@@ -52,7 +52,7 @@ configure(subprojects) {
 
     dependencies {
         testCompile 'junit:junit:4.11'
-        compile 'org.mongodb:mongo-java-driver:[2.10.1,2.15]'
+        compile 'org.mongodb:mongo-java-driver:2.12.0-SNAPSHOT'
     }
 
     sourceSets.main.compileClasspath += configurations.provided
@@ -98,6 +98,8 @@ project(':morphia') {
         compile 'cglib:cglib-nodep:[2.1_3,3.0)'
         compile 'com.thoughtworks.proxytoys:proxytoys:1.0'
         compile 'com.google.code.findbugs:findbugs:2.0.2'
+        
+        testCompile 'org.zeroturnaround:zt-exec:1.5'
     }
 }
 

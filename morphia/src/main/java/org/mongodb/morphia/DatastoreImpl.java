@@ -18,6 +18,8 @@ import com.mongodb.MongoException;
 import com.mongodb.ReadPreference;
 import com.mongodb.WriteConcern;
 import com.mongodb.WriteResult;
+import org.mongodb.morphia.aggregation.AggregationPipeline;
+import org.mongodb.morphia.aggregation.AggregationPipelineImpl;
 import org.mongodb.morphia.annotations.CappedAt;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Index;
@@ -90,7 +92,7 @@ public class DatastoreImpl implements AdvancedDatastore {
     }
 
     /**
-     * @deprecated 
+     * @deprecated
      */
     public DatastoreImpl(final Morphia morphia, final Mongo mongo) {
         this(morphia, mongo, null);
@@ -474,6 +476,13 @@ public class DatastoreImpl implements AdvancedDatastore {
         return createQuery(type, query);
     }
 
+    /**
+     * Returns a new query bound to the kind (a specific {@link DBCollection})
+     */
+    public <T, U> AggregationPipeline<T, U> createAggregation(final Class<T> source, final Class<U> target) {
+        return new AggregationPipelineImpl<T, U>(this, source, target);
+    }
+
     public <T> Query<T> createQuery(final Class<T> type) {
         return newQuery(type, getCollection(type));
     }
@@ -553,7 +562,7 @@ public class DatastoreImpl implements AdvancedDatastore {
         }
         for (final Map.Entry<String, List<DBRef>> entry : kindMap.entrySet()) {
             final List<DBRef> kindRefs = entry.getValue();
-            
+
             final List<Object> objIds = new ArrayList<Object>();
             for (final DBRef key : kindRefs) {
                 objIds.add(key.getId());
@@ -1412,4 +1421,5 @@ public class DatastoreImpl implements AdvancedDatastore {
     public QueryFactory getQueryFactory() {
         return queryFactory;
     }
+
 }
