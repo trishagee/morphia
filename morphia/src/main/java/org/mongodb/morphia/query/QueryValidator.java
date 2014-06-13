@@ -1,6 +1,5 @@
 package org.mongodb.morphia.query;
 
-import com.mongodb.DBObject;
 import org.mongodb.morphia.Key;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Reference;
@@ -10,11 +9,15 @@ import org.mongodb.morphia.logging.MorphiaLoggerFactory;
 import org.mongodb.morphia.mapping.MappedClass;
 import org.mongodb.morphia.mapping.MappedField;
 import org.mongodb.morphia.mapping.Mapper;
-import org.mongodb.morphia.utils.ReflectionUtils;
+import org.mongodb.morphia.query.validation.AllOperationValidator;
+import org.mongodb.morphia.query.validation.ExistsOperationValidator;
+import org.mongodb.morphia.query.validation.GeoWithinOperationValidator;
+import org.mongodb.morphia.query.validation.InOperationValidator;
+import org.mongodb.morphia.query.validation.ModOperationValidator;
+import org.mongodb.morphia.query.validation.NotInOperationValidator;
+import org.mongodb.morphia.query.validation.SizeOperationValidator;
 
-import java.lang.reflect.Array;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Pattern;
 
 import static java.lang.String.format;
@@ -23,60 +26,54 @@ import static java.util.Arrays.asList;
 //TODO: Trisha - this really needs a test, if only to document what it's doing
 final class QueryValidator {
     private static final Logger LOG = MorphiaLoggerFactory.get(QueryValidator.class);
-    
-    private QueryValidator() {}
+
+    private QueryValidator() {
+    }
 
     @SuppressWarnings("unchecked")
     /*package*/ static boolean isCompatibleForOperator(final MappedField mf, final Class<?> type, final FilterOperator op,
-                                                   final Object value) {
-        if (value == null || type == null) {
-            return true;
-        } else if (op.equals(FilterOperator.EXISTS) && (value instanceof Boolean)) {
-            return true;
-        } else if (op.equals(FilterOperator.SIZE) && (type.isAssignableFrom(List.class) && value instanceof Integer)) {
-            return true;
-        } else if (op.equals(FilterOperator.IN) && (value.getClass().isArray() || Iterable.class.isAssignableFrom(value.getClass())
-                                                    || Map.class.isAssignableFrom(value.getClass()))) {
-            return true;
-        } else if (op.equals(FilterOperator.NOT_IN) && (value.getClass().isArray() || Iterable.class.isAssignableFrom(value.getClass())
-                                                        || Map.class.isAssignableFrom(value.getClass()))) {
-            return true;
-        } else if (op.equals(FilterOperator.MOD) && value.getClass().isArray()) {
-            return ReflectionUtils.isIntegerType(Array.get(value, 0).getClass());
-        } else if (op.equals(FilterOperator.GEO_WITHIN)
-                   && (type.isArray() || Iterable.class.isAssignableFrom(type))
-                   && (mf.getSubType() instanceof Number || asList(int.class, long.class, double.class,
-                                                                   float.class).contains(mf.getSubType()))) {
-            if (value instanceof DBObject) {
-                String key = ((DBObject) value).keySet().iterator().next();
-                return key.equals("$box") || key.equals("$center") || key.equals("$centerSphere") || key.equals("$polygon");
+                                                       final Object value) {
+        try {
+            if (value == null || type == null) {
+                return true;
+            } else if (ExistsOperationValidator.validate(op, value)) {
+                return true;
+            } else if (SizeOperationValidator.validate(type, op, value)) {
+                return true;
+            } else if (InOperationValidator.validate(op, value)) {
+                return true;
+            } else if (NotInOperationValidator.validate(op, value)) {
+                return true;
+            } else if (ModOperationValidator.validate(op, value)) {
+                return true;
+            } else if (GeoWithinOperationValidator.validate(mf, type, op, value)) {
+                return true;
+            } else if (AllOperationValidator.validate(op, value)) {
+                return true;
+            } else if (value instanceof Integer && (asList(int.class, long.class, Long.class).contains(type))) {
+                return true;
+            } else if ((value instanceof Integer || value instanceof Long) && (asList(double.class, Double.class).contains(type))) {
+                return true;
+            } else if (value instanceof Pattern && String.class.equals(type)) {
+                return true;
+            } else if (value.getClass().getAnnotation(Entity.class) != null && Key.class.equals(type)) {
+                return true;
+            } else if (value.getClass().isAssignableFrom(Key.class) && type.equals(((Key) value).getKindClass())) {
+                return true;
+            } else if (value instanceof List<?>) {
+                return true;
+            } else if (mf.getMapper().getMappedClass(type) != null && mf.getMapper().getMappedClass(type).getMappedIdField() != null
+                       && value.getClass().equals(mf.getMapper().getMappedClass(type).getMappedIdField().getConcreteType())) {
+                return true;
+            } else if (!value.getClass().isAssignableFrom(type) && !value.getClass()
+                                                                         .getSimpleName()
+                                                                         .equalsIgnoreCase(type.getSimpleName())) {
+                return false;
             }
-            return false;
-        } else if (op.equals(FilterOperator.ALL)
-                   && (value.getClass().isArray() || Iterable.class.isAssignableFrom(value.getClass())
-                       || Map.class.isAssignableFrom(value.getClass()))) {
             return true;
-        } else if (value instanceof Integer && (asList(int.class, long.class, Long.class).contains(type))) {
-            return true;
-        } else if ((value instanceof Integer || value instanceof Long) && (asList(double.class, Double.class).contains(type))) {
-            return true;
-        } else if (value instanceof Pattern && String.class.equals(type)) {
-            return true;
-        } else if (value.getClass().getAnnotation(Entity.class) != null && Key.class.equals(type)) {
-            return true;
-        } else if (value.getClass().isAssignableFrom(Key.class) && type.equals(((Key) value).getKindClass())) {
-            return true;
-        } else if (value instanceof List<?>) {
-            return true;
-        } else if (mf.getMapper().getMappedClass(type) != null && mf.getMapper().getMappedClass(type).getMappedIdField() != null
-                   && value.getClass().equals(mf.getMapper().getMappedClass(type).getMappedIdField().getConcreteType())) {
-            return true;
-        } else if (!value.getClass().isAssignableFrom(type) && !value.getClass()
-                                                                     .getSimpleName()
-                                                                     .equalsIgnoreCase(type.getSimpleName())) {
+        } catch (final ValidationException e) {
             return false;
         }
-        return true;
     }
 
     /**

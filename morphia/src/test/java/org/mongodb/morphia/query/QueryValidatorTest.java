@@ -117,7 +117,9 @@ public class QueryValidatorTest {
     @Ignore("the final 'false' fall-through does not work")
     public void shouldNotAllowOtherValuesForInOperator() {
         // expect
-        assertThat(QueryValidator.isCompatibleForOperator(null, String.class, IN, "value"), is(false));
+        MappedClass mappedClass = new MappedClass(SimpleEntity.class, new Mapper());
+        MappedField mappedField = mappedClass.getMappedField("name");
+        assertThat(QueryValidator.isCompatibleForOperator(mappedField, String.class, IN, "value"), is(false));
     }
 
     @Test
@@ -179,6 +181,15 @@ public class QueryValidatorTest {
         MappedClass mappedClass = new MappedClass(GeoEntity.class, new Mapper());
         MappedField mappedField = mappedClass.getMappedField("array");
         assertThat(QueryValidator.isCompatibleForOperator(mappedField, List.class, GEO_WITHIN, new BasicDBObject("$box", 1)), is(true));
+    }
+
+    @Test
+    public void shouldNotAllowGeoWithinWhenValueDoesNotContainKeyword() {
+        // expect
+        MappedClass mappedClass = new MappedClass(GeoEntity.class, new Mapper());
+        MappedField mappedField = mappedClass.getMappedField("array");
+        assertThat(QueryValidator.isCompatibleForOperator(mappedField, List.class, GEO_WITHIN, new BasicDBObject("notValidKey", 1)),
+                   is(false));
     }
 
     @Test
