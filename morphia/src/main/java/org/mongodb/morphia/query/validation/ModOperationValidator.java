@@ -7,8 +7,9 @@ import org.mongodb.morphia.utils.ReflectionUtils;
 import java.lang.reflect.Array;
 
 // see http://docs.mongodb.org/manual/reference/operator/query/mod/
-public final class ModOperationValidator implements Validator {
-    private ModOperationValidator() { }
+public final class ModOperationValidator implements OperationValidator {
+    private ModOperationValidator() {
+    }
 
     public static boolean validate(final FilterOperator operator, final Object value) {
         //TODO: Trish - This needs simplification, and I don't want to use Exceptions for logic

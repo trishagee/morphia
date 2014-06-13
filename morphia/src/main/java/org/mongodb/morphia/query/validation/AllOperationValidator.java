@@ -4,9 +4,10 @@ import org.mongodb.morphia.query.FilterOperator;
 
 import java.util.Map;
 
-public final class AllOperationValidator implements Validator {
+public final class AllOperationValidator implements OperationValidator {
 
-    private AllOperationValidator() { }
+    private AllOperationValidator() {
+    }
 
     public static boolean validate(final FilterOperator operator, final Object value) {
         return operator.equals(FilterOperator.ALL)

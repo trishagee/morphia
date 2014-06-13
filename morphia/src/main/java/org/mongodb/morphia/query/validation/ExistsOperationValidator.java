@@ -5,9 +5,10 @@ import org.mongodb.morphia.query.FilterOperator;
 /**
  * Checks if the value can have the {@code FilterOperator.EXISTS} operator applied to it.
  */
-public final class ExistsOperationValidator implements Validator {
+public final class ExistsOperationValidator implements OperationValidator {
 
-    private ExistsOperationValidator() { }
+    private ExistsOperationValidator() {
+    }
 
     /**
      * Validate whether this operator can work on the given value.

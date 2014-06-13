@@ -1,7 +1,5 @@
 package org.mongodb.morphia.query;
 
-import org.mongodb.morphia.Key;
-import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Reference;
 import org.mongodb.morphia.annotations.Serialized;
 import org.mongodb.morphia.logging.Logger;
@@ -10,18 +8,20 @@ import org.mongodb.morphia.mapping.MappedClass;
 import org.mongodb.morphia.mapping.MappedField;
 import org.mongodb.morphia.mapping.Mapper;
 import org.mongodb.morphia.query.validation.AllOperationValidator;
+import org.mongodb.morphia.query.validation.EntityAnnotatedValueValidator;
 import org.mongodb.morphia.query.validation.ExistsOperationValidator;
 import org.mongodb.morphia.query.validation.GeoWithinOperationValidator;
 import org.mongodb.morphia.query.validation.InOperationValidator;
+import org.mongodb.morphia.query.validation.IntegerOrLongValueTypeValidator;
+import org.mongodb.morphia.query.validation.IntegerValueTypeValidator;
+import org.mongodb.morphia.query.validation.KeyValueTypeValidator;
+import org.mongodb.morphia.query.validation.ListValueValidator;
 import org.mongodb.morphia.query.validation.ModOperationValidator;
 import org.mongodb.morphia.query.validation.NotInOperationValidator;
+import org.mongodb.morphia.query.validation.PatternValueTypeValidator;
 import org.mongodb.morphia.query.validation.SizeOperationValidator;
 
-import java.util.List;
-import java.util.regex.Pattern;
-
 import static java.lang.String.format;
-import static java.util.Arrays.asList;
 
 //TODO: Trisha - this really needs a test, if only to document what it's doing
 final class QueryValidator {
@@ -50,17 +50,17 @@ final class QueryValidator {
                 return true;
             } else if (AllOperationValidator.validate(op, value)) {
                 return true;
-            } else if (value instanceof Integer && (asList(int.class, long.class, Long.class).contains(type))) {
+            } else if (IntegerValueTypeValidator.validate(type, value)) {
                 return true;
-            } else if ((value instanceof Integer || value instanceof Long) && (asList(double.class, Double.class).contains(type))) {
+            } else if (IntegerOrLongValueTypeValidator.validate(type, value)) {
                 return true;
-            } else if (value instanceof Pattern && String.class.equals(type)) {
+            } else if (PatternValueTypeValidator.validate(type, value)) {
                 return true;
-            } else if (value.getClass().getAnnotation(Entity.class) != null && Key.class.equals(type)) {
+            } else if (EntityAnnotatedValueValidator.validate(type, value)) {
                 return true;
-            } else if (value.getClass().isAssignableFrom(Key.class) && type.equals(((Key) value).getKindClass())) {
+            } else if (KeyValueTypeValidator.validate(type, value)) {
                 return true;
-            } else if (value instanceof List<?>) {
+            } else if (ListValueValidator.validator(value)) {
                 return true;
             } else if (mf.getMapper().getMappedClass(type) != null && mf.getMapper().getMappedClass(type).getMappedIdField() != null
                        && value.getClass().equals(mf.getMapper().getMappedClass(type).getMappedIdField().getConcreteType())) {

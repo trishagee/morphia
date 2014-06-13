@@ -7,9 +7,10 @@ import org.mongodb.morphia.query.FilterOperator;
 import static java.util.Arrays.asList;
 
 //TODO: Trish - needs simplification
-public final class GeoWithinOperationValidator implements Validator {
+public final class GeoWithinOperationValidator implements OperationValidator {
 
-    private GeoWithinOperationValidator() { }
+    private GeoWithinOperationValidator() {
+    }
 
     @SuppressWarnings("unchecked")
     public static boolean validate(final MappedField mf, final Class<?> type, final FilterOperator operator,

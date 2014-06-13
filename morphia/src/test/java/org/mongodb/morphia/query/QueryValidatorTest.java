@@ -237,9 +237,7 @@ public class QueryValidatorTest {
         assertThat(QueryValidator.isCompatibleForOperator(null, Long.class, EQUAL, new Integer(1)), is(true));
         assertThat(QueryValidator.isCompatibleForOperator(null, int.class, EQUAL, new Integer(1)), is(true));
         assertThat(QueryValidator.isCompatibleForOperator(null, long.class, EQUAL, new Integer(1)), is(true));
-
-        //for some insane reason, although the value needs to be an Integer, the type cannot be
-        //        assertThat(QueryValidator.isCompatibleForOperator(null, Integer.class, EQUAL, new Integer(1)), is(true));
+        assertThat(QueryValidator.isCompatibleForOperator(null, Integer.class, EQUAL, new Integer(1)), is(true));
     }
 
     @Test
@@ -287,7 +285,7 @@ public class QueryValidatorTest {
     }
 
     @Test
-    public void shouldNotAllowStringValueWithTypeOfString() {
+    public void shouldNotAllowStringValueWithTypeThatIsNotString() {
         // expect
         MappedClass mappedClass = new MappedClass(SimpleEntity.class, new Mapper());
         MappedField mappedField = mappedClass.getMappedField("name");
