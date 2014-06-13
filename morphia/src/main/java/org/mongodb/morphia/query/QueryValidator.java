@@ -8,6 +8,7 @@ import org.mongodb.morphia.mapping.MappedClass;
 import org.mongodb.morphia.mapping.MappedField;
 import org.mongodb.morphia.mapping.Mapper;
 import org.mongodb.morphia.query.validation.AllOperationValidator;
+import org.mongodb.morphia.query.validation.DefaultTypeValueValidator;
 import org.mongodb.morphia.query.validation.EntityAnnotatedValueValidator;
 import org.mongodb.morphia.query.validation.ExistsOperationValidator;
 import org.mongodb.morphia.query.validation.GeoWithinOperationValidator;
@@ -16,6 +17,7 @@ import org.mongodb.morphia.query.validation.IntegerOrLongValueTypeValidator;
 import org.mongodb.morphia.query.validation.IntegerValueTypeValidator;
 import org.mongodb.morphia.query.validation.KeyValueTypeValidator;
 import org.mongodb.morphia.query.validation.ListValueValidator;
+import org.mongodb.morphia.query.validation.MappedFieldTypeValidator;
 import org.mongodb.morphia.query.validation.ModOperationValidator;
 import org.mongodb.morphia.query.validation.NotInOperationValidator;
 import org.mongodb.morphia.query.validation.PatternValueTypeValidator;
@@ -62,12 +64,9 @@ final class QueryValidator {
                 return true;
             } else if (ListValueValidator.validator(value)) {
                 return true;
-            } else if (mf.getMapper().getMappedClass(type) != null && mf.getMapper().getMappedClass(type).getMappedIdField() != null
-                       && value.getClass().equals(mf.getMapper().getMappedClass(type).getMappedIdField().getConcreteType())) {
+            } else if (MappedFieldTypeValidator.validate(mf.getMapper(), type, value)) {
                 return true;
-            } else if (!value.getClass().isAssignableFrom(type) && !value.getClass()
-                                                                         .getSimpleName()
-                                                                         .equalsIgnoreCase(type.getSimpleName())) {
+            } else if (!DefaultTypeValueValidator.validate(type, value)) {
                 return false;
             }
             return true;
