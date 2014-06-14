@@ -39,6 +39,7 @@ public class TestSuperDatastore extends TestBase {
     }
 
     @Test
+    //TODO: Validation - this test will fail if we turn on breaking validation
     public void testSaveAndDelete() throws Exception {
         final String ns = "hotels";
         final Rectangle rect = new Rectangle(10, 10);
@@ -72,6 +73,7 @@ public class TestSuperDatastore extends TestBase {
     }
 
     @Test
+    //TODO: Validation - this test will fail if we turn on breaking validation
     public void testFind() throws Exception {
         final String ns = "hotels";
         Rectangle rect = new Rectangle(10, 10);

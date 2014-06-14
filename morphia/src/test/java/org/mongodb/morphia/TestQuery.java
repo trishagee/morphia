@@ -340,6 +340,7 @@ public class TestQuery extends TestBase {
     }
 
     @Test
+    //TODO: Validation - this test will fail if we turn on breaking validation
     public void testReferenceQuery() throws Exception {
         final Photo p = new Photo();
         final ContainsPhotoKey cpk = new ContainsPhotoKey();
@@ -649,6 +650,7 @@ public class TestQuery extends TestBase {
     }
 
     @Test
+    //TODO: Validation - this test will fail if we turn on breaking validation
     public void testIdFieldNameQuery() throws Exception {
         final PhotoWithKeywords pwk = new PhotoWithKeywords("scott", "hernandez");
         getDs().save(pwk);
@@ -710,6 +712,7 @@ public class TestQuery extends TestBase {
     }
 
     @Test
+    //TODO: Validation - this test will fail if we turn on breaking validation
     public void testDeepQueryWithBadArgs() throws Exception {
         getDs().save(new PhotoWithKeywords());
         PhotoWithKeywords p = getDs().find(PhotoWithKeywords.class, "keywords.keyword", 1).get();
@@ -841,11 +844,13 @@ public class TestQuery extends TestBase {
     }
 
     @Test
+    //TODO: Validation - this test will fail if we turn on breaking validation
     public void testNonexistentGet() throws Exception {
         assertNull(getDs().get(Hotel.class, -1));
     }
 
     @Test
+    //TODO: Validation - this test will fail if we turn on breaking validation
     public void testNonexistentFindGet() throws Exception {
         assertNull(getDs().find(Hotel.class, "_id", -1).get());
     }

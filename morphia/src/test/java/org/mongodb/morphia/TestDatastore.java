@@ -376,6 +376,7 @@ public class TestDatastore extends TestBase {
     }
 
     @Test
+    //TODO: Validation - this test will fail if we turn on breaking validation
     public void testSaveAndDelete() {
         getDs().getCollection(Rectangle.class).drop();
 

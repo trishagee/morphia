@@ -136,6 +136,7 @@ public class EnumMappingTest extends TestBase {
     }
 
     @Test
+    //TODO: Validation - this test will fail if we turn on breaking validation
     public void testEnumMapping() throws Exception {
         getMorphia().map(ContainsEnum.class);
 
