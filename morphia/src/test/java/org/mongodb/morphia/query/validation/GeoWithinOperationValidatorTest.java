@@ -6,6 +6,7 @@ import org.mongodb.morphia.mapping.MappedClass;
 import org.mongodb.morphia.mapping.MappedField;
 import org.mongodb.morphia.mapping.Mapper;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -19,8 +20,15 @@ public class GeoWithinOperationValidatorTest {
         // expect
         MappedClass mappedClass = new MappedClass(GeoEntity.class, new Mapper());
         MappedField mappedField = mappedClass.getMappedField("array");
-        assertThat(GeoWithinOperationValidator.validate(mappedField, List.class, GEO_WITHIN,
-                                                        new BasicDBObject("$box", 1)), is(true));
+        assertThat(GeoWithinOperationValidator.validate(mappedField, GEO_WITHIN, new BasicDBObject("$box", 1)), is(true));
+    }
+
+    @Test
+    public void shouldAllowGeoWithinOperatorForGeoEntityWithListOfIntegers() {
+        // expect
+        MappedClass mappedClass = new MappedClass(GeoEntity.class, new Mapper());
+        MappedField mappedField = mappedClass.getMappedField("list");
+        assertThat(GeoWithinOperationValidator.validate(mappedField, GEO_WITHIN, new BasicDBObject("$box", 1)), is(true));
     }
 
     @Test
@@ -28,8 +36,7 @@ public class GeoWithinOperationValidatorTest {
         // expect
         MappedClass mappedClass = new MappedClass(GeoEntity.class, new Mapper());
         MappedField mappedField = mappedClass.getMappedField("array");
-        assertThat(GeoWithinOperationValidator.validate(mappedField, List.class, GEO_WITHIN, new BasicDBObject("notValidKey", 1)),
-                   is(false));
+        assertThat(GeoWithinOperationValidator.validate(mappedField, GEO_WITHIN, new BasicDBObject("notValidKey", 1)), is(false));
     }
 
     @Test
@@ -37,23 +44,34 @@ public class GeoWithinOperationValidatorTest {
         // expect
         MappedClass mappedClass = new MappedClass(GeoEntity.class, new Mapper());
         MappedField mappedField = mappedClass.getMappedField("array");
-        assertThat(GeoWithinOperationValidator.validate(mappedField, List.class, GEO_WITHIN, "NotAGeoQuery"), is(false));
+        assertThat(GeoWithinOperationValidator.validate(mappedField, GEO_WITHIN, "NotAGeoQuery"), is(false));
     }
 
     @Test
-    public void shouldNotAllowGeoWithinOperatorWhenMappedFieldIsNotAnArrayOfNumbers() {
+    public void shouldNotAllowGeoWithinOperatorWhenMappedFieldIsArrayThatDoesNotContainNumbers() {
         // expect
         MappedClass mappedClass = new MappedClass(InvalidGeoEntity.class, new Mapper());
-        MappedField mappedField = mappedClass.getMappedField("array");
-        assertThat(GeoWithinOperationValidator.validate(mappedField, List.class, GEO_WITHIN,
-                                                        new BasicDBObject("$box", 1)), is(false));
+        MappedField mappedField = mappedClass.getMappedField("arrayOfStrings");
+        assertThat(GeoWithinOperationValidator.validate(mappedField, GEO_WITHIN, new BasicDBObject("$box", 1)), is(false));
     }
 
+    @Test
+    public void shouldNotAllowGeoWithinOperatorWhenMappedFieldIsListThatDoesNotContainNumbers() {
+        // expect
+        MappedClass mappedClass = new MappedClass(InvalidGeoEntity.class, new Mapper());
+        MappedField mappedField = mappedClass.getMappedField("listOfStrings");
+        assertThat(GeoWithinOperationValidator.validate(mappedField, GEO_WITHIN, new BasicDBObject("$box", 1)), is(false));
+    }
+
+    @SuppressWarnings("unused")
     private static class GeoEntity {
         private final int[] array = {1};
+        private final List<Integer> list = Arrays.asList(1);
     }
 
+    @SuppressWarnings("unused")
     private static class InvalidGeoEntity {
-        private final String[] array = {"1"};
+        private final String[] arrayOfStrings = {"1"};
+        private final List<String> listOfStrings = Arrays.asList("1");
     }
 }

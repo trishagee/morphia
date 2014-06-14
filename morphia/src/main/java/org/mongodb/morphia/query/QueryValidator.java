@@ -25,7 +25,6 @@ import org.mongodb.morphia.query.validation.SizeOperationValidator;
 
 import static java.lang.String.format;
 
-//TODO: Trisha - this really needs a test, if only to document what it's doing
 final class QueryValidator {
     private static final Logger LOG = MorphiaLoggerFactory.get(QueryValidator.class);
 
@@ -49,7 +48,7 @@ final class QueryValidator {
                 return true;
             } else if (ModOperationValidator.validate(op, value)) {
                 return true;
-            } else if (GeoWithinOperationValidator.validate(mf, type, op, value)) {
+            } else if (GeoWithinOperationValidator.validate(mf, op, value)) {
                 return true;
             } else if (AllOperationValidator.validate(op, value)) {
                 return true;
