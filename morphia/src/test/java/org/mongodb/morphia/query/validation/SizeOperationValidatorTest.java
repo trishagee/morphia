@@ -1,6 +1,5 @@
 package org.mongodb.morphia.query.validation;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mongodb.morphia.entities.SimpleEntity;
 
@@ -19,14 +18,12 @@ public class SizeOperationValidatorTest {
     }
 
     @Test
-    @Ignore("So we don't allow arrays?")
     public void shouldAllowSizeOperatorForArraysAndIntegerValues() {
         // expect
         assertThat(SizeOperationValidator.validate(new int[0].getClass(), SIZE, 3), is(true));
     }
 
     @Test
-    @Ignore("OK this is weird, I'd expect ArrayList to be OK. I think the logic is backwards")
     public void shouldAllowSizeOperatorForAllListTypesAndIntegerValues() {
         // expect
         assertThat(SizeOperationValidator.validate(ArrayList.class, SIZE, 3), is(true));

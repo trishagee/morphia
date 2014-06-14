@@ -75,14 +75,12 @@ public class QueryValidatorTest {
     }
 
     @Test
-    @Ignore("So we don't allow arrays?")
     public void shouldAllowSizeOperatorForArraysAndIntegerValues() {
         // expect
         assertThat(QueryValidator.isCompatibleForOperator(null, new int[0].getClass(), SIZE, 3), is(true));
     }
 
     @Test
-    @Ignore("OK this is weird, I'd expect ArrayList to be OK. I think the logic is backwards")
     public void shouldAllowSizeOperatorForAllListTypesAndIntegerValues() {
         // expect
         assertThat(QueryValidator.isCompatibleForOperator(null, ArrayList.class, SIZE, 3), is(true));

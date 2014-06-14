@@ -38,7 +38,8 @@ final class QueryValidator {
         try {
             if (value == null || type == null) {
                 return true;
-            } else if (ExistsOperationValidator.validate(op, value)) {
+            }
+            if (ExistsOperationValidator.validate(op, value)) {
                 return true;
             } else if (SizeOperationValidator.validate(type, op, value)) {
                 return true;
