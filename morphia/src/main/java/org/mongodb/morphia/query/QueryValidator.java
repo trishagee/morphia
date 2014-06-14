@@ -40,7 +40,7 @@ final class QueryValidator {
             }
             if (ExistsOperationValidator.validate(op, value)) {
                 return true;
-            } else if (SizeOperationValidator.validate(type, op, value)) {
+            } else if (SizeOperationValidator.validate(mf, op, value)) {
                 return true;
             } else if (InOperationValidator.validate(op, value)) {
                 return true;

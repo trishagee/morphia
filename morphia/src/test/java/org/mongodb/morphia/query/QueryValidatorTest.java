@@ -5,6 +5,7 @@ import org.bson.types.ObjectId;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.mongodb.morphia.Key;
+import org.mongodb.morphia.entities.EntityWithListsAndArrays;
 import org.mongodb.morphia.entities.SimpleEntity;
 import org.mongodb.morphia.mapping.MappedClass;
 import org.mongodb.morphia.mapping.MappedField;
@@ -30,6 +31,7 @@ import static org.mongodb.morphia.query.FilterOperator.SIZE;
 import static org.mongodb.morphia.query.QueryValidator.validateQuery;
 
 public class QueryValidatorTest {
+    //TODO: when the validation is totally split into individual validators, this test will be a lot simpler, or redundant
 
     @Test
     public void shouldNotErrorWhenValidateQueryCalledWithNullValue() {
@@ -70,28 +72,42 @@ public class QueryValidatorTest {
 
     @Test
     public void shouldAllowSizeOperatorForListTypesAndIntegerValues() {
+        // given
+        MappedClass mappedClass = new MappedClass(EntityWithListsAndArrays.class, new Mapper());
+        MappedField mappedField = mappedClass.getMappedField("list");
+
         // expect
-        assertThat(QueryValidator.isCompatibleForOperator(null, List.class, SIZE, 3), is(true));
+        assertThat(QueryValidator.isCompatibleForOperator(mappedField, NullClass.class, SIZE, 3), is(true));
     }
 
     @Test
     public void shouldAllowSizeOperatorForArraysAndIntegerValues() {
+        // given
+        MappedClass mappedClass = new MappedClass(EntityWithListsAndArrays.class, new Mapper());
+        MappedField mappedField = mappedClass.getMappedField("array");
+
         // expect
-        assertThat(QueryValidator.isCompatibleForOperator(null, new int[0].getClass(), SIZE, 3), is(true));
+        assertThat(QueryValidator.isCompatibleForOperator(mappedField, NullClass.class, SIZE, 3), is(true));
     }
 
     @Test
-    public void shouldAllowSizeOperatorForAllListTypesAndIntegerValues() {
+    public void shouldAllowSizeOperatorForArrayListTypesAndIntegerValues() {
+        // given
+        MappedClass mappedClass = new MappedClass(EntityWithListsAndArrays.class, new Mapper());
+        MappedField mappedField = mappedClass.getMappedField("arrayList");
+
         // expect
-        assertThat(QueryValidator.isCompatibleForOperator(null, ArrayList.class, SIZE, 3), is(true));
+        assertThat(QueryValidator.isCompatibleForOperator(mappedField, NullClass.class, SIZE, 3), is(true));
     }
 
     @Test
     public void shouldNotAllowSizeOperatorForNonListTypes() {
+        // given
+        MappedClass mappedClass = new MappedClass(EntityWithListsAndArrays.class, new Mapper());
+        MappedField mappedField = mappedClass.getMappedField("notAnArrayOrList");
+
         // expect
-        MappedClass mappedClass = new MappedClass(SimpleEntity.class, new Mapper());
-        MappedField mappedField = mappedClass.getMappedField("name");
-        assertThat(QueryValidator.isCompatibleForOperator(mappedField, SimpleEntity.class, SIZE, 3), is(false));
+        assertThat(QueryValidator.isCompatibleForOperator(mappedField, NullClass.class, SIZE, 3), is(false));
     }
 
     @Test
@@ -353,5 +369,6 @@ public class QueryValidatorTest {
         assertThat(QueryValidator.isCompatibleForOperator(mappedField, String.class, EQUAL, 1), is(false));
     }
 
-    //the only branch I couldn't test was the bit using the mapper class
+    private static class NullClass {
+    }
 }
