@@ -22,6 +22,10 @@ import org.mongodb.morphia.query.validation.ModOperationValidator;
 import org.mongodb.morphia.query.validation.NotInOperationValidator;
 import org.mongodb.morphia.query.validation.PatternValueTypeValidator;
 import org.mongodb.morphia.query.validation.SizeOperationValidator;
+import org.mongodb.morphia.query.validation.ValidationFailure;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static java.lang.String.format;
 
@@ -33,12 +37,12 @@ final class QueryValidator {
 
     @SuppressWarnings("unchecked")
     /*package*/ static boolean isCompatibleForOperator(final MappedField mf, final Class<?> type, final FilterOperator op,
-                                                       final Object value) {
+                                                       final Object value, final List<ValidationFailure> validationFailures) {
         try {
             if (value == null || type == null) {
                 return true;
             }
-            if (ExistsOperationValidator.validate(op, value)) {
+            if (ExistsOperationValidator.apply(op, value, validationFailures)) {
                 return true;
             } else if (SizeOperationValidator.validate(mf, op, value)) {
                 return true;
@@ -142,8 +146,8 @@ final class QueryValidator {
             }
 
             if (validateTypes) {
-                boolean compatibleForType = isCompatibleForOperator(mf, mf.getType(), op, val);
-                boolean compatibleForSubclass = isCompatibleForOperator(mf, mf.getSubClass(), op, val);
+                boolean compatibleForType = isCompatibleForOperator(mf, mf.getType(), op, val, new ArrayList<ValidationFailure>());
+                boolean compatibleForSubclass = isCompatibleForOperator(mf, mf.getSubClass(), op, val, new ArrayList<ValidationFailure>());
 
                 if ((mf.isSingleValue() && !compatibleForType)
                     || mf.isMultipleValues() && !(compatibleForSubclass || compatibleForType)) {
