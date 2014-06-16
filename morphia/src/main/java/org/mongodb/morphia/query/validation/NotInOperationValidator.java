@@ -10,24 +10,16 @@ import static java.lang.String.format;
 import static org.mongodb.morphia.query.FilterOperator.NOT_IN;
 
 /**
- * Checks if the value can have the {@code FilterOperator.NOT_IN} operator applied to it.  Since this class does not need state, and the
- * methods can't be static because it implements an interface, it seems to be one of the few places where the Singleton pattern seems
- * appropriate.
+ * Checks if the value can have the {@code FilterOperator.NOT_IN} operator applied to it.
  */
-public enum NotInOperationValidator implements OperationValidator {
-    INSTANCE;
+public final class NotInOperationValidator extends OperationValidator {
+    private static final NotInOperationValidator INSTANCE = new NotInOperationValidator();
 
-    @Override
-    public boolean apply(final MappedField mappedField, final FilterOperator operator, final Object value,
-                         final List<ValidationFailure> validationFailures) {
-        if (appliesTo(operator)) {
-            validate(value, validationFailures);
-            return true;
-        }
-        return false;
+    private NotInOperationValidator() {
     }
 
-    private static void validate(final Object value, final List<ValidationFailure> validationFailures) {
+    @Override
+    protected void validate(final MappedField mappedField, final Object value, final List<ValidationFailure> validationFailures) {
         if (value == null) {
             validationFailures.add(new ValidationFailure(format("For a $nin operation, value cannot be null.")));
         } else if (!(value.getClass().isArray()
@@ -40,7 +32,17 @@ public enum NotInOperationValidator implements OperationValidator {
         }
     }
 
-    private static boolean appliesTo(final FilterOperator operator) {
-        return operator.equals(NOT_IN);
+    @Override
+    protected FilterOperator getOperator() {
+        return NOT_IN;
+    }
+
+    /**
+     * Get the instance
+     *
+     * @return the Singleton instance of this validator
+     */
+    public static NotInOperationValidator getInstance() {
+        return INSTANCE;
     }
 }

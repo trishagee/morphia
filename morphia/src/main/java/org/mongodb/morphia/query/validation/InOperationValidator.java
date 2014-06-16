@@ -10,13 +10,16 @@ import static java.lang.String.format;
 import static org.mongodb.morphia.query.FilterOperator.IN;
 
 /**
- * Checks if the value can have the {@code FilterOperator.IN} operator applied to it.  Since this class does not need state, and the methods
- * can't be static because it implements an interface, it seems to be one of the few places where the Singleton pattern seems appropriate.
+ * Checks if the value can have the {@code FilterOperator.IN} operator applied to it.
  */
-public enum InOperationValidator implements OperationValidator {
-    INSTANCE;
+public final class InOperationValidator extends OperationValidator {
+    private static final InOperationValidator INSTANCE = new InOperationValidator();
 
-    private static void validate(final Object value, final List<ValidationFailure> validationFailures) {
+    private InOperationValidator() {
+    }
+
+    @Override
+    protected void validate(final MappedField mappedField, final Object value, final List<ValidationFailure> validationFailures) {
         if (value == null) {
             validationFailures.add(new ValidationFailure(format("For an $in operation, value cannot be null.")));
             //TODO: Trish - extract this check for array types out as it's used in multiple places
@@ -31,17 +34,16 @@ public enum InOperationValidator implements OperationValidator {
     }
 
     @Override
-    public boolean apply(final MappedField mappedField, final FilterOperator operator, final Object value,
-                         final List<ValidationFailure> validationFailures) {
-        if (appliesTo(operator)) {
-            validate(value, validationFailures);
-            return true;
-        }
-        return false;
-
+    protected FilterOperator getOperator() {
+        return IN;
     }
 
-    private static boolean appliesTo(final FilterOperator operator) {
-        return operator.equals(IN);
+    /**
+     * Get the instance.
+     *
+     * @return the Singleton instance of this validator
+     */
+    public static InOperationValidator getInstance() {
+        return INSTANCE;
     }
 }

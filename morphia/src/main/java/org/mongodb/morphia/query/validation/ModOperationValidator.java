@@ -11,10 +11,18 @@ import static java.lang.String.format;
 import static org.mongodb.morphia.query.FilterOperator.MOD;
 
 // see http://docs.mongodb.org/manual/reference/operator/query/mod/
-public enum ModOperationValidator implements OperationValidator {
-    INSTANCE;
 
-    private static void validate(final Object value, final List<ValidationFailure> validationFailures) {
+/**
+ * Validates queries using the {@code FilterOperator.MOD}.
+ */
+public final class ModOperationValidator extends OperationValidator {
+    private static final ModOperationValidator INSTANCE = new ModOperationValidator();
+
+    private ModOperationValidator() {
+    }
+
+    @Override
+    protected void validate(final MappedField mappedField, final Object value, final List<ValidationFailure> validationFailures) {
         if (value == null) {
             validationFailures.add(new ValidationFailure(format("For an $all operation, value cannot be null.")));
         } else if (value.getClass().isArray()) {
@@ -38,17 +46,17 @@ public enum ModOperationValidator implements OperationValidator {
     }
 
     @Override
-    public boolean apply(final MappedField mappedField, final FilterOperator operator, final Object value,
-                         final List<ValidationFailure> validationFailures) {
-        if (appliesTo(operator)) {
-            validate(value, validationFailures);
-            return true;
-        }
-        return false;
+    protected FilterOperator getOperator() {
+        return MOD;
     }
 
-    private static boolean appliesTo(final FilterOperator operator) {
-        return operator.equals(MOD);
+    /**
+     * Get the instance.
+     *
+     * @return the Singleton instance of this validator
+     */
+    public static ModOperationValidator getInstance() {
+        return INSTANCE;
     }
 
     //    { field: { $mod: [ divisor, remainder ] } }

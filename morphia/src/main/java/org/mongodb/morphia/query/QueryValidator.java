@@ -43,19 +43,19 @@ final class QueryValidator {
         if (value == null || type == null) {
             return true;
         }
-        if (ExistsOperationValidator.INSTANCE.apply(mappedField, op, value, validationFailures)) {
+        if (ExistsOperationValidator.getInstance().apply(mappedField, op, value, validationFailures)) {
             return validationFailures.size() == 0;
-        } else if (SizeOperationValidator.INSTANCE.apply(mappedField, op, value, validationFailures)) {
+        } else if (SizeOperationValidator.getInstance().apply(mappedField, op, value, validationFailures)) {
             return validationFailures.size() == 0;
-        } else if (InOperationValidator.INSTANCE.apply(mappedField, op, value, validationFailures)) {
+        } else if (InOperationValidator.getInstance().apply(mappedField, op, value, validationFailures)) {
             return validationFailures.size() == 0;
-        } else if (NotInOperationValidator.INSTANCE.apply(mappedField, op, value, validationFailures)) {
+        } else if (NotInOperationValidator.getInstance().apply(mappedField, op, value, validationFailures)) {
             return validationFailures.size() == 0;
-        } else if (ModOperationValidator.INSTANCE.apply(mappedField, op, value, validationFailures)) {
+        } else if (ModOperationValidator.getInstance().apply(mappedField, op, value, validationFailures)) {
             return validationFailures.size() == 0;
-        } else if (GeoWithinOperationValidator.INSTANCE.apply(mappedField, op, value, validationFailures)) {
+        } else if (GeoWithinOperationValidator.getInstance().apply(mappedField, op, value, validationFailures)) {
             return validationFailures.size() == 0;
-        } else if (AllOperationValidator.INSTANCE.apply(mappedField, op, value, validationFailures)) {
+        } else if (AllOperationValidator.getInstance().apply(mappedField, op, value, validationFailures)) {
             return validationFailures.size() == 0;
         } else if (IntegerValueTypeValidator.validate(type, value)) {
             return true;
@@ -152,7 +152,7 @@ final class QueryValidator {
 
                     if (LOG.isWarningEnabled()) {
                         String className = val == null ? "null" : val.getClass().getName();
-                        LOG.warning(format("The type(s) for the query/update may be inconsistent; using an instance of type '%s' "
+                        LOG.warning(format("The type(s) for the query/update may be inconsistent; using an getInstance() of type '%s' "
                                            + "for the field '%s.%s' which is declared as '%s'", className,
                                            mf.getDeclaringClass().getName(), mf.getJavaFieldName(), mf.getType().getName()
                                           ));

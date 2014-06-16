@@ -9,21 +9,18 @@ import java.util.List;
 import static java.lang.String.format;
 import static org.mongodb.morphia.query.FilterOperator.GEO_WITHIN;
 
-public enum GeoWithinOperationValidator implements OperationValidator {
-    INSTANCE;
+/**
+ * Supports validation for queries using the {@code FilterOperator.GEO_WITHIN} operator.
+ */
+public final class GeoWithinOperationValidator extends OperationValidator {
+    private static final GeoWithinOperationValidator INSTANCE = new GeoWithinOperationValidator();
 
-    @Override
-    public boolean apply(final MappedField mappedField, final FilterOperator operator, final Object value,
-                         final List<ValidationFailure> validationFailures) {
-        if (appliesTo(operator)) {
-            validate(mappedField, value, validationFailures);
-            return true;
-        }
-        return false;
+    private GeoWithinOperationValidator() {
     }
 
-    public static void validate(final MappedField mappedField, final Object value,
-                                final List<ValidationFailure> validationFailures) {
+    @Override
+    protected void validate(final MappedField mappedField, final Object value,
+                            final List<ValidationFailure> validationFailures) {
         if (!isArrayAndContainsNumericValues(mappedField) && !isIterableAndContainsNumericValues(mappedField)) {
             validationFailures.add(new ValidationFailure(format("For a $geoWithin operation, if field '%s' is an array or iterable it "
                                                                 + "should have numeric values. Instead it had: %s",
@@ -58,7 +55,17 @@ public enum GeoWithinOperationValidator implements OperationValidator {
         return false;
     }
 
-    private static boolean appliesTo(final FilterOperator operator) {
-        return operator.equals(GEO_WITHIN);
+    @Override
+    protected FilterOperator getOperator() {
+        return GEO_WITHIN;
+    }
+
+    /**
+     * Get the instance.
+     *
+     * @return the Singleton instance of this validator
+     */
+    public static GeoWithinOperationValidator getInstance() {
+        return INSTANCE;
     }
 }

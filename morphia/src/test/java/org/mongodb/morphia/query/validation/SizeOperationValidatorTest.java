@@ -24,7 +24,7 @@ public class SizeOperationValidatorTest {
         List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
 
         // when
-        boolean validationApplied = SizeOperationValidator.INSTANCE.apply(mappedField, EQUAL, 1, validationFailures);
+        boolean validationApplied = SizeOperationValidator.getInstance().apply(mappedField, EQUAL, 1, validationFailures);
 
         // then
         assertThat(validationApplied, is(false));
@@ -39,7 +39,7 @@ public class SizeOperationValidatorTest {
         List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
 
         // when
-        boolean validationApplied = SizeOperationValidator.INSTANCE.apply(mappedField, SIZE, 3, validationFailures);
+        boolean validationApplied = SizeOperationValidator.getInstance().apply(mappedField, SIZE, 3, validationFailures);
 
         // then
         assertThat(validationApplied, is(true));
@@ -54,7 +54,7 @@ public class SizeOperationValidatorTest {
         List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
 
         // when
-        boolean validationApplied = SizeOperationValidator.INSTANCE.apply(mappedField, SIZE, 3, validationFailures);
+        boolean validationApplied = SizeOperationValidator.getInstance().apply(mappedField, SIZE, 3, validationFailures);
 
         // then
         assertThat(validationApplied, is(true));
@@ -69,7 +69,7 @@ public class SizeOperationValidatorTest {
         List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
 
         // when
-        boolean validationApplied = SizeOperationValidator.INSTANCE.apply(mappedField, SIZE, 3, validationFailures);
+        boolean validationApplied = SizeOperationValidator.getInstance().apply(mappedField, SIZE, 3, validationFailures);
 
         // then
         assertThat(validationApplied, is(true));
@@ -84,7 +84,7 @@ public class SizeOperationValidatorTest {
         List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
 
         // when
-        boolean validationApplied = SizeOperationValidator.INSTANCE.apply(mappedField, SIZE, 3, validationFailures);
+        boolean validationApplied = SizeOperationValidator.getInstance().apply(mappedField, SIZE, 3, validationFailures);
 
         // then
         assertThat(validationApplied, is(true));
@@ -100,7 +100,7 @@ public class SizeOperationValidatorTest {
         List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
 
         // when
-        boolean validationApplied = SizeOperationValidator.INSTANCE.apply(mappedField, SIZE, "value", validationFailures);
+        boolean validationApplied = SizeOperationValidator.getInstance().apply(mappedField, SIZE, "value", validationFailures);
 
         // then
         assertThat(validationApplied, is(true));
@@ -116,7 +116,7 @@ public class SizeOperationValidatorTest {
         List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
 
         // when
-        boolean validationApplied = SizeOperationValidator.INSTANCE.apply(mappedField, SIZE, "value", validationFailures);
+        boolean validationApplied = SizeOperationValidator.getInstance().apply(mappedField, SIZE, "value", validationFailures);
 
         // then
         assertThat(validationApplied, is(true));

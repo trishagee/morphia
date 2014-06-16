@@ -21,7 +21,7 @@ public class InOperationValidatorTest {
         List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
 
         // when
-        boolean validationApplied = InOperationValidator.INSTANCE.apply(null, IN, Collections.emptySet(), validationFailures);
+        boolean validationApplied = InOperationValidator.getInstance().apply(null, IN, Collections.emptySet(), validationFailures);
 
         // then
         assertThat(validationApplied, is(true));
@@ -34,7 +34,7 @@ public class InOperationValidatorTest {
         List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
 
         // when
-        boolean validationApplied = InOperationValidator.INSTANCE.apply(null, IN, new HashMap<String, String>(), validationFailures);
+        boolean validationApplied = InOperationValidator.getInstance().apply(null, IN, new HashMap<String, String>(), validationFailures);
 
         // then
         assertThat(validationApplied, is(true));
@@ -47,7 +47,7 @@ public class InOperationValidatorTest {
         List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
 
         // when
-        boolean validationApplied = InOperationValidator.INSTANCE.apply(null, IN, new int[0], validationFailures);
+        boolean validationApplied = InOperationValidator.getInstance().apply(null, IN, new int[0], validationFailures);
 
         // then
         assertThat(validationApplied, is(true));
@@ -60,7 +60,7 @@ public class InOperationValidatorTest {
         List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
 
         // when
-        boolean validationApplied = InOperationValidator.INSTANCE.apply(null, IN, asList(1, 2), validationFailures);
+        boolean validationApplied = InOperationValidator.getInstance().apply(null, IN, asList(1, 2), validationFailures);
 
         // then
         assertThat(validationApplied, is(true));
@@ -74,7 +74,7 @@ public class InOperationValidatorTest {
 
         // when
         ArrayList<Integer> arrayList = new ArrayList<Integer>(asList(1, 2));
-        boolean validationApplied = InOperationValidator.INSTANCE.apply(null, IN, arrayList, validationFailures);
+        boolean validationApplied = InOperationValidator.getInstance().apply(null, IN, arrayList, validationFailures);
 
         // then
         assertThat(validationApplied, is(true));
@@ -87,7 +87,7 @@ public class InOperationValidatorTest {
         List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
 
         // when
-        boolean validationApplied = InOperationValidator.INSTANCE.apply(null, IN, "value", validationFailures);
+        boolean validationApplied = InOperationValidator.getInstance().apply(null, IN, "value", validationFailures);
 
         // then
         assertThat(validationApplied, is(true));
@@ -100,7 +100,7 @@ public class InOperationValidatorTest {
         List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
 
         // when
-        boolean validationApplied = InOperationValidator.INSTANCE.apply(null, IN, null, validationFailures);
+        boolean validationApplied = InOperationValidator.getInstance().apply(null, IN, null, validationFailures);
 
         // then
         assertThat(validationApplied, is(true));
@@ -114,7 +114,7 @@ public class InOperationValidatorTest {
         List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
 
         // when
-        boolean validationApplied = InOperationValidator.INSTANCE.apply(null, EQUAL, "value", validationFailures);
+        boolean validationApplied = InOperationValidator.getInstance().apply(null, EQUAL, "value", validationFailures);
 
         // then
         assertThat(validationApplied, is(false));

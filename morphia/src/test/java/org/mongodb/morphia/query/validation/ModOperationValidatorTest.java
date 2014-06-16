@@ -18,7 +18,7 @@ public class ModOperationValidatorTest {
         List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
 
         // when
-        boolean validationApplied = ModOperationValidator.INSTANCE.apply(null, MOD, new int[2], validationFailures);
+        boolean validationApplied = ModOperationValidator.getInstance().apply(null, MOD, new int[2], validationFailures);
 
         // then
         assertThat(validationApplied, is(true));
@@ -31,7 +31,7 @@ public class ModOperationValidatorTest {
         List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
 
         // when
-        boolean validationApplied = ModOperationValidator.INSTANCE.apply(null, MOD, new int[0], validationFailures);
+        boolean validationApplied = ModOperationValidator.getInstance().apply(null, MOD, new int[0], validationFailures);
 
         // then
         assertThat(validationApplied, is(true));
@@ -45,7 +45,7 @@ public class ModOperationValidatorTest {
         List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
 
         // when
-        boolean validationApplied = ModOperationValidator.INSTANCE.apply(null, MOD, new String[]{"1", "2"}, validationFailures);
+        boolean validationApplied = ModOperationValidator.getInstance().apply(null, MOD, new String[]{"1", "2"}, validationFailures);
 
         // then
         assertThat(validationApplied, is(true));
@@ -59,7 +59,7 @@ public class ModOperationValidatorTest {
         List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
 
         // when
-        boolean validationApplied = ModOperationValidator.INSTANCE.apply(null, MOD, "Not an array", validationFailures);
+        boolean validationApplied = ModOperationValidator.getInstance().apply(null, MOD, "Not an array", validationFailures);
 
         // then
         assertThat(validationApplied, is(true));
@@ -73,7 +73,7 @@ public class ModOperationValidatorTest {
         List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
 
         // when
-        boolean validationApplied = ModOperationValidator.INSTANCE.apply(null, MOD, null, validationFailures);
+        boolean validationApplied = ModOperationValidator.getInstance().apply(null, MOD, null, validationFailures);
 
         // then
         assertThat(validationApplied, is(true));
@@ -87,7 +87,7 @@ public class ModOperationValidatorTest {
         List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
 
         // when
-        boolean validationApplied = ModOperationValidator.INSTANCE.apply(null, EQUAL, new int[2], validationFailures);
+        boolean validationApplied = ModOperationValidator.getInstance().apply(null, EQUAL, new int[2], validationFailures);
 
         // then
         assertThat(validationApplied, is(false));

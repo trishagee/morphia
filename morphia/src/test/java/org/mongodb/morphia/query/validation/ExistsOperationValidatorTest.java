@@ -18,7 +18,7 @@ public class ExistsOperationValidatorTest {
         List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
 
         // when
-        boolean validationApplied = ExistsOperationValidator.INSTANCE.apply(null, EXISTS, true, validationFailures);
+        boolean validationApplied = ExistsOperationValidator.getInstance().apply(null, EXISTS, true, validationFailures);
 
         // then
         assertThat(validationApplied, is(true));
@@ -31,7 +31,7 @@ public class ExistsOperationValidatorTest {
         List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
 
         // when
-        boolean validationApplied = ExistsOperationValidator.INSTANCE.apply(null, EXISTS, "value", validationFailures);
+        boolean validationApplied = ExistsOperationValidator.getInstance().apply(null, EXISTS, "value", validationFailures);
 
         // then
         assertThat(validationApplied, is(true));
@@ -44,7 +44,7 @@ public class ExistsOperationValidatorTest {
         List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
 
         // when
-        boolean validationApplied = ExistsOperationValidator.INSTANCE.apply(null, ALL, true, validationFailures);
+        boolean validationApplied = ExistsOperationValidator.getInstance().apply(null, ALL, true, validationFailures);
 
         // then
         assertThat(validationApplied, is(false));

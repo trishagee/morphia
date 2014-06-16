@@ -9,20 +9,17 @@ import java.util.Map;
 import static java.lang.String.format;
 import static org.mongodb.morphia.query.FilterOperator.ALL;
 
-public enum AllOperationValidator implements OperationValidator {
-    INSTANCE;
+/**
+ * Validates a query that uses the FilterOperator.ALL operator.
+ */
+public final class AllOperationValidator extends OperationValidator {
+    private static final AllOperationValidator INSTANCE = new AllOperationValidator();
 
-    @Override
-    public boolean apply(final MappedField mappedField, final FilterOperator operator, final Object value,
-                         final List<ValidationFailure> validationFailures) {
-        if (appliesTo(operator)) {
-            validate(value, validationFailures);
-            return true;
-        }
-        return false;
+    private AllOperationValidator() {
     }
 
-    private static void validate(final Object value, final List<ValidationFailure> validationFailures) {
+    @Override
+    protected void validate(final MappedField mappedField, final Object value, final List<ValidationFailure> validationFailures) {
         if (value == null) {
             validationFailures.add(new ValidationFailure(format("For an $all operation, value cannot be null.")));
         } else if (!(value.getClass().isArray()
@@ -35,7 +32,18 @@ public enum AllOperationValidator implements OperationValidator {
         }
     }
 
-    private static boolean appliesTo(final FilterOperator operator) {
-        return operator.equals(ALL);
+    @Override
+    protected FilterOperator getOperator() {
+        return ALL;
     }
+
+    /**
+     * Get the instance.
+     *
+     * @return the Singleton instance of this validator
+     */
+    public static AllOperationValidator getInstance() {
+        return INSTANCE;
+    }
+
 }

@@ -25,8 +25,8 @@ public class GeoWithinOperationValidatorTest {
         MappedField mappedField = mappedClass.getMappedField("array");
 
         // when
-        assertThat(GeoWithinOperationValidator.INSTANCE.apply(mappedField, GEO_WITHIN, new BasicDBObject("$box", 1),
-                                                              validationFailures), is(true));
+        assertThat(GeoWithinOperationValidator.getInstance().apply(mappedField, GEO_WITHIN, new BasicDBObject("$box", 1),
+                                                                   validationFailures), is(true));
     }
 
     @Test
@@ -35,8 +35,12 @@ public class GeoWithinOperationValidatorTest {
         List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
         MappedClass mappedClass = new MappedClass(GeoEntity.class, new Mapper());
         MappedField mappedField = mappedClass.getMappedField("list");
-        assertThat(GeoWithinOperationValidator.INSTANCE.apply(mappedField, GEO_WITHIN, new BasicDBObject("$box", 1), validationFailures),
-                   is(true));
+        assertThat(GeoWithinOperationValidator.getInstance().apply(mappedField,
+                                                                   GEO_WITHIN,
+                                                                   new BasicDBObject("$box", 1),
+                                                                   validationFailures),
+                   is(true)
+                  );
     }
 
     @Test
@@ -47,10 +51,10 @@ public class GeoWithinOperationValidatorTest {
         MappedField mappedField = mappedClass.getMappedField("array");
 
         // when
-        boolean validationApplied = GeoWithinOperationValidator.INSTANCE.apply(mappedField,
-                                                                               GEO_WITHIN,
-                                                                               new BasicDBObject("notValidKey", 1),
-                                                                               validationFailures);
+        boolean validationApplied = GeoWithinOperationValidator.getInstance().apply(mappedField,
+                                                                                    GEO_WITHIN,
+                                                                                    new BasicDBObject("notValidKey", 1),
+                                                                                    validationFailures);
 
         // then
         assertThat(validationApplied, is(true));
@@ -67,7 +71,10 @@ public class GeoWithinOperationValidatorTest {
         MappedField mappedField = mappedClass.getMappedField("array");
 
         // when
-        boolean validationApplied = GeoWithinOperationValidator.INSTANCE.apply(mappedField, GEO_WITHIN, "NotAGeoQuery", validationFailures);
+        boolean validationApplied = GeoWithinOperationValidator.getInstance().apply(mappedField,
+                                                                                    GEO_WITHIN,
+                                                                                    "NotAGeoQuery",
+                                                                                    validationFailures);
 
         // then
         assertThat(validationApplied, is(true));
@@ -84,10 +91,10 @@ public class GeoWithinOperationValidatorTest {
         MappedField mappedField = mappedClass.getMappedField("arrayOfStrings");
 
         // when
-        boolean validationApplied = GeoWithinOperationValidator.INSTANCE.apply(mappedField,
-                                                                               GEO_WITHIN,
-                                                                               new BasicDBObject("$box", 1),
-                                                                               validationFailures);
+        boolean validationApplied = GeoWithinOperationValidator.getInstance().apply(mappedField,
+                                                                                    GEO_WITHIN,
+                                                                                    new BasicDBObject("$box", 1),
+                                                                                    validationFailures);
 
         // then
         assertThat(validationApplied, is(true));
@@ -103,10 +110,10 @@ public class GeoWithinOperationValidatorTest {
         MappedField mappedField = mappedClass.getMappedField("listOfStrings");
 
         // when
-        boolean validationApplied = GeoWithinOperationValidator.INSTANCE.apply(mappedField,
-                                                                               GEO_WITHIN,
-                                                                               new BasicDBObject("$box", 1),
-                                                                               validationFailures);
+        boolean validationApplied = GeoWithinOperationValidator.getInstance().apply(mappedField,
+                                                                                    GEO_WITHIN,
+                                                                                    new BasicDBObject("$box", 1),
+                                                                                    validationFailures);
 
         // then
         assertThat(validationApplied, is(true));
@@ -120,7 +127,7 @@ public class GeoWithinOperationValidatorTest {
         List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
 
         // when
-        boolean validationApplied = GeoWithinOperationValidator.INSTANCE.apply(null, EQUAL, null, validationFailures);
+        boolean validationApplied = GeoWithinOperationValidator.getInstance().apply(null, EQUAL, null, validationFailures);
 
         // then
         assertThat(validationApplied, is(false));

@@ -13,21 +13,15 @@ import static org.mongodb.morphia.query.FilterOperator.SIZE;
  * methods can't be static because it implements an interface, it seems to be one of the few places where the Singleton pattern seems
  * appropriate.
  */
-public enum SizeOperationValidator implements OperationValidator {
-    INSTANCE;
+public final class SizeOperationValidator extends OperationValidator {
+    private static final SizeOperationValidator INSTANCE = new SizeOperationValidator();
 
-    @Override
-    public boolean apply(final MappedField mappedField, final FilterOperator operator, final Object value,
-                         final List<ValidationFailure> validationFailures) {
-        if (appliesTo(operator)) {
-            validate(mappedField, value, validationFailures);
-            return true;
-        }
-        return false;
+    private SizeOperationValidator() {
     }
 
-    private static void validate(final MappedField mappedField, final Object value,
-                                 final List<ValidationFailure> validationFailures) {
+    @Override
+    protected void validate(final MappedField mappedField, final Object value,
+                            final List<ValidationFailure> validationFailures) {
         if (!(value instanceof Integer)) {
             validationFailures.add(new ValidationFailure(format("For a $size operation, value '%s' should be an integer type.  "
                                                                 + "Instead it was a: %s",
@@ -43,7 +37,17 @@ public enum SizeOperationValidator implements OperationValidator {
         }
     }
 
-    private static boolean appliesTo(final FilterOperator operator) {
-        return operator.equals(SIZE);
+    @Override
+    protected FilterOperator getOperator() {
+        return SIZE;
+    }
+
+    /**
+     * Get the instance
+     *
+     * @return the Singleton instance of this validator
+     */
+    public static SizeOperationValidator getInstance() {
+        return INSTANCE;
     }
 }
