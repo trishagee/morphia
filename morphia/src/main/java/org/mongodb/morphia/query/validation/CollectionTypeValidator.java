@@ -6,8 +6,8 @@ import java.util.Map;
 /**
  * Contains static validators for checking your type against various criteria.
  */
-public final class TypeValidator implements Validator {
-    private TypeValidator() {
+public final class CollectionTypeValidator implements Validator {
+    private CollectionTypeValidator() {
     }
 
     static boolean typeIsAListOrArray(final Class<?> type) {

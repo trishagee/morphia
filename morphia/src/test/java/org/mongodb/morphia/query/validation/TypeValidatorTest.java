@@ -15,50 +15,50 @@ public class TypeValidatorTest {
     @Test
     public void shouldAcceptListTypes() {
         // expect
-        assertThat(TypeValidator.typeIsAListOrArray(List.class), is(true));
+        assertThat(CollectionTypeValidator.typeIsAListOrArray(List.class), is(true));
     }
 
     @Test
     public void shouldAcceptArrayListTypes() {
         // expect
-        assertThat(TypeValidator.typeIsAListOrArray(ArrayList.class), is(true));
+        assertThat(CollectionTypeValidator.typeIsAListOrArray(ArrayList.class), is(true));
     }
 
     @Test
     public void shouldAcceptArrayTypes() {
         // expect
-        assertThat(TypeValidator.typeIsAListOrArray(int[].class), is(true));
+        assertThat(CollectionTypeValidator.typeIsAListOrArray(int[].class), is(true));
     }
 
     @Test
     public void shouldRejectIterablesThatAreNotListOrArray() {
         // expect
-        assertThat(TypeValidator.typeIsAListOrArray(Set.class), is(false));
+        assertThat(CollectionTypeValidator.typeIsAListOrArray(Set.class), is(false));
     }
 
     @Test
     public void shouldRejectOtherTypes() {
         // expect
-        assertThat(TypeValidator.typeIsAListOrArray(String.class), is(false));
+        assertThat(CollectionTypeValidator.typeIsAListOrArray(String.class), is(false));
     }
 
     @Test
     public void shouldAllowIterableTypesThatAreNotListsAndRejectOtherTypes() {
         // expect
-        assertThat(TypeValidator.typeIsIterable(Set.class), is(true));
-        assertThat(TypeValidator.typeIsIterable(Map.class), is(false));
-        assertThat(TypeValidator.typeIsIterable(int[].class), is(false));
+        assertThat(CollectionTypeValidator.typeIsIterable(Set.class), is(true));
+        assertThat(CollectionTypeValidator.typeIsIterable(Map.class), is(false));
+        assertThat(CollectionTypeValidator.typeIsIterable(int[].class), is(false));
     }
 
     @Test
     public void shouldAllowMapTypesAndRejectOtherTypes() {
         // given 
-        assertThat(TypeValidator.typeIsMap(HashMap.class), is(true));
-        assertThat(TypeValidator.typeIsMap(Map.class), is(true));
+        assertThat(CollectionTypeValidator.typeIsMap(HashMap.class), is(true));
+        assertThat(CollectionTypeValidator.typeIsMap(Map.class), is(true));
 
-        assertThat(TypeValidator.typeIsMap(Set.class), is(false));
-        assertThat(TypeValidator.typeIsMap(List.class), is(false));
-        assertThat(TypeValidator.typeIsMap(int[].class), is(false));
+        assertThat(CollectionTypeValidator.typeIsMap(Set.class), is(false));
+        assertThat(CollectionTypeValidator.typeIsMap(List.class), is(false));
+        assertThat(CollectionTypeValidator.typeIsMap(int[].class), is(false));
     }
 
 }

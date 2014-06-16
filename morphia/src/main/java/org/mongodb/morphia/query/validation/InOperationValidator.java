@@ -7,7 +7,7 @@ import java.util.List;
 
 import static java.lang.String.format;
 import static org.mongodb.morphia.query.FilterOperator.IN;
-import static org.mongodb.morphia.query.validation.TypeValidator.typeIsIterableOrArrayOrMap;
+import static org.mongodb.morphia.query.validation.CollectionTypeValidator.typeIsIterableOrArrayOrMap;
 
 /**
  * Checks if the value can have the {@code FilterOperator.IN} operator applied to it.

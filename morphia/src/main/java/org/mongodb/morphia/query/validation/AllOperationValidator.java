@@ -7,7 +7,7 @@ import java.util.List;
 
 import static java.lang.String.format;
 import static org.mongodb.morphia.query.FilterOperator.ALL;
-import static org.mongodb.morphia.query.validation.TypeValidator.typeIsIterableOrArrayOrMap;
+import static org.mongodb.morphia.query.validation.CollectionTypeValidator.typeIsIterableOrArrayOrMap;
 
 /**
  * Validates a query that uses the FilterOperator.ALL operator.

@@ -30,7 +30,7 @@ public final class SizeOperationValidator extends OperationValidator {
                                                                )));
 
         }
-        if (!TypeValidator.typeIsAListOrArray(mappedField.getType())) {
+        if (!CollectionTypeValidator.typeIsAListOrArray(mappedField.getType())) {
             validationFailures.add(new ValidationFailure(format("For a $size operation, field '%s' should be a List or array.  "
                                                                 + "Instead it was a: %s",
                                                                 mappedField, mappedField.getType()
