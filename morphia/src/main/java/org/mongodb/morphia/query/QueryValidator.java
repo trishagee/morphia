@@ -36,47 +36,45 @@ final class QueryValidator {
     }
 
     @SuppressWarnings("unchecked")
-    /*package*/ static boolean isCompatibleForOperator(final MappedField mf, final Class<?> type, final FilterOperator op,
+    /*package*/ static boolean isCompatibleForOperator(final MappedField mappedField, final Class<?> type, final FilterOperator op,
                                                        final Object value, final List<ValidationFailure> validationFailures) {
-        try {
-            if (value == null || type == null) {
-                return true;
-            }
-            if (ExistsOperationValidator.apply(op, value, validationFailures)) {
-                return true;
-            } else if (SizeOperationValidator.validate(mf, op, value)) {
-                return true;
-            } else if (InOperationValidator.validate(op, value)) {
-                return true;
-            } else if (NotInOperationValidator.validate(op, value)) {
-                return true;
-            } else if (ModOperationValidator.validate(op, value)) {
-                return true;
-            } else if (GeoWithinOperationValidator.validate(mf, op, value)) {
-                return true;
-            } else if (AllOperationValidator.validate(op, value)) {
-                return true;
-            } else if (IntegerValueTypeValidator.validate(type, value)) {
-                return true;
-            } else if (IntegerOrLongValueTypeValidator.validate(type, value)) {
-                return true;
-            } else if (PatternValueTypeValidator.validate(type, value)) {
-                return true;
-            } else if (EntityAnnotatedValueValidator.validate(type, value)) {
-                return true;
-            } else if (KeyValueTypeValidator.validate(type, value)) {
-                return true;
-            } else if (ListValueValidator.validator(value)) {
-                return true;
-            } else if (MappedFieldTypeValidator.validate(mf.getMapper(), type, value)) {
-                return true;
-            } else if (!DefaultTypeValueValidator.validate(type, value)) {
-                return false;
-            }
+        // TODO: it's really OK to have null values?  I think this is to prevent null pointers further down, 
+        // but I want to move the null check into the operations that care whether they allow nulls or not.
+        if (value == null || type == null) {
             return true;
-        } catch (final ValidationException e) {
+        }
+        if (ExistsOperationValidator.INSTANCE.apply(mappedField, op, value, validationFailures)) {
+            return validationFailures.size() == 0;
+        } else if (SizeOperationValidator.INSTANCE.apply(mappedField, op, value, validationFailures)) {
+            return validationFailures.size() == 0;
+        } else if (InOperationValidator.INSTANCE.apply(mappedField, op, value, validationFailures)) {
+            return validationFailures.size() == 0;
+        } else if (NotInOperationValidator.INSTANCE.apply(mappedField, op, value, validationFailures)) {
+            return validationFailures.size() == 0;
+        } else if (ModOperationValidator.INSTANCE.apply(mappedField, op, value, validationFailures)) {
+            return validationFailures.size() == 0;
+        } else if (GeoWithinOperationValidator.INSTANCE.apply(mappedField, op, value, validationFailures)) {
+            return validationFailures.size() == 0;
+        } else if (AllOperationValidator.INSTANCE.apply(mappedField, op, value, validationFailures)) {
+            return validationFailures.size() == 0;
+        } else if (IntegerValueTypeValidator.validate(type, value)) {
+            return true;
+        } else if (IntegerOrLongValueTypeValidator.validate(type, value)) {
+            return true;
+        } else if (PatternValueTypeValidator.validate(type, value)) {
+            return true;
+        } else if (EntityAnnotatedValueValidator.validate(type, value)) {
+            return true;
+        } else if (KeyValueTypeValidator.validate(type, value)) {
+            return true;
+        } else if (ListValueValidator.validator(value)) {
+            return true;
+        } else if (MappedFieldTypeValidator.validate(mappedField.getMapper(), type, value)) {
+            return true;
+        } else if (!DefaultTypeValueValidator.validate(type, value)) {
             return false;
         }
+        return true;
     }
 
     /**

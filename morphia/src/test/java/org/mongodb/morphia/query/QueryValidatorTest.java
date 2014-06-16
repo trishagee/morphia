@@ -70,13 +70,8 @@ public class QueryValidatorTest {
         // given
         MappedClass mappedClass = new MappedClass(SimpleEntity.class, new Mapper());
         MappedField mappedField = mappedClass.getMappedField("name");
-        List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
-
-        // when
-        QueryValidator.isCompatibleForOperator(mappedField, SimpleEntity.class, EXISTS, "value", validationFailures);
-
-        // then
-        assertThat(validationFailures.size(), is(1));
+        assertThat(QueryValidator.isCompatibleForOperator(mappedField, SimpleEntity.class, EXISTS, "value",
+                                                          new ArrayList<ValidationFailure>()), is(false));
     }
 
     @Test
@@ -180,7 +175,7 @@ public class QueryValidatorTest {
     @Test
     public void shouldAllowModOperatorForArrayOfIntegerValues() {
         // expect
-        assertThat(QueryValidator.isCompatibleForOperator(null, SimpleEntity.class, MOD, new int[1], new ArrayList<ValidationFailure>()),
+        assertThat(QueryValidator.isCompatibleForOperator(null, SimpleEntity.class, MOD, new int[2], new ArrayList<ValidationFailure>()),
                    is(true));
     }
 
@@ -276,9 +271,11 @@ public class QueryValidatorTest {
 
     @Test
     public void shouldNotAllowOtherValuesForAllOperator() {
-        // expect
+        // given
         MappedClass mappedClass = new MappedClass(SimpleEntity.class, new Mapper());
         MappedField mappedField = mappedClass.getMappedField("name");
+
+        // expect
         assertThat(QueryValidator.isCompatibleForOperator(mappedField,
                                                           SimpleEntity.class,
                                                           ALL,

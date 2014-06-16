@@ -1,26 +1,54 @@
 package org.mongodb.morphia.query.validation;
 
+import org.mongodb.morphia.mapping.MappedField;
 import org.mongodb.morphia.query.FilterOperator;
-import org.mongodb.morphia.query.ValidationException;
 import org.mongodb.morphia.utils.ReflectionUtils;
 
 import java.lang.reflect.Array;
+import java.util.List;
+
+import static java.lang.String.format;
+import static org.mongodb.morphia.query.FilterOperator.MOD;
 
 // see http://docs.mongodb.org/manual/reference/operator/query/mod/
-public final class ModOperationValidator implements OperationValidator {
-    private ModOperationValidator() {
+public enum ModOperationValidator implements OperationValidator {
+    INSTANCE;
+
+    private static void validate(final Object value, final List<ValidationFailure> validationFailures) {
+        if (value == null) {
+            validationFailures.add(new ValidationFailure(format("For an $all operation, value cannot be null.")));
+        } else if (value.getClass().isArray()) {
+            if (Array.getLength(value) != 2) {
+                validationFailures.add(new ValidationFailure(format("For a $mod operation, value '%s' should be an array with two integer"
+                                                                    + " elements.  Instead it had %s",
+                                                                    value, Array.getLength(value)
+                                                                   )));
+
+            }
+            if (!(ReflectionUtils.isIntegerType(value.getClass().getComponentType()))) {
+                validationFailures.add(new ValidationFailure(format("Array value needs to contain integers for $mod, but contained: %s",
+                                                                    value.getClass().getComponentType())));
+            }
+        } else {
+            validationFailures.add(new ValidationFailure(format("For a $mod operation, value '%s' should be an integer array.  "
+                                                                + "Instead it was a: %s",
+                                                                value, value.getClass()
+                                                               )));
+        }
     }
 
-    public static boolean validate(final FilterOperator operator, final Object value) {
-        //TODO: Trish - This needs simplification, and I don't want to use Exceptions for logic
-        if (operator.equals(FilterOperator.MOD) && value.getClass().isArray()) {
-            if (!ReflectionUtils.isIntegerType(Array.get(value, 0).getClass())) {
-                throw new ValidationException("Array needs to contain integers for MOD, but contained " + Array.get(value, 0).getClass());
-            } else {
-                return true;
-            }
+    @Override
+    public boolean apply(final MappedField mappedField, final FilterOperator operator, final Object value,
+                         final List<ValidationFailure> validationFailures) {
+        if (appliesTo(operator)) {
+            validate(value, validationFailures);
+            return true;
         }
         return false;
+    }
+
+    private static boolean appliesTo(final FilterOperator operator) {
+        return operator.equals(MOD);
     }
 
     //    { field: { $mod: [ divisor, remainder ] } }

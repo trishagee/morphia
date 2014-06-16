@@ -6,61 +6,125 @@ import org.mongodb.morphia.mapping.MappedClass;
 import org.mongodb.morphia.mapping.MappedField;
 import org.mongodb.morphia.mapping.Mapper;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mongodb.morphia.query.FilterOperator.EQUAL;
 import static org.mongodb.morphia.query.FilterOperator.GEO_WITHIN;
 
-//TODO: Trish - this really needs to be beefed up to test all happy paths and edge conditions
 public class GeoWithinOperationValidatorTest {
     @Test
     public void shouldAllowGeoWithinOperatorWithAllAppropriateTrimmings() {
-        // expect
+        // given 
+        List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
         MappedClass mappedClass = new MappedClass(GeoEntity.class, new Mapper());
         MappedField mappedField = mappedClass.getMappedField("array");
-        assertThat(GeoWithinOperationValidator.validate(mappedField, GEO_WITHIN, new BasicDBObject("$box", 1)), is(true));
+
+        // when
+        assertThat(GeoWithinOperationValidator.INSTANCE.apply(mappedField, GEO_WITHIN, new BasicDBObject("$box", 1),
+                                                              validationFailures), is(true));
     }
 
     @Test
     public void shouldAllowGeoWithinOperatorForGeoEntityWithListOfIntegers() {
-        // expect
+        // given 
+        List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
         MappedClass mappedClass = new MappedClass(GeoEntity.class, new Mapper());
         MappedField mappedField = mappedClass.getMappedField("list");
-        assertThat(GeoWithinOperationValidator.validate(mappedField, GEO_WITHIN, new BasicDBObject("$box", 1)), is(true));
+        assertThat(GeoWithinOperationValidator.INSTANCE.apply(mappedField, GEO_WITHIN, new BasicDBObject("$box", 1), validationFailures),
+                   is(true));
     }
 
     @Test
     public void shouldNotAllowGeoWithinWhenValueDoesNotContainKeyword() {
-        // expect
+        // given 
+        List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
         MappedClass mappedClass = new MappedClass(GeoEntity.class, new Mapper());
         MappedField mappedField = mappedClass.getMappedField("array");
-        assertThat(GeoWithinOperationValidator.validate(mappedField, GEO_WITHIN, new BasicDBObject("notValidKey", 1)), is(false));
+
+        // when
+        boolean validationApplied = GeoWithinOperationValidator.INSTANCE.apply(mappedField,
+                                                                               GEO_WITHIN,
+                                                                               new BasicDBObject("notValidKey", 1),
+                                                                               validationFailures);
+
+        // then
+        assertThat(validationApplied, is(true));
+        assertThat(validationFailures.size(), is(1));
+        assertThat(validationFailures.get(0).toString(),
+                   containsString("For a $geoWithin operation, the value should be a valid geo query"));
     }
 
     @Test
     public void shouldNotAllowGeoWithinWhenValueIsNotADBObject() {
-        // expect
+        // given 
+        List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
         MappedClass mappedClass = new MappedClass(GeoEntity.class, new Mapper());
         MappedField mappedField = mappedClass.getMappedField("array");
-        assertThat(GeoWithinOperationValidator.validate(mappedField, GEO_WITHIN, "NotAGeoQuery"), is(false));
+
+        // when
+        boolean validationApplied = GeoWithinOperationValidator.INSTANCE.apply(mappedField, GEO_WITHIN, "NotAGeoQuery", validationFailures);
+
+        // then
+        assertThat(validationApplied, is(true));
+        assertThat(validationFailures.size(), is(1));
+        assertThat(validationFailures.get(0).toString(),
+                   containsString("For a $geoWithin operation, the value should be a valid geo query"));
     }
 
     @Test
     public void shouldNotAllowGeoWithinOperatorWhenMappedFieldIsArrayThatDoesNotContainNumbers() {
-        // expect
+        // given 
+        List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
         MappedClass mappedClass = new MappedClass(InvalidGeoEntity.class, new Mapper());
         MappedField mappedField = mappedClass.getMappedField("arrayOfStrings");
-        assertThat(GeoWithinOperationValidator.validate(mappedField, GEO_WITHIN, new BasicDBObject("$box", 1)), is(false));
+
+        // when
+        boolean validationApplied = GeoWithinOperationValidator.INSTANCE.apply(mappedField,
+                                                                               GEO_WITHIN,
+                                                                               new BasicDBObject("$box", 1),
+                                                                               validationFailures);
+
+        // then
+        assertThat(validationApplied, is(true));
+        assertThat(validationFailures.size(), is(1));
+        assertThat(validationFailures.get(0).toString(), containsString("is an array or iterable it should have numeric values"));
     }
 
     @Test
     public void shouldNotAllowGeoWithinOperatorWhenMappedFieldIsListThatDoesNotContainNumbers() {
-        // expect
+        // given 
+        List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
         MappedClass mappedClass = new MappedClass(InvalidGeoEntity.class, new Mapper());
         MappedField mappedField = mappedClass.getMappedField("listOfStrings");
-        assertThat(GeoWithinOperationValidator.validate(mappedField, GEO_WITHIN, new BasicDBObject("$box", 1)), is(false));
+
+        // when
+        boolean validationApplied = GeoWithinOperationValidator.INSTANCE.apply(mappedField,
+                                                                               GEO_WITHIN,
+                                                                               new BasicDBObject("$box", 1),
+                                                                               validationFailures);
+
+        // then
+        assertThat(validationApplied, is(true));
+        assertThat(validationFailures.size(), is(1));
+        assertThat(validationFailures.get(0).toString(), containsString("is an array or iterable it should have numeric values"));
+    }
+
+    @Test
+    public void shouldNotApplyValidationWhenOperatorIsNotGeoWithin() {
+        // given 
+        List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
+
+        // when
+        boolean validationApplied = GeoWithinOperationValidator.INSTANCE.apply(null, EQUAL, null, validationFailures);
+
+        // then
+        assertThat(validationApplied, is(false));
+        assertThat(validationFailures.size(), is(0));
     }
 
     @SuppressWarnings("unused")
