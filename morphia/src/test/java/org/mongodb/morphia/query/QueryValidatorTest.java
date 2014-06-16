@@ -78,7 +78,7 @@ public class QueryValidatorTest {
     public void shouldAllowSizeOperatorForListTypesAndIntegerValues() {
         // given
         MappedClass mappedClass = new MappedClass(EntityWithListsAndArrays.class, new Mapper());
-        MappedField mappedField = mappedClass.getMappedField("list");
+        MappedField mappedField = mappedClass.getMappedField("listOfIntegers");
 
         // expect
         assertThat(QueryValidator.isCompatibleForOperator(mappedField, NullClass.class, SIZE, 3, new ArrayList<ValidationFailure>()),
@@ -89,7 +89,7 @@ public class QueryValidatorTest {
     public void shouldAllowSizeOperatorForArraysAndIntegerValues() {
         // given
         MappedClass mappedClass = new MappedClass(EntityWithListsAndArrays.class, new Mapper());
-        MappedField mappedField = mappedClass.getMappedField("array");
+        MappedField mappedField = mappedClass.getMappedField("arrayOfInts");
 
         // expect
         assertThat(QueryValidator.isCompatibleForOperator(mappedField, NullClass.class, SIZE, 3, new ArrayList<ValidationFailure>()),
@@ -100,7 +100,7 @@ public class QueryValidatorTest {
     public void shouldAllowSizeOperatorForArrayListTypesAndIntegerValues() {
         // given
         MappedClass mappedClass = new MappedClass(EntityWithListsAndArrays.class, new Mapper());
-        MappedField mappedField = mappedClass.getMappedField("arrayList");
+        MappedField mappedField = mappedClass.getMappedField("arrayListOfIntegers");
 
         // expect
         assertThat(QueryValidator.isCompatibleForOperator(mappedField, NullClass.class, SIZE, 3, new ArrayList<ValidationFailure>()),

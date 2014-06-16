@@ -5,8 +5,11 @@ import java.util.List;
 
 @SuppressWarnings("unused")
 public class EntityWithListsAndArrays {
-    private String[] array;
-    private List<String> list;
-    private ArrayList<String> arrayList;
+    private String[] arrayOfStrings;
+    private int[] arrayOfInts;
+    private List<String> listOfStrings;
+    private List<Integer> listOfIntegers;
+    private ArrayList<String> arrayListOfStrings;
+    private ArrayList<Integer> arrayListOfIntegers;
     private String notAnArrayOrList;
 }

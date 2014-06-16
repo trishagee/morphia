@@ -7,6 +7,7 @@ import java.util.List;
 
 import static java.lang.String.format;
 import static org.mongodb.morphia.query.FilterOperator.SIZE;
+import static org.mongodb.morphia.query.validation.ValueClassValidator.valueIsA;
 
 /**
  * Checks if the value can have the {@code FilterOperator.ALL} operator applied to it.  Since this class does not need state, and the
@@ -22,14 +23,14 @@ public final class SizeOperationValidator extends OperationValidator {
     @Override
     protected void validate(final MappedField mappedField, final Object value,
                             final List<ValidationFailure> validationFailures) {
-        if (!(value instanceof Integer)) {
+        if (!valueIsA(value, Integer.class)) {
             validationFailures.add(new ValidationFailure(format("For a $size operation, value '%s' should be an integer type.  "
                                                                 + "Instead it was a: %s",
                                                                 value, value == null ? "null" : value.getClass()
                                                                )));
 
         }
-        if (!(List.class.isAssignableFrom(mappedField.getType()) || mappedField.getType().isArray())) {
+        if (!TypeValidator.typeIsAListOrArray(mappedField.getType())) {
             validationFailures.add(new ValidationFailure(format("For a $size operation, field '%s' should be a List or array.  "
                                                                 + "Instead it was a: %s",
                                                                 mappedField, mappedField.getType()

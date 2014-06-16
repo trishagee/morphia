@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertThat;
 import static org.mongodb.morphia.query.FilterOperator.EQUAL;
 import static org.mongodb.morphia.query.FilterOperator.SIZE;
@@ -35,7 +36,7 @@ public class SizeOperationValidatorTest {
     public void shouldAllowSizeOperatorForListTypesAndIntegerValues() {
         // given
         MappedClass mappedClass = new MappedClass(EntityWithListsAndArrays.class, new Mapper());
-        MappedField mappedField = mappedClass.getMappedField("list");
+        MappedField mappedField = mappedClass.getMappedField("listOfIntegers");
         List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
 
         // when
@@ -47,10 +48,10 @@ public class SizeOperationValidatorTest {
     }
 
     @Test
-    public void shouldAllowSizeOperatorForArrayTypeAndIntegerValues() {
+    public void shouldAllowSizeOperatorForArrayTypeAndIntValues() {
         // given
         MappedClass mappedClass = new MappedClass(EntityWithListsAndArrays.class, new Mapper());
-        MappedField mappedField = mappedClass.getMappedField("array");
+        MappedField mappedField = mappedClass.getMappedField("arrayOfInts");
         List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
 
         // when
@@ -65,7 +66,7 @@ public class SizeOperationValidatorTest {
     public void shouldAllowSizeOperatorForArrayListTypesAndIntegerValues() {
         // given
         MappedClass mappedClass = new MappedClass(EntityWithListsAndArrays.class, new Mapper());
-        MappedField mappedField = mappedClass.getMappedField("arrayList");
+        MappedField mappedField = mappedClass.getMappedField("arrayListOfIntegers");
         List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
 
         // when
@@ -89,14 +90,14 @@ public class SizeOperationValidatorTest {
         // then
         assertThat(validationApplied, is(true));
         assertThat(validationFailures.size(), is(1));
-        assertThat(validationFailures.get(0).toString(), Matchers.containsString("should be a List or array."));
+        assertThat(validationFailures.get(0).toString(), containsString("should be a List or array."));
     }
 
     @Test
     public void shouldNotAllowSizeOperatorForNonIntegerValues() {
         // given
         MappedClass mappedClass = new MappedClass(EntityWithListsAndArrays.class, new Mapper());
-        MappedField mappedField = mappedClass.getMappedField("list");
+        MappedField mappedField = mappedClass.getMappedField("listOfStrings");
         List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
 
         // when

@@ -7,6 +7,7 @@ import java.util.List;
 
 import static java.lang.String.format;
 import static org.mongodb.morphia.query.FilterOperator.EXISTS;
+import static org.mongodb.morphia.query.validation.ValueClassValidator.valueIsA;
 
 /**
  * Checks if the value can have the {@code FilterOperator.EXISTS} operator applied to it.  Since this class does not need state, and the
@@ -21,7 +22,7 @@ public final class ExistsOperationValidator extends OperationValidator {
 
     @Override
     protected void validate(final MappedField mappedField, final Object value, final List<ValidationFailure> validationFailures) {
-        if (!(value instanceof Boolean)) {
+        if (!valueIsA(value, Boolean.class)) {
             validationFailures.add(new ValidationFailure(format("For an $exists operation, value '%s' should be a boolean type.  "
                                                                 + "Instead it was a: %s",
                                                                 value, value == null ? "null" : value.getClass()

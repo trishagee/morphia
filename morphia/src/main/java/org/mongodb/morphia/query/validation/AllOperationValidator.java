@@ -4,10 +4,10 @@ import org.mongodb.morphia.mapping.MappedField;
 import org.mongodb.morphia.query.FilterOperator;
 
 import java.util.List;
-import java.util.Map;
 
 import static java.lang.String.format;
 import static org.mongodb.morphia.query.FilterOperator.ALL;
+import static org.mongodb.morphia.query.validation.TypeValidator.typeIsIterableOrArrayOrMap;
 
 /**
  * Validates a query that uses the FilterOperator.ALL operator.
@@ -22,9 +22,7 @@ public final class AllOperationValidator extends OperationValidator {
     protected void validate(final MappedField mappedField, final Object value, final List<ValidationFailure> validationFailures) {
         if (value == null) {
             validationFailures.add(new ValidationFailure(format("For an $all operation, value cannot be null.")));
-        } else if (!(value.getClass().isArray()
-                     || Iterable.class.isAssignableFrom(value.getClass())
-                     || Map.class.isAssignableFrom(value.getClass()))) {
+        } else if (!typeIsIterableOrArrayOrMap(value.getClass())) {
             validationFailures.add(new ValidationFailure(format("For an $all operation, value '%s' should be an array, "
                                                                 + "an Iterable, or a Map.  Instead it was a: %s",
                                                                 value, value.getClass()
