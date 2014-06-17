@@ -200,10 +200,6 @@ public class QueryValidatorTest {
 
     @Test
     public void shouldNotAllowModOperatorWithNonArrayValue() {
-        // expect
-        // this is bad
-        //        MappedClass mappedClass = new MappedClass(SimpleEntity.class, new Mapper());
-        //        MappedField mappedField = mappedClass.getMappedField("name");
         assertThat(QueryValidator.isCompatibleForOperator(null, String.class, MOD, "value", new ArrayList<ValidationFailure>()), is(false));
     }
 

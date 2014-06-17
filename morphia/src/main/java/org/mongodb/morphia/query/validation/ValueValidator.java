@@ -12,7 +12,7 @@ public abstract class ValueValidator {
      * Errors are appended to the validationFailures list.
      *
      * @param type               the Class of the field being queried
-     * @param value              the value being used for a query
+     * @param value              the non-null value being used for a query
      * @param validationFailures the list to add any failures to. If validation passes or {@code appliesTo} returned false, this list will
      *                           not change.
      * @return true if validation was applied, false if this validation doesn't apply to this field type.
