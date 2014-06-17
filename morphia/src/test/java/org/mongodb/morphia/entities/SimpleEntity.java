@@ -11,4 +11,5 @@ public class SimpleEntity {
     private ObjectId id;
 
     private String name;
+    private Integer integer;
 }

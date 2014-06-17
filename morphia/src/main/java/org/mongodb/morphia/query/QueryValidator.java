@@ -8,13 +8,13 @@ import org.mongodb.morphia.mapping.MappedClass;
 import org.mongodb.morphia.mapping.MappedField;
 import org.mongodb.morphia.mapping.Mapper;
 import org.mongodb.morphia.query.validation.AllOperationValidator;
-import org.mongodb.morphia.query.validation.DefaultTypeValueValidator;
+import org.mongodb.morphia.query.validation.DefaultTypeValidator;
+import org.mongodb.morphia.query.validation.DoubleTypeValidator;
 import org.mongodb.morphia.query.validation.EntityAnnotatedValueValidator;
 import org.mongodb.morphia.query.validation.ExistsOperationValidator;
 import org.mongodb.morphia.query.validation.GeoWithinOperationValidator;
 import org.mongodb.morphia.query.validation.InOperationValidator;
-import org.mongodb.morphia.query.validation.IntegerOrLongValueTypeValidator;
-import org.mongodb.morphia.query.validation.IntegerValueTypeValidator;
+import org.mongodb.morphia.query.validation.IntegerTypeValidator;
 import org.mongodb.morphia.query.validation.KeyValueTypeValidator;
 import org.mongodb.morphia.query.validation.ListValueValidator;
 import org.mongodb.morphia.query.validation.MappedFieldTypeValidator;
@@ -35,7 +35,6 @@ final class QueryValidator {
     private QueryValidator() {
     }
 
-    @SuppressWarnings("unchecked")
     /*package*/ static boolean isCompatibleForOperator(final MappedField mappedField, final Class<?> type, final FilterOperator op,
                                                        final Object value, final List<ValidationFailure> validationFailures) {
         // TODO: it's really OK to have null values?  I think this is to prevent null pointers further down, 
@@ -57,21 +56,21 @@ final class QueryValidator {
             return validationFailures.size() == 0;
         } else if (AllOperationValidator.getInstance().apply(mappedField, op, value, validationFailures)) {
             return validationFailures.size() == 0;
-        } else if (IntegerValueTypeValidator.validate(type, value)) {
+        } else if (KeyValueTypeValidator.validate(type, value)) {
             return true;
-        } else if (IntegerOrLongValueTypeValidator.validate(type, value)) {
-            return true;
+        } else if (IntegerTypeValidator.getInstance().apply(type, value, validationFailures)) {
+            return validationFailures.size() == 0;
+        } else if (DoubleTypeValidator.getInstance().apply(type, value, validationFailures)) {
+            return validationFailures.size() == 0;
         } else if (PatternValueTypeValidator.validate(type, value)) {
             return true;
         } else if (EntityAnnotatedValueValidator.validate(type, value)) {
-            return true;
-        } else if (KeyValueTypeValidator.validate(type, value)) {
             return true;
         } else if (ListValueValidator.validator(value)) {
             return true;
         } else if (MappedFieldTypeValidator.validate(mappedField.getMapper(), type, value)) {
             return true;
-        } else if (!DefaultTypeValueValidator.validate(type, value)) {
+        } else if (DefaultTypeValidator.getInstance().apply(type, value, validationFailures) && validationFailures.size() != 0) {
             return false;
         }
         return true;

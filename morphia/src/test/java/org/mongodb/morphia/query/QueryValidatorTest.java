@@ -141,7 +141,6 @@ public class QueryValidatorTest {
     }
 
     @Test
-    @Ignore("the final 'false' fall-through does not work")
     public void shouldNotAllowOtherValuesForInOperator() {
         // expect
         MappedClass mappedClass = new MappedClass(SimpleEntity.class, new Mapper());
@@ -180,7 +179,6 @@ public class QueryValidatorTest {
     }
 
     @Test
-    @Ignore("bug waiting to happen")
     public void shouldNotErrorIfModOperatorIsUsedWithZeroLengthArrayOfIntegerValues() {
         // expect
         assertThat(QueryValidator.isCompatibleForOperator(null, SimpleEntity.class, MOD, new int[0], new ArrayList<ValidationFailure>()),
@@ -195,7 +193,6 @@ public class QueryValidatorTest {
     }
 
     @Test
-    @Ignore("bug waiting to happen")
     public void shouldNotErrorModOperatorWithArrayOfNullValues() {
         // expect
         assertThat(QueryValidator.isCompatibleForOperator(null, SimpleEntity.class, MOD, new String[1], new ArrayList<ValidationFailure>()),
@@ -203,7 +200,6 @@ public class QueryValidatorTest {
     }
 
     @Test
-    @Ignore("the final 'false' fall-through does not work")
     public void shouldNotAllowModOperatorWithNonArrayValue() {
         // expect
         // this is bad
@@ -327,7 +323,6 @@ public class QueryValidatorTest {
     }
 
     @Test
-    @Ignore("the final 'false' fall-through does not work")
     public void shouldNotAllowNonDoubleTypeIfValueIsLong() {
         // expect
         assertThat(QueryValidator.isCompatibleForOperator(null, long.class, EQUAL, new Long(1), new ArrayList<ValidationFailure>()),
@@ -387,7 +382,7 @@ public class QueryValidatorTest {
     public void shouldAllowTypeThatMatchesKeyTypeValue() {
         // expect
         MappedClass mappedClass = new MappedClass(SimpleEntity.class, new Mapper());
-        MappedField mappedField = mappedClass.getMappedField("name");
+        MappedField mappedField = mappedClass.getMappedField("integer");
         assertThat(QueryValidator.isCompatibleForOperator(mappedField, Integer.class, EQUAL,
                                                           new Key<Number>(Integer.class, new ObjectId()),
                                                           new ArrayList<ValidationFailure>()), is(true));
@@ -414,13 +409,13 @@ public class QueryValidatorTest {
                   );
     }
 
-    @Test
-    public void shouldAllowValuesOfList() {
-        // expect
-        assertThat(QueryValidator.isCompatibleForOperator(null, List.class, EQUAL, new ArrayList<String>(),
-                                                          new ArrayList<ValidationFailure>()), is(true));
-    }
-
+//    @Test
+//    public void shouldAllowValuesOfList() {
+//        // expect
+//        assertThat(QueryValidator.isCompatibleForOperator(null, List.class, EQUAL, new ArrayList<String>(),
+//                                                          new ArrayList<ValidationFailure>()), is(true));
+//    }
+//
     @Test
     public void shouldRejectTypesAndValuesThatDoNotMatch() {
         // expect
