@@ -3,43 +3,40 @@ package org.mongodb.morphia.query.validation;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.regex.Pattern;
 
-import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class ListValueValidatorTest {
+public class PatternValueValidatorTest {
     @Test
-    public void shouldAllowValuesOfList() {
+    public void shouldAllowValueOfPatternWithTypeOfString() {
         // given
         ArrayList<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
         // when
-        List<Integer> list = asList(1, 2);
-        boolean validationApplied = ListValueValidator.getInstance().apply(null, list, validationFailures);
+        boolean validationApplied = PatternValueValidator.getInstance().apply(String.class, Pattern.compile("."), validationFailures);
         // then
         assertThat(validationApplied, is(true));
         assertThat(validationFailures.size(), is(0));
     }
 
     @Test
-    public void shouldAllowSubclassesOfList() {
+    public void shouldRejectNonStringTypeWithValueOfPattern() {
         // given
         ArrayList<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
         // when
-        boolean validationApplied = ListValueValidator.getInstance().apply(null, new ArrayList<String>(), validationFailures);
+        boolean validationApplied = PatternValueValidator.getInstance().apply(Pattern.class, Pattern.compile("."), validationFailures);
         // then
         assertThat(validationApplied, is(true));
-        assertThat(validationFailures.size(), is(0));
+        assertThat(validationFailures.size(), is(1));
     }
 
     @Test
-    public void shouldNotApplyIfValueIsNotAList() {
+    public void shouldNotApplyValidationWhenValueIsNotAPattern() {
         // given
         ArrayList<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
         // when
-        boolean validationApplied = ListValueValidator.getInstance().apply(null, new HashMap<String, Object>(), validationFailures);
+        boolean validationApplied = PatternValueValidator.getInstance().apply(String.class, ".", validationFailures);
         // then
         assertThat(validationApplied, is(false));
         assertThat(validationFailures.size(), is(0));

@@ -2,7 +2,6 @@ package org.mongodb.morphia.query;
 
 import com.mongodb.BasicDBObject;
 import org.bson.types.ObjectId;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mongodb.morphia.Key;
 import org.mongodb.morphia.entities.EntityWithListsAndArrays;
@@ -337,7 +336,6 @@ public class QueryValidatorTest {
     }
 
     @Test
-    @Ignore("the final 'false' fall-through does not work")
     public void shouldNotAllowNonStringTypeWithValueOfPattern() {
         // expect
         assertThat(QueryValidator.isCompatibleForOperator(null, Pattern.class, EQUAL, Pattern.compile("."),
@@ -401,21 +399,21 @@ public class QueryValidatorTest {
     @Test
     public void shouldNotAllowNonKeyTypeWithKeyValue() {
         // expect
-        MappedClass mappedClass = new MappedClass(SimpleEntity.class, new Mapper());
-        MappedField mappedField = mappedClass.getMappedField("name");
+        MappedClass mappedClass = new MappedClass(EntityWithListsAndArrays.class, new Mapper());
+        MappedField mappedField = mappedClass.getMappedField("listOfIntegers");
         assertThat(QueryValidator.isCompatibleForOperator(mappedField, SimpleEntity.class, EQUAL, new Key<String>("kind", new ObjectId()),
-                                                          new ArrayList<ValidationFailure>()),
-                   is(false)
-                  );
+                                                          new ArrayList<ValidationFailure>()), is(false));
     }
 
-//    @Test
-//    public void shouldAllowValuesOfList() {
-//        // expect
-//        assertThat(QueryValidator.isCompatibleForOperator(null, List.class, EQUAL, new ArrayList<String>(),
-//                                                          new ArrayList<ValidationFailure>()), is(true));
-//    }
-//
+    @Test
+    public void shouldAllowValuesOfList() {
+        // expect
+        MappedClass mappedClass = new MappedClass(SimpleEntity.class, new Mapper());
+        MappedField mappedField = mappedClass.getMappedField("name");
+        assertThat(QueryValidator.isCompatibleForOperator(mappedField, List.class, EQUAL, new ArrayList<String>(),
+                                                          new ArrayList<ValidationFailure>()), is(true));
+    }
+
     @Test
     public void shouldRejectTypesAndValuesThatDoNotMatch() {
         // expect

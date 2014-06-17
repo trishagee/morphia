@@ -11,16 +11,16 @@ import org.mongodb.morphia.query.validation.AllOperationValidator;
 import org.mongodb.morphia.query.validation.DefaultTypeValidator;
 import org.mongodb.morphia.query.validation.DoubleTypeValidator;
 import org.mongodb.morphia.query.validation.EntityAnnotatedValueValidator;
+import org.mongodb.morphia.query.validation.EntityTypeAndIdValueValidator;
 import org.mongodb.morphia.query.validation.ExistsOperationValidator;
 import org.mongodb.morphia.query.validation.GeoWithinOperationValidator;
 import org.mongodb.morphia.query.validation.InOperationValidator;
 import org.mongodb.morphia.query.validation.IntegerTypeValidator;
 import org.mongodb.morphia.query.validation.KeyValueTypeValidator;
 import org.mongodb.morphia.query.validation.ListValueValidator;
-import org.mongodb.morphia.query.validation.MappedFieldTypeValidator;
 import org.mongodb.morphia.query.validation.ModOperationValidator;
 import org.mongodb.morphia.query.validation.NotInOperationValidator;
-import org.mongodb.morphia.query.validation.PatternValueTypeValidator;
+import org.mongodb.morphia.query.validation.PatternValueValidator;
 import org.mongodb.morphia.query.validation.SizeOperationValidator;
 import org.mongodb.morphia.query.validation.ValidationFailure;
 
@@ -56,20 +56,20 @@ final class QueryValidator {
             return validationFailures.size() == 0;
         } else if (AllOperationValidator.getInstance().apply(mappedField, op, value, validationFailures)) {
             return validationFailures.size() == 0;
-        } else if (KeyValueTypeValidator.validate(type, value)) {
-            return true;
+        } else if (KeyValueTypeValidator.getInstance().apply(type, value, validationFailures)) {
+            return validationFailures.size() == 0;
         } else if (IntegerTypeValidator.getInstance().apply(type, value, validationFailures)) {
             return validationFailures.size() == 0;
         } else if (DoubleTypeValidator.getInstance().apply(type, value, validationFailures)) {
             return validationFailures.size() == 0;
-        } else if (PatternValueTypeValidator.validate(type, value)) {
-            return true;
-        } else if (EntityAnnotatedValueValidator.validate(type, value)) {
-            return true;
-        } else if (ListValueValidator.validator(value)) {
-            return true;
-        } else if (MappedFieldTypeValidator.validate(mappedField.getMapper(), type, value)) {
-            return true;
+        } else if (PatternValueValidator.getInstance().apply(type, value, validationFailures)) {
+            return validationFailures.size() == 0;
+        } else if (EntityAnnotatedValueValidator.getInstance().apply(type, value, validationFailures)) {
+            return validationFailures.size() == 0;
+        } else if (ListValueValidator.getInstance().apply(type, value, validationFailures)) {
+            return validationFailures.size() == 0;
+        } else if (EntityTypeAndIdValueValidator.getInstance().apply(mappedField.getMapper(), type, value, validationFailures)) {
+            return validationFailures.size() == 0;
         } else if (DefaultTypeValidator.getInstance().apply(type, value, validationFailures) && validationFailures.size() != 0) {
             return false;
         }

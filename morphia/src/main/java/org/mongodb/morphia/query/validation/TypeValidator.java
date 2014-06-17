@@ -7,7 +7,7 @@ import java.util.List;
  */
 public abstract class TypeValidator implements Validator {
     /**
-     * Applied validation for the given field.  If the field is not of a type in the list returned by getTypeClasses, the validation is not
+     * Apply validation for the given field.  If the field is not of a type in the list returned by getTypeClasses, the validation is not
      * applied and this method returns false.  If the type is in the list, then the validate method is called to see if the value is of a
      * type that can be applied to the given field type.  Errors are appended to the validationFailures list.
      *

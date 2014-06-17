@@ -5,26 +5,47 @@ import org.junit.Test;
 import org.mongodb.morphia.Key;
 import org.mongodb.morphia.entities.SimpleEntity;
 
+import java.util.ArrayList;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public class KeyValueTypeValidatorTest {
     @Test
-    public void shouldAllowKeyTypeWhenValueIsAKey() {
-        // expect
-        assertThat(KeyValueTypeValidator.validate(Integer.class, new Key<Number>(Integer.class, new ObjectId())), is(true));
+    public void shouldAllowTypeThatMatchesKeyKindWhenValueIsAKey() {
+        // given
+        ArrayList<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
+        // when
+        boolean validationApplied = KeyValueTypeValidator.getInstance().apply(Integer.class,
+                                                                              new Key<Number>(Integer.class, new ObjectId()),
+                                                                              validationFailures);
+        // then
+        assertThat(validationApplied, is(true));
+        assertThat(validationFailures.size(), is(0));
     }
 
     @Test
-    public void shouldNotAllowNonKeyTypeWhenValueIsAKey() {
-        // expect
-        assertThat(KeyValueTypeValidator.validate(String.class, new Key<Number>(Integer.class, new ObjectId())), is(false));
+    public void shouldRejectTypeThatDoesNotMatchKeyKindWhenValueIsAKey() {
+        // given
+        ArrayList<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
+        // when
+        boolean validationApplied = KeyValueTypeValidator.getInstance().apply(String.class,
+                                                                              new Key<Number>(Integer.class, new ObjectId()),
+                                                                              validationFailures);
+        // then
+        assertThat(validationApplied, is(true));
+        assertThat(validationFailures.size(), is(1));
     }
 
     @Test
-    public void shouldNotAllowTypeThatDoesNotMatchTheKindClassInAKey() {
-        // expect
-        assertThat(KeyValueTypeValidator.validate(SimpleEntity.class, new Key<String>("kind", new ObjectId())), is(false));
+    public void shouldNotValidateWhenValueIsNotAKey() {
+        // given
+        ArrayList<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
+        // when
+        boolean validationApplied = KeyValueTypeValidator.getInstance().apply(String.class, new SimpleEntity(), validationFailures);
+        // then
+        assertThat(validationApplied, is(false));
+        assertThat(validationFailures.size(), is(0));
     }
 
 }

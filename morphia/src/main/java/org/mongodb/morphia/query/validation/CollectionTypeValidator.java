@@ -6,7 +6,7 @@ import java.util.Map;
 /**
  * Contains static validators for checking your type against various criteria.
  */
-public final class CollectionTypeValidator implements Validator {
+final class CollectionTypeValidator implements Validator {
     private CollectionTypeValidator() {
     }
 
