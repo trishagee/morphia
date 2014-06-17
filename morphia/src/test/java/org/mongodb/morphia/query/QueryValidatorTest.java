@@ -31,8 +31,6 @@ import static org.mongodb.morphia.query.FilterOperator.SIZE;
 import static org.mongodb.morphia.query.QueryValidator.validateQuery;
 
 public class QueryValidatorTest {
-    //TODO: when the validation is totally split into individual validators, this test will be a lot simpler, or redundant
-
     @Test
     public void shouldNotErrorWhenValidateQueryCalledWithNullValue() {
         // this unit test is to drive fixing a null pointer in the logging code.  It's a bit stupid but it's an edge case that wasn't 
@@ -47,6 +45,7 @@ public class QueryValidatorTest {
     @Test
     public void shouldBeCompatibleIfValueIsNull() {
         // expect
+        // frankly not sure we should just let nulls through
         assertThat(QueryValidator.isCompatibleForOperator(null, SimpleEntity.class, EQUAL, null, new ArrayList<ValidationFailure>()),
                    is(true));
     }
@@ -54,6 +53,7 @@ public class QueryValidatorTest {
     @Test
     public void shouldBeCompatibleIfTypeIsNull() {
         // expect
+        // frankly not sure we should just let nulls through
         assertThat(QueryValidator.isCompatibleForOperator(null, null, EQUAL, "value", new ArrayList<ValidationFailure>()), is(true));
     }
 

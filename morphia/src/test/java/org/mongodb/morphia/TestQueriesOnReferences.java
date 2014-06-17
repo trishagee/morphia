@@ -83,7 +83,6 @@ public class TestQueriesOnReferences extends TestBase {
     }
 
     @Test
-    //TODO: Validation - this test will fail if we turn on breaking validation
     public void testWithKeyQuery() {
         final ContainsPic cpk = new ContainsPic();
         final Pic p = new Pic();

@@ -12,6 +12,7 @@ import org.mongodb.morphia.testutil.TestEntity;
 import java.util.HashSet;
 import java.util.Set;
 
+
 public class TestEmptyEntityMapping extends TestBase {
     @Entity
     static class A extends TestEntity {
@@ -105,7 +106,6 @@ public class TestEmptyEntityMapping extends TestBase {
     }
     
     @Test
-    //TODO: Validation - this test will fail if we turn on breaking validation
     public void testSizeOnEmptyElements() {
         User u = new User();
         u.setFullName("User Name");

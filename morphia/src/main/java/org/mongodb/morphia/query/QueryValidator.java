@@ -32,11 +32,9 @@ import static java.lang.String.format;
 final class QueryValidator {
     private static final Logger LOG = MorphiaLoggerFactory.get(QueryValidator.class);
 
-    private QueryValidator() {
-    }
+    private QueryValidator() {}
 
-    /*package*/
-    static boolean isCompatibleForOperator(final MappedField mappedField, final Class<?> type, final FilterOperator op,
+    /*package*/ static boolean isCompatibleForOperator(final MappedField mappedField, final Class<?> type, final FilterOperator op,
                                            final Object value, final List<ValidationFailure> validationFailures) {
         // TODO: it's really OK to have null values?  I think this is to prevent null pointers further down, 
         // but I want to move the null check into the operations that care whether they allow nulls or not.
@@ -131,8 +129,9 @@ final class QueryValidator {
             }
 
             if (validateTypes) {
-                boolean compatibleForType = isCompatibleForOperator(mf, mf.getType(), op, val, new ArrayList<ValidationFailure>());
-                boolean compatibleForSubclass = isCompatibleForOperator(mf, mf.getSubClass(), op, val, new ArrayList<ValidationFailure>());
+                ArrayList<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
+                boolean compatibleForType = isCompatibleForOperator(mf, mf.getType(), op, val, validationFailures);
+                boolean compatibleForSubclass = isCompatibleForOperator(mf, mf.getSubClass(), op, val, validationFailures);
 
                 if ((mf.isSingleValue() && !compatibleForType)
                     || mf.isMultipleValues() && !(compatibleForSubclass || compatibleForType)) {
@@ -143,6 +142,7 @@ final class QueryValidator {
                                            + "for the field '%s.%s' which is declared as '%s'", className,
                                            mf.getDeclaringClass().getName(), mf.getJavaFieldName(), mf.getType().getName()
                                           ));
+                        LOG.warning("Validation warnings: \n"+validationFailures);
                     }
                 }
             }

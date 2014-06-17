@@ -136,7 +136,6 @@ public class TestIdField extends TestBase {
     }
 
     @Test
-    //TODO: Validation - this test will fail if we turn on breaking validation
     public void testMapAsId() throws Exception {
         getMorphia().map(MapAsId.class);
 
