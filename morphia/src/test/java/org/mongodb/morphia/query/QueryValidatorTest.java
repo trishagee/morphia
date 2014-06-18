@@ -96,6 +96,7 @@ public class QueryValidatorTest {
     }
 
     @Test
+    //this used to fail
     public void shouldAllowSizeOperatorForArrayListTypesAndIntegerValues() {
         // given
         MappedClass mappedClass = new MappedClass(EntityWithListsAndArrays.class, new Mapper());
@@ -178,6 +179,7 @@ public class QueryValidatorTest {
     }
 
     @Test
+    //this used to fail
     public void shouldNotErrorIfModOperatorIsUsedWithZeroLengthArrayOfIntegerValues() {
         // expect
         assertThat(QueryValidator.isCompatibleForOperator(null, SimpleEntity.class, MOD, new int[0], new ArrayList<ValidationFailure>()),
@@ -192,6 +194,7 @@ public class QueryValidatorTest {
     }
 
     @Test
+    //this used to fail
     public void shouldNotErrorModOperatorWithArrayOfNullValues() {
         // expect
         assertThat(QueryValidator.isCompatibleForOperator(null, SimpleEntity.class, MOD, new String[1], new ArrayList<ValidationFailure>()),
@@ -199,6 +202,7 @@ public class QueryValidatorTest {
     }
 
     @Test
+    //this used to fail
     public void shouldNotAllowModOperatorWithNonArrayValue() {
         assertThat(QueryValidator.isCompatibleForOperator(null, String.class, MOD, "value", new ArrayList<ValidationFailure>()), is(false));
     }
@@ -345,6 +349,7 @@ public class QueryValidatorTest {
     }
 
     @Test
+    //this used to fail
     public void shouldNotAllowNonStringTypeWithValueOfPattern() {
         // expect
         assertThat(QueryValidator.isCompatibleForOperator(null, Pattern.class, EQUAL, Pattern.compile("."),
