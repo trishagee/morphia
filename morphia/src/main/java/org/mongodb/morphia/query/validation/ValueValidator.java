@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * Provides validation based on the Value in the query
  */
-public abstract class ValueValidator {
+public abstract class ValueValidator implements Validator {
     /**
      * Applied validation for the given field.  If the value does not match the correct type, the validation is not applied and this method
      * returns false.  If the value is to be validated, then the validate method is called to see if the value and type are compatible.

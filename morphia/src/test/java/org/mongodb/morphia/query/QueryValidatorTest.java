@@ -373,15 +373,6 @@ public class QueryValidatorTest {
     }
 
     @Test
-    public void shouldNotAllowValueWithEntityAnnotationAndNonKeyType() {
-        // expect
-        MappedClass mappedClass = new MappedClass(SimpleEntity.class, new Mapper());
-        MappedField mappedField = mappedClass.getMappedField("name");
-        assertThat(QueryValidator.isCompatibleForOperator(mappedField, String.class, EQUAL, new SimpleEntity(),
-                                                          new ArrayList<ValidationFailure>()), is(false));
-    }
-
-    @Test
     public void shouldNotAllowValueWithoutEntityAnnotationAndTypeOfKey() {
         // expect
         MappedClass mappedClass = new MappedClass(SimpleEntity.class, new Mapper());

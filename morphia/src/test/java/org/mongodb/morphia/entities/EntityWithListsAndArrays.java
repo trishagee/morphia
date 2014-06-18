@@ -2,6 +2,7 @@ package org.mongodb.morphia.entities;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @SuppressWarnings("unused")
 public class EntityWithListsAndArrays {
@@ -11,5 +12,6 @@ public class EntityWithListsAndArrays {
     private List<Integer> listOfIntegers;
     private ArrayList<String> arrayListOfStrings;
     private ArrayList<Integer> arrayListOfIntegers;
+    private Set<Integer> setOfIntegers;
     private String notAnArrayOrList;
 }

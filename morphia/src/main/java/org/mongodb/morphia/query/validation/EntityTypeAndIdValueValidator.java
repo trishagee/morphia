@@ -25,23 +25,23 @@ public final class EntityTypeAndIdValueValidator implements Validator {
      * @return true if the validation was applied.
      */
     public boolean apply(final Mapper mapper, final Class<?> type, final Object value, final List<ValidationFailure> validationFailures) {
-        MappedClass mappedClassForType = mapper.getMappedClass(type);
-        if (mappedClassForType.getMappedIdField() == null) {
-            validationFailures.add(new ValidationFailure(format("Type should be from a class with an ID field. "
-                                                                + "Type was %s and its class was a %s", type,
-                                                                mappedClassForType.getClazz().getCanonicalName()
-                                                               )));
+        if (appliesTo(mapper, type)) {
+            Class<?> classOfValue = value.getClass();
+            MappedClass mappedClassForType = mapper.getMappedClass(type);
+            Class classOfIdFieldForType = mappedClassForType.getMappedIdField().getConcreteType();
+            if (!type.equals(value.getClass()) && !classOfValue.equals(classOfIdFieldForType)) {
+                validationFailures.add(new ValidationFailure(format("The value class needs to match the type of ID for the field. "
+                                                                    + "Value was %s and was a %s and the ID of the type was %s",
+                                                                    value, classOfValue, classOfIdFieldForType
+                                                                   )));
+            }
             return true;
         }
-        Class<?> classOfValue = value.getClass();
-        Class classOfIdFieldForType = mappedClassForType.getMappedIdField().getConcreteType();
-        if (!classOfValue.equals(classOfIdFieldForType)) {
-            validationFailures.add(new ValidationFailure(format("The value class needs to match the type of ID for the field. "
-                                                                + "Value was %s and was a %s and the ID of the type was %s",
-                                                                value, classOfValue, classOfIdFieldForType
-                                                               )));
-        }
-        return true;
+        return false;
+    }
+
+    private boolean appliesTo(final Mapper mapper, final Class<?> type) {
+        return mapper.getMappedClass(type) != null && mapper.getMappedClass(type).getMappedIdField() != null;
     }
 
     /**

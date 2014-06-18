@@ -30,15 +30,14 @@ public class DefaultTypeValidatorTest {
     }
 
     @Test
-    public void shouldRejectAllowTypesThatAreSuperclasses() {
-        //TODO this is the current behaviour, and I don't think it's correct
+    public void shouldAllowTypesThatAreSuperclasses() {
         // given
         List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
         // when
         boolean validationApplied = DefaultTypeValidator.getInstance().apply(Map.class, new HashMap(), validationFailures);
         // then
         assertThat(validationApplied, is(true));
-        assertThat(validationFailures.size(), is(1));
+        assertThat(validationFailures.size(), is(0));
     }
 
     @Test

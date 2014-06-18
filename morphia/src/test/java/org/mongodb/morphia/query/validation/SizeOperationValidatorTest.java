@@ -108,6 +108,21 @@ public class SizeOperationValidatorTest {
     }
 
     @Test
+    public void shouldAllowSizeOperatorForIterableTypesAndIntegerValues() {
+        // given
+        MappedClass mappedClass = new MappedClass(EntityWithListsAndArrays.class, new Mapper());
+        MappedField mappedField = mappedClass.getMappedField("setOfIntegers");
+        List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
+
+        // when
+        boolean validationApplied = SizeOperationValidator.getInstance().apply(mappedField, SIZE, 3, validationFailures);
+
+        // then
+        assertThat(validationApplied, is(true));
+        assertThat(validationFailures.size(), is(0));
+    }
+
+    @Test
     public void shouldRejectSizeOperatorForNonListTypes() {
         // given
         MappedClass mappedClass = new MappedClass(EntityWithListsAndArrays.class, new Mapper());

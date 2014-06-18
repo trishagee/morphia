@@ -16,15 +16,17 @@ public final class DefaultTypeValidator extends TypeValidator {
 
     @Override
     protected void validate(final Class<?> type, final Object value, final List<ValidationFailure> validationFailures) {
-        if (!(value.getClass().isAssignableFrom(type)
-              || value.getClass().getSimpleName().equalsIgnoreCase(type.getSimpleName()))) {
-            validationFailures.add(new ValidationFailure(format("Type %s may not be queryable with value '%s' with class %s", type,
-                                                                value, value.getClass())));
+        if (!type.isAssignableFrom(value.getClass())
+            && !value.getClass().getSimpleName().equalsIgnoreCase(type.getSimpleName())) {
+            validationFailures.add(new ValidationFailure(format("Type %s may not be queryable with value '%s' with class %s",
+                                                                type.getCanonicalName(),
+                                                                value, value.getClass().getCanonicalName())));
         }
     }
 
     /**
      * Always returns true, applies to all types
+     *
      * @param type the type to be validated
      * @return true.  Always.
      */

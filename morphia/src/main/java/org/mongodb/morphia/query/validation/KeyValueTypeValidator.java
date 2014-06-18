@@ -13,9 +13,10 @@ public final class KeyValueTypeValidator extends ValueValidator {
 
     @Override
     protected void validate(final Class<?> type, final Object value, final List<ValidationFailure> validationFailures) {
-        if (!type.equals(((Key) value).getKindClass())) {
+        if (!type.equals(((Key) value).getKindClass()) && !type.equals(Key.class)) {
             validationFailures.add(new ValidationFailure(format("When value is a Key, the type needs to be the right kind of class. " 
-                                                                + "Type was %s and value was '%s'", type, value)));
+                                                                + "Type was %s and value was '%s'", type, value)
+            ));
         }
     }
 

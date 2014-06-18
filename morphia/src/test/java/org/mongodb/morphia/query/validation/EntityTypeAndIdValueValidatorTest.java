@@ -41,7 +41,7 @@ public class EntityTypeAndIdValueValidatorTest {
     }
 
     @Test
-    public void shouldRejectIfEntityHasNoIdField() {
+    public void shouldNotValidateIfEntityHasNoIdField() {
         // given
         ArrayList<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
         // when
@@ -50,7 +50,7 @@ public class EntityTypeAndIdValueValidatorTest {
                                                                                       "some non-null value",
                                                                                       validationFailures);
         // then
-        assertThat(validationApplied, is(true));
-        assertThat(validationFailures.size(), is(1));
+        assertThat(validationApplied, is(false));
+        assertThat(validationFailures.size(), is(0));
     }
 }
