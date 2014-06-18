@@ -15,7 +15,7 @@ public class DefaultTypeValidatorTest {
     @Test
     public void shouldAllowTypesThatMatchTheClassOfTheValue() {
         // given
-        ArrayList<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
+        List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
         // expect
         assertThat(DefaultTypeValidator.getInstance().apply(String.class, "some String", validationFailures), is(true));
     }
@@ -23,7 +23,7 @@ public class DefaultTypeValidatorTest {
     @Test
     public void shouldAllowTypesThatTheRealTypeOfTheValue() {
         // given
-        ArrayList<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
+        List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
         // given
         List<Integer> valueAsList = Arrays.asList(1);
         assertThat(DefaultTypeValidator.getInstance().apply(ArrayList.class, valueAsList, validationFailures), is(true));
@@ -33,7 +33,7 @@ public class DefaultTypeValidatorTest {
     public void shouldRejectAllowTypesThatAreSuperclasses() {
         //TODO this is the current behaviour, and I don't think it's correct
         // given
-        ArrayList<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
+        List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
         // when
         boolean validationApplied = DefaultTypeValidator.getInstance().apply(Map.class, new HashMap(), validationFailures);
         // then
@@ -44,7 +44,7 @@ public class DefaultTypeValidatorTest {
     @Test
     public void shouldRejectTypesAndValuesThatDoNotMatch() {
         // given
-        ArrayList<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
+        List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
         // when
         boolean validationApplied = DefaultTypeValidator.getInstance().apply(String.class, 1, validationFailures);
         // then

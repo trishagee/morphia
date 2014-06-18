@@ -26,7 +26,7 @@ public class ExistsOperationValidatorTest {
     }
 
     @Test
-    public void shouldNotAllowNonBooleanValuesForExistsOperator() {
+    public void shouldRejectNonBooleanValuesForExistsOperator() {
         // given 
         List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
 

@@ -129,7 +129,7 @@ final class QueryValidator {
             }
 
             if (validateTypes) {
-                ArrayList<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
+                List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
                 boolean compatibleForType = isCompatibleForOperator(mf, mf.getType(), op, val, validationFailures);
                 boolean compatibleForSubclass = isCompatibleForOperator(mf, mf.getSubClass(), op, val, validationFailures);
 
@@ -142,7 +142,7 @@ final class QueryValidator {
                                            + "for the field '%s.%s' which is declared as '%s'", className,
                                            mf.getDeclaringClass().getName(), mf.getJavaFieldName(), mf.getType().getName()
                                           ));
-                        LOG.warning("Validation warnings: \n"+validationFailures);
+                        LOG.warning("Validation warnings: \n" + validationFailures);
                     }
                 }
             }

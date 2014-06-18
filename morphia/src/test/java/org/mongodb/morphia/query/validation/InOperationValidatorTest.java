@@ -82,7 +82,7 @@ public class InOperationValidatorTest {
     }
 
     @Test
-    public void shouldNotAllowValuesThatAreNotTheCorrectType() {
+    public void shouldRejectValuesThatAreNotTheCorrectType() {
         // given 
         List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
 
@@ -95,7 +95,7 @@ public class InOperationValidatorTest {
     }
 
     @Test
-    public void shouldNotAllowNullValues() {
+    public void shouldRejectNullValues() {
         // given 
         List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
 

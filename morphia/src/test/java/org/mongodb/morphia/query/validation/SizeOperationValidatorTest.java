@@ -78,7 +78,7 @@ public class SizeOperationValidatorTest {
     }
 
     @Test
-    public void shouldNotAllowSizeOperatorForNonListTypes() {
+    public void shouldRejectSizeOperatorForNonListTypes() {
         // given
         MappedClass mappedClass = new MappedClass(EntityWithListsAndArrays.class, new Mapper());
         MappedField mappedField = mappedClass.getMappedField("notAnArrayOrList");
@@ -94,7 +94,7 @@ public class SizeOperationValidatorTest {
     }
 
     @Test
-    public void shouldNotAllowSizeOperatorForNonIntegerValues() {
+    public void shouldRejectSizeOperatorForNonIntegerValues() {
         // given
         MappedClass mappedClass = new MappedClass(EntityWithListsAndArrays.class, new Mapper());
         MappedField mappedField = mappedClass.getMappedField("listOfStrings");

@@ -44,7 +44,7 @@ public class GeoWithinOperationValidatorTest {
     }
 
     @Test
-    public void shouldNotAllowGeoWithinWhenValueDoesNotContainKeyword() {
+    public void shouldRejectGeoWithinWhenValueDoesNotContainKeyword() {
         // given 
         List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
         MappedClass mappedClass = new MappedClass(GeoEntity.class, new Mapper());
@@ -64,7 +64,7 @@ public class GeoWithinOperationValidatorTest {
     }
 
     @Test
-    public void shouldNotAllowGeoWithinWhenValueIsNotADBObject() {
+    public void shouldRejectGeoWithinWhenValueIsNotADBObject() {
         // given 
         List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
         MappedClass mappedClass = new MappedClass(GeoEntity.class, new Mapper());
@@ -84,7 +84,7 @@ public class GeoWithinOperationValidatorTest {
     }
 
     @Test
-    public void shouldNotAllowGeoWithinOperatorWhenMappedFieldIsArrayThatDoesNotContainNumbers() {
+    public void shouldRejectGeoWithinOperatorWhenMappedFieldIsArrayThatDoesNotContainNumbers() {
         // given 
         List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
         MappedClass mappedClass = new MappedClass(InvalidGeoEntity.class, new Mapper());
@@ -103,7 +103,7 @@ public class GeoWithinOperationValidatorTest {
     }
 
     @Test
-    public void shouldNotAllowGeoWithinOperatorWhenMappedFieldIsListThatDoesNotContainNumbers() {
+    public void shouldRejectGeoWithinOperatorWhenMappedFieldIsListThatDoesNotContainNumbers() {
         // given 
         List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
         MappedClass mappedClass = new MappedClass(InvalidGeoEntity.class, new Mapper());

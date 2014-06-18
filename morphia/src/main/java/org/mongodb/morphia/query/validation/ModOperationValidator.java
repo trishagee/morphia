@@ -24,7 +24,7 @@ public final class ModOperationValidator extends OperationValidator {
     @Override
     protected void validate(final MappedField mappedField, final Object value, final List<ValidationFailure> validationFailures) {
         if (value == null) {
-            validationFailures.add(new ValidationFailure(format("For an $all operation, value cannot be null.")));
+            validationFailures.add(new ValidationFailure(format("For a $mod operation, value cannot be null.")));
         } else if (value.getClass().isArray()) {
             if (Array.getLength(value) != 2) {
                 validationFailures.add(new ValidationFailure(format("For a $mod operation, value '%s' should be an array with two integer"

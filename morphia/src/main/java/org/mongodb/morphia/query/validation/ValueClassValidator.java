@@ -3,7 +3,7 @@ package org.mongodb.morphia.query.validation;
 /**
  * Checks that the given value is of the required type.
  */
-public final class ValueClassValidator implements Validator {
+final class ValueClassValidator implements Validator {
     private ValueClassValidator() {
     }
 

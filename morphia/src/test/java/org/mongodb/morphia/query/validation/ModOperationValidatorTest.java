@@ -40,7 +40,7 @@ public class ModOperationValidatorTest {
     }
 
     @Test
-    public void shouldNotAllowModOperatorWithNonIntegerArray() {
+    public void shouldRejectModOperatorWithNonIntegerArray() {
         // given 
         List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
 
@@ -54,7 +54,7 @@ public class ModOperationValidatorTest {
     }
 
     @Test
-    public void shouldNotAllowModOperatorWithNonArrayValue() {
+    public void shouldRejectModOperatorWithNonArrayValue() {
         // given 
         List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
 
@@ -68,7 +68,7 @@ public class ModOperationValidatorTest {
     }
 
     @Test
-    public void shouldNotAllowNullValues() {
+    public void shouldRejectNullValues() {
         // given 
         List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
 
