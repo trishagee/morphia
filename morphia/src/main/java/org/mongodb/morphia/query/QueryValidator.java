@@ -18,6 +18,7 @@ import org.mongodb.morphia.query.validation.InOperationValidator;
 import org.mongodb.morphia.query.validation.IntegerTypeValidator;
 import org.mongodb.morphia.query.validation.KeyValueTypeValidator;
 import org.mongodb.morphia.query.validation.ListValueValidator;
+import org.mongodb.morphia.query.validation.LongTypeValidator;
 import org.mongodb.morphia.query.validation.ModOperationValidator;
 import org.mongodb.morphia.query.validation.NotInOperationValidator;
 import org.mongodb.morphia.query.validation.PatternValueValidator;
@@ -51,6 +52,7 @@ final class QueryValidator {
                                     || AllOperationValidator.getInstance().apply(mappedField, op, value, validationFailures)
                                     || KeyValueTypeValidator.getInstance().apply(type, value, validationFailures)
                                     || IntegerTypeValidator.getInstance().apply(type, value, validationFailures)
+                                    || LongTypeValidator.getInstance().apply(type, value, validationFailures)
                                     || DoubleTypeValidator.getInstance().apply(type, value, validationFailures)
                                     || PatternValueValidator.getInstance().apply(type, value, validationFailures)
                                     || EntityAnnotatedValueValidator.getInstance().apply(type, value, validationFailures)

@@ -275,16 +275,24 @@ public class QueryValidatorTest {
     }
 
     @Test
-    public void shouldOnlyAllowValuesOfIntegerIfTypeIsIntOrLong() {
+    public void shouldAllowValuesOfIntegerIfTypeIsInteger() {
         // expect
-        // Op is only needed so it doesn't null pointer
-        assertThat(QueryValidator.isCompatibleForOperator(null, Long.class, EQUAL, new Integer(1), new ArrayList<ValidationFailure>()),
-                   is(true));
         assertThat(QueryValidator.isCompatibleForOperator(null, int.class, EQUAL, new Integer(1), new ArrayList<ValidationFailure>()),
+                   is(true));
+        assertThat(QueryValidator.isCompatibleForOperator(null, Integer.class, EQUAL, new Integer(1), new ArrayList<ValidationFailure>()),
+                   is(true));
+    }
+
+    @Test
+    public void shouldAllowValuesOfIntegerOrLongIfTypeIsLong() {
+        // expect
+        assertThat(QueryValidator.isCompatibleForOperator(null, Long.class, EQUAL, new Integer(1), new ArrayList<ValidationFailure>()),
                    is(true));
         assertThat(QueryValidator.isCompatibleForOperator(null, long.class, EQUAL, new Integer(1), new ArrayList<ValidationFailure>()),
                    is(true));
-        assertThat(QueryValidator.isCompatibleForOperator(null, Integer.class, EQUAL, new Integer(1), new ArrayList<ValidationFailure>()),
+        assertThat(QueryValidator.isCompatibleForOperator(null, Long.class, EQUAL, new Long(1), new ArrayList<ValidationFailure>()),
+                   is(true));
+        assertThat(QueryValidator.isCompatibleForOperator(null, long.class, EQUAL, new Long(1), new ArrayList<ValidationFailure>()),
                    is(true));
     }
 
@@ -298,9 +306,15 @@ public class QueryValidatorTest {
     }
 
     @Test
-    public void shouldOnlyAllowValuesOfIntegerIfTypeIsDouble() {
+    public void shouldNotAllowNonIntegerValueIfTypeIsInt() {
         // expect
-        // Op is only needed so it doesn't null pointer
+        assertThat(QueryValidator.isCompatibleForOperator(null, int.class, EQUAL, "some non int value",
+                                                          new ArrayList<ValidationFailure>()), is(false));
+    }
+
+    @Test
+    public void shouldAllowValuesOfIntegerIfTypeIsDouble() {
+        // expect
         assertThat(QueryValidator.isCompatibleForOperator(null, Double.class, EQUAL, new Integer(1), new ArrayList<ValidationFailure>()),
                    is(true));
         assertThat(QueryValidator.isCompatibleForOperator(null, double.class, EQUAL, new Integer(1), new ArrayList<ValidationFailure>()),
@@ -308,9 +322,8 @@ public class QueryValidatorTest {
     }
 
     @Test
-    public void shouldOnlyAllowValuesOfLongIfTypeIsDouble() {
+    public void shouldAllowValuesOfLongIfTypeIsDouble() {
         // expect
-        // Op is only needed so it doesn't null pointer
         assertThat(QueryValidator.isCompatibleForOperator(null, Double.class, EQUAL, new Long(1), new ArrayList<ValidationFailure>()),
                    is(true));
         assertThat(QueryValidator.isCompatibleForOperator(null, double.class, EQUAL, new Long(1), new ArrayList<ValidationFailure>()),
@@ -318,9 +331,9 @@ public class QueryValidatorTest {
     }
 
     @Test
-    public void shouldNotAllowNonDoubleTypeIfValueIsLong() {
+    public void shouldRejectNonDoubleValuesIfTypeIsDouble() {
         // expect
-        assertThat(QueryValidator.isCompatibleForOperator(null, long.class, EQUAL, new Long(1), new ArrayList<ValidationFailure>()),
+        assertThat(QueryValidator.isCompatibleForOperator(null, Double.class, EQUAL, "Not a double", new ArrayList<ValidationFailure>()),
                    is(false));
     }
 

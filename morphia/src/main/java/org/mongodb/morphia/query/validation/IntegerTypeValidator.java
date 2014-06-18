@@ -1,6 +1,5 @@
 package org.mongodb.morphia.query.validation;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static java.lang.String.format;
@@ -24,11 +23,7 @@ public final class IntegerTypeValidator extends TypeValidator {
     }
 
     protected boolean appliesTo(final Class<?> type) {
-        return getTypeClasses().contains(type);
-    }
-
-    private List<Class<?>> getTypeClasses() {
-        return Arrays.<Class<?>>asList(int.class, long.class, Long.class, Integer.class);
+        return type == int.class || type == Integer.class;
     }
 
     /**
