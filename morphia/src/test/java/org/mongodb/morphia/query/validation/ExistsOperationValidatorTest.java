@@ -18,6 +18,19 @@ public class ExistsOperationValidatorTest {
         List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
 
         // when
+        boolean validationApplied = ExistsOperationValidator.getInstance().apply(null, EXISTS, Boolean.TRUE, validationFailures);
+
+        // then
+        assertThat(validationApplied, is(true));
+        assertThat(validationFailures.size(), is(0));
+    }
+
+    @Test
+    public void shouldAllowPrimitiveBooleanValuesForExistsOperator() {
+        // given 
+        List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
+
+        // when
         boolean validationApplied = ExistsOperationValidator.getInstance().apply(null, EXISTS, true, validationFailures);
 
         // then

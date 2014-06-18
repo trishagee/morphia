@@ -11,9 +11,9 @@ final class ValueClassValidator implements Validator {
      * @param value         a non-null value
      * @param requiredClass a non-null type to validate against
      */
-    static boolean valueIsA(final Object value,
-                            final Class requiredClass) {
-        return (value.getClass().equals(requiredClass));
+    static boolean valueIsClassOrSubclassOf(final Object value,
+                                            final Class<?> requiredClass) {
+        return (requiredClass.isAssignableFrom(value.getClass()));
     }
 
 }

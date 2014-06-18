@@ -33,7 +33,7 @@ public class SizeOperationValidatorTest {
     }
 
     @Test
-    public void shouldAllowSizeOperatorForListTypesAndIntegerValues() {
+    public void shouldAllowSizeOperatorForListTypesAndIntValues() {
         // given
         MappedClass mappedClass = new MappedClass(EntityWithListsAndArrays.class, new Mapper());
         MappedField mappedField = mappedClass.getMappedField("listOfIntegers");
@@ -41,6 +41,21 @@ public class SizeOperationValidatorTest {
 
         // when
         boolean validationApplied = SizeOperationValidator.getInstance().apply(mappedField, SIZE, 3, validationFailures);
+
+        // then
+        assertThat(validationApplied, is(true));
+        assertThat(validationFailures.size(), is(0));
+    }
+
+    @Test
+    public void shouldAllowSizeOperatorForListTypesAndLongValues() {
+        // given
+        MappedClass mappedClass = new MappedClass(EntityWithListsAndArrays.class, new Mapper());
+        MappedField mappedField = mappedClass.getMappedField("listOfIntegers");
+        List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
+
+        // when
+        boolean validationApplied = SizeOperationValidator.getInstance().apply(mappedField, SIZE, 3L, validationFailures);
 
         // then
         assertThat(validationApplied, is(true));
@@ -56,6 +71,21 @@ public class SizeOperationValidatorTest {
 
         // when
         boolean validationApplied = SizeOperationValidator.getInstance().apply(mappedField, SIZE, 3, validationFailures);
+
+        // then
+        assertThat(validationApplied, is(true));
+        assertThat(validationFailures.size(), is(0));
+    }
+
+    @Test
+    public void shouldAllowSizeOperatorForArrayTypeAndLongValues() {
+        // given
+        MappedClass mappedClass = new MappedClass(EntityWithListsAndArrays.class, new Mapper());
+        MappedField mappedField = mappedClass.getMappedField("arrayOfInts");
+        List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
+
+        // when
+        boolean validationApplied = SizeOperationValidator.getInstance().apply(mappedField, SIZE, 3L, validationFailures);
 
         // then
         assertThat(validationApplied, is(true));

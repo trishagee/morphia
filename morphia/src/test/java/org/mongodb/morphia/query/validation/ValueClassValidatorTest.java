@@ -12,26 +12,25 @@ public class ValueClassValidatorTest {
     @Test
     public void shouldAllowClassesWithExactlyTheSameType() {
         // expect
-        assertThat(ValueClassValidator.valueIsA(new Integer(1), Integer.class), is(true));
+        assertThat(ValueClassValidator.valueIsClassOrSubclassOf(new Integer(1), Integer.class), is(true));
     }
 
     @Test
     public void shouldAllowPrimitiveValuesComparedToObjectType() {
         // expect
-        assertThat(ValueClassValidator.valueIsA(1, Integer.class), is(true));
+        assertThat(ValueClassValidator.valueIsClassOrSubclassOf(1, Integer.class), is(true));
+    }
+
+    @Test
+    public void shouldAllowValueWithClassThatIsSubclassOfType() {
+        // expect
+        assertThat(ValueClassValidator.valueIsClassOrSubclassOf(new ArrayList(), List.class), is(true));
     }
 
     @Test
     public void shouldRejectValueThatDoesNotMatchType() {
         // expect
-        assertThat(ValueClassValidator.valueIsA(1, String.class), is(false));
-    }
-
-    @Test
-    public void shouldRejectValueWithClassThatIsSubclassOfType() {
-        // I'm not sure this is actually required behaviour, but it's what is already implemented.
-        // expect
-        assertThat(ValueClassValidator.valueIsA(new ArrayList(), List.class), is(false));
+        assertThat(ValueClassValidator.valueIsClassOrSubclassOf(1, String.class), is(false));
     }
 
 }
