@@ -109,7 +109,11 @@ public final class GeoJson {
 
     public static class LineString {
         private final String type = "LineString";
-        private final double[][] coordinates;
+        private double[][] coordinates;
+
+        @SuppressWarnings("UnusedDeclaration") // used by Morphia
+        private LineString() {
+        }
 
         LineString(final Point... points) {
             this.coordinates = new double[points.length][2];
@@ -117,17 +121,107 @@ public final class GeoJson {
                 this.coordinates[i] = points[i].coordinates;
             }
         }
+
+        @Override
+        public boolean equals(final Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+
+            LineString that = (LineString) o;
+
+            if (!nestedArraysEquals(coordinates, that.coordinates)) {
+                return false;
+            }
+
+            if (type != null ? !type.equals(that.type) : that.type != null) {
+                return false;
+            }
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = type != null ? type.hashCode() : 0;
+            result = 31 * result + (coordinates != null ? Arrays.hashCode(coordinates) : 0);
+            return result;
+        }
+
+        @Override
+        public String toString() {
+            StringBuffer coordsAsString  = new StringBuffer();
+            for (int i = 0; i < coordinates.length; i++) {
+                double[] coordinate = coordinates[i];
+                coordsAsString.append(Arrays.toString(coordinate)).append(",");
+            }
+            return "LineString{"
+                   + "type='" + type + '\''
+                   + ", coordinates=" 
+                   + "["
+                   + coordsAsString
+            + "]" 
+                   + '}';
+        }
     }
 
     public static class Polygon {
         private final String type = "Polygon";
-        private final double[][] coordinates;
+        private double[][] coordinates;
 
-        public Polygon(final Point... points) {
+        @SuppressWarnings("UnusedDeclaration") // used by Morphia
+        private Polygon() {
+        }
+
+        Polygon(final Point... points) {
             this.coordinates = new double[points.length][2];
             for (int i = 0; i < points.length; i++) {
                 this.coordinates[i] = points[i].coordinates;
             }
         }
+
+        @Override
+        public boolean equals(final Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+
+            Polygon that = (Polygon) o;
+
+            if (!nestedArraysEquals(coordinates, that.coordinates)) {
+                return false;
+            }
+
+            if (type != null ? !type.equals(that.type) : that.type != null) {
+                return false;
+            }
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            return type != null ? type.hashCode() : 0;
+        }
     }
+
+    private static boolean nestedArraysEquals(final double[][] array1, final double[][] array2) {
+        if (array1.length != array2.length){
+            return false;
+        }
+
+        for (int i = 0; i < array1.length; i++) {
+            if (!Arrays.equals(array1[i], array2[i])) {
+                return false;
+            }
+        }
+        return true;
+    }
+
 }
