@@ -103,7 +103,8 @@ public class GeoEntitiesTest extends TestBase {
         // then use the underlying driver to ensure it was persisted correctly to the database
         DBObject storedArea = getDs().getCollection(Area.class).findOne(new BasicDBObject("name", "The Area"),
                                                                         new BasicDBObject("_id", 0)
-                                                                        .append("className", 0));
+                                                                        .append("className", 0)
+                                                                        .append("area.className", 0));
         assertThat(storedArea, is(notNullValue()));
         assertThat(storedArea.toString(), JSONMatcher.jsonEqual("  {"
                                                                 + " name: 'The Area',"
@@ -136,18 +137,19 @@ public class GeoEntitiesTest extends TestBase {
     public void shouldSaveAnEntityWithAPolygonContainingInteriorRings() {
         // given
         String polygonName = "A polygon with holes";
-        GeoJson.Polygon exteriorBoundary = GeoJson.polygon(point(1.1, 2.0), point(2.3, 3.5), point(3.7, 1.0), point(1.1, 2.0));
-        GeoJson.Polygon hole1 = GeoJson.polygon(point(1.5, 2.0), point(1.9, 2.0), point(1.9, 1.8), point(1.5, 2.0));
-        GeoJson.Polygon hole2 = GeoJson.polygon(point(2.2, 2.1), point(2.4, 1.9), point(2.4, 1.7), point(2.1, 1.8), point(2.2, 2.1));
-        Area2 area = new Area2(polygonName, GeoJson.polygon(exteriorBoundary, hole1, hole2));
+        GeoJson.SimplePolygon exteriorBoundary = GeoJson.polygon(point(1.1, 2.0), point(2.3, 3.5), point(3.7, 1.0), point(1.1, 2.0));
+        GeoJson.SimplePolygon hole1 = GeoJson.polygon(point(1.5, 2.0), point(1.9, 2.0), point(1.9, 1.8), point(1.5, 2.0));
+        GeoJson.SimplePolygon hole2 = GeoJson.polygon(point(2.2, 2.1), point(2.4, 1.9), point(2.4, 1.7), point(2.1, 1.8), point(2.2, 2.1));
+        Area area = new Area(polygonName, GeoJson.polygon(exteriorBoundary, hole1, hole2));
 
         // when
         getDs().save(area);
 
         // then use the underlying driver to ensure it was persisted correctly to the database
-        DBObject storedArea = getDs().getCollection(Area2.class).findOne(new BasicDBObject("name", polygonName),
-                                                                         new BasicDBObject("_id", 0)
-                                                                         .append("className", 0));
+        DBObject storedArea = getDs().getCollection(Area.class).findOne(new BasicDBObject("name", polygonName),
+                                                                        new BasicDBObject("_id", 0)
+                                                                        .append("className", 0)
+                                                                        .append("area.className", 0));
         assertThat(storedArea, is(notNullValue()));
         assertThat(storedArea.toString(), JSONMatcher.jsonEqual("  {"
                                                                 + " name: " + polygonName + ","
@@ -180,14 +182,14 @@ public class GeoEntitiesTest extends TestBase {
     public void shouldRetrieveGeoJsonMultiRingPolygon() {
         // given
         String polygonName = "A polygon with holes";
-        GeoJson.Polygon exteriorBoundary = GeoJson.polygon(point(1.1, 2.0), point(2.3, 3.5), point(3.7, 1.0), point(1.1, 2.0));
-        GeoJson.Polygon hole1 = GeoJson.polygon(point(1.5, 2.0), point(1.9, 2.0), point(1.9, 1.8), point(1.5, 2.0));
-        GeoJson.Polygon hole2 = GeoJson.polygon(point(2.2, 2.1), point(2.4, 1.9), point(2.4, 1.7), point(2.1, 1.8), point(2.2, 2.1));
-        Area2 area = new Area2(polygonName, GeoJson.polygon(exteriorBoundary, hole1, hole2));
+        GeoJson.SimplePolygon exteriorBoundary = GeoJson.polygon(point(1.1, 2.0), point(2.3, 3.5), point(3.7, 1.0), point(1.1, 2.0));
+        GeoJson.SimplePolygon hole1 = GeoJson.polygon(point(1.5, 2.0), point(1.9, 2.0), point(1.9, 1.8), point(1.5, 2.0));
+        GeoJson.SimplePolygon hole2 = GeoJson.polygon(point(2.2, 2.1), point(2.4, 1.9), point(2.4, 1.7), point(2.1, 1.8), point(2.2, 2.1));
+        Area area = new Area(polygonName, GeoJson.polygon(exteriorBoundary, hole1, hole2));
         getDs().save(area);
 
         // when
-        Area2 found = getDs().find(Area2.class).field("name").equal(polygonName).get();
+        Area found = getDs().find(Area.class).field("name").equal(polygonName).get();
 
         // then
         assertThat(found, is(notNullValue()));
@@ -268,56 +270,6 @@ public class GeoEntitiesTest extends TestBase {
             }
 
             Area area1 = (Area) o;
-
-            if (area != null ? !area.equals(area1.area) : area1.area != null) {
-                return false;
-            }
-            if (name != null ? !name.equals(area1.name) : area1.name != null) {
-                return false;
-            }
-
-            return true;
-        }
-
-        @Override
-        public int hashCode() {
-            int result = name != null ? name.hashCode() : 0;
-            result = 31 * result + (area != null ? area.hashCode() : 0);
-            return result;
-        }
-
-        @Override
-        public String toString() {
-            return "Area{"
-                   + "name='" + name + '\''
-                   + ", area=" + area
-                   + '}';
-        }
-    }
-
-    @SuppressWarnings("UnusedDeclaration")
-    private static final class Area2 {
-        private String name;
-        private GeoJson.MultiRingPolygon area;
-
-        private Area2() {
-        }
-
-        private Area2(final String name, final GeoJson.MultiRingPolygon area) {
-            this.name = name;
-            this.area = area;
-        }
-
-        @Override
-        public boolean equals(final Object o) {
-            if (this == o) {
-                return true;
-            }
-            if (o == null || getClass() != o.getClass()) {
-                return false;
-            }
-
-            Area2 area1 = (Area2) o;
 
             if (area != null ? !area.equals(area1.area) : area1.area != null) {
                 return false;

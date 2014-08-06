@@ -47,11 +47,11 @@ public final class GeoJson {
      * @return a Polygon instance representing an area bounded by the given points.
      * @throws java.lang.IllegalArgumentException if the start and end points are not the same
      */
-    public static Polygon polygon(final Point... points) {
+    public static SimplePolygon polygon(final Point... points) {
         if (points.length > 0 && !points[0].equals(points[points.length - 1])) {
             throw new IllegalArgumentException("A polygon requires the starting point to be the same as the end to ensure a closed area");
         }
-        return new Polygon(points);
+        return new SimplePolygon(points);
     }
 
     /**
@@ -63,7 +63,7 @@ public final class GeoJson {
      * @return a Polygon instance representing an area (defined by the exterior boundary) containing holes (defined by the interior
      * boundaries)
      */
-    public static MultiRingPolygon polygon(final Polygon exteriorBoundary, final Polygon... interiorBoundaries) {
+    public static MultiRingPolygon polygon(final SimplePolygon exteriorBoundary, final SimplePolygon... interiorBoundaries) {
         return new MultiRingPolygon(exteriorBoundary, interiorBoundaries);
     }
 
@@ -172,15 +172,17 @@ public final class GeoJson {
         }
     }
 
-    public static class Polygon {
+    public interface Polygon { }
+
+    public static class SimplePolygon implements Polygon {
         private final String type = "Polygon";
         private final List<List<List<Double>>> coordinates = new ArrayList<List<List<Double>>>();
 
         @SuppressWarnings("UnusedDeclaration") // used by Morphia
-        private Polygon() {
+        private SimplePolygon() {
         }
 
-        Polygon(final Point... points) {
+        SimplePolygon(final Point... points) {
             List<List<Double>> boundary = new ArrayList<List<Double>>();
             for (Point point : points) {
                 boundary.add(point.coordinates);
@@ -197,12 +199,12 @@ public final class GeoJson {
                 return false;
             }
 
-            Polygon polygon = (Polygon) o;
+            SimplePolygon that = (SimplePolygon) o;
 
-            if (!coordinates.equals(polygon.coordinates)) {
+            if (!coordinates.equals(that.coordinates)) {
                 return false;
             }
-            if (!type.equals(polygon.type)) {
+            if (!type.equals(that.type)) {
                 return false;
             }
 
@@ -229,17 +231,17 @@ public final class GeoJson {
      * This class represents a more complex polygon that contains both an exterior boundary and zero or more interior boundaries (holes)
      * within it.  MultiRingPolygon relies on SimplePolygon to represent the outer and inner boundaries
      */
-    public static class MultiRingPolygon {
-        private final String type = "Polygon";
+    public static class MultiRingPolygon implements Polygon {
+    private final String type = "Polygon";
         private final List<List<List<Double>>> coordinates = new ArrayList<List<List<Double>>>();
 
         @SuppressWarnings("UnusedDeclaration") // used by Morphia
         private MultiRingPolygon() {
         }
 
-        MultiRingPolygon(final Polygon exteriorBoundary, final Polygon... interiorBoundaries) {
+        MultiRingPolygon(final SimplePolygon exteriorBoundary, final SimplePolygon... interiorBoundaries) {
             this.coordinates.add(exteriorBoundary.coordinates.get(0));
-            for (final Polygon interiorBoundary : interiorBoundaries) {
+            for (final SimplePolygon interiorBoundary : interiorBoundaries) {
                 this.coordinates.add(interiorBoundary.coordinates.get(0));
             }
         }
