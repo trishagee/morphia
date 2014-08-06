@@ -54,6 +54,19 @@ public final class GeoJson {
         return new Polygon(points);
     }
 
+    /**
+     * Create a new Polygon representing a <a href="http://docs.mongodb.org/manual/apps/geospatial-indexes/#geojson-objects">GeoJSON</a>
+     * Polygon type.  Supported by server versions 2.4 an above.
+     *
+     * @param exteriorBoundary   a Polygon defining the exterior ring of the area
+     * @param interiorBoundaries zero or more Polygons defining any interior rings (or holes) inside that exterior ring
+     * @return a Polygon instance representing an area (defined by the exterior boundary) containing holes (defined by the interior
+     * boundaries)
+     */
+    public static MultiRingPolygon polygon(final Polygon exteriorBoundary, final Polygon... interiorBoundaries) {
+        return new MultiRingPolygon(exteriorBoundary, interiorBoundaries);
+    }
+
     public static class Point {
         private final String type = "Point";
         private final List<Double> coordinates = new ArrayList<Double>(2);
@@ -212,4 +225,59 @@ public final class GeoJson {
         }
     }
 
+    /**
+     * This class represents a more complex polygon that contains both an exterior boundary and zero or more interior boundaries (holes)
+     * within it.  MultiRingPolygon relies on SimplePolygon to represent the outer and inner boundaries
+     */
+    public static class MultiRingPolygon {
+        private final String type = "Polygon";
+        private final List<List<List<Double>>> coordinates = new ArrayList<List<List<Double>>>();
+
+        @SuppressWarnings("UnusedDeclaration") // used by Morphia
+        private MultiRingPolygon() {
+        }
+
+        MultiRingPolygon(final Polygon exteriorBoundary, final Polygon... interiorBoundaries) {
+            this.coordinates.add(exteriorBoundary.coordinates.get(0));
+            for (final Polygon interiorBoundary : interiorBoundaries) {
+                this.coordinates.add(interiorBoundary.coordinates.get(0));
+            }
+        }
+
+        @Override
+        public boolean equals(final Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+
+            MultiRingPolygon that = (MultiRingPolygon) o;
+
+            if (!coordinates.equals(that.coordinates)) {
+                return false;
+            }
+            if (!type.equals(that.type)) {
+                return false;
+            }
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = type.hashCode();
+            result = 31 * result + coordinates.hashCode();
+            return result;
+        }
+
+        @Override
+        public String toString() {
+            return "MultiRingPolygon{"
+                   + "type='" + type + '\''
+                   + ", coordinates=" + coordinates
+                   + '}';
+        }
+    }
 }
