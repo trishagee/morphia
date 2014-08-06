@@ -3,7 +3,8 @@ package org.mongodb.morphia.query;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Factory class for creating GeoJSON types.  See 
@@ -55,15 +56,15 @@ public final class GeoJson {
 
     public static class Point {
         private final String type = "Point";
-        private double[] coordinates;
+        private final List<Double> coordinates = new ArrayList<Double>(2);
 
-        //needed for Morphia serialisation
-        @SuppressWarnings("unused")
+        @SuppressWarnings("unused") //needed for Morphia serialisation
         private Point() {
         }
 
         Point(final double latitude, final double longitude) {
-            this.coordinates = new double[]{longitude, latitude};
+            this.coordinates.add(longitude);
+            this.coordinates.add(latitude);
         }
 
         DBObject asDBObject() {
@@ -81,7 +82,7 @@ public final class GeoJson {
 
             Point point = (Point) o;
 
-            if (!Arrays.equals(coordinates, point.coordinates)) {
+            if (!coordinates.equals(point.coordinates)) {
                 return false;
             }
             if (!type.equals(point.type)) {
@@ -94,7 +95,7 @@ public final class GeoJson {
         @Override
         public int hashCode() {
             int result = type.hashCode();
-            result = 31 * result + Arrays.hashCode(coordinates);
+            result = 31 * result + coordinates.hashCode();
             return result;
         }
 
@@ -102,23 +103,22 @@ public final class GeoJson {
         public String toString() {
             return "Point{"
                    + "type='" + type + '\''
-                   + ", coordinates=" + Arrays.toString(coordinates)
+                   + ", coordinates=" + coordinates
                    + '}';
         }
     }
 
     public static class LineString {
         private final String type = "LineString";
-        private double[][] coordinates;
+        private final List<List<Double>> coordinates = new ArrayList<List<Double>>();
 
         @SuppressWarnings("UnusedDeclaration") // used by Morphia
         private LineString() {
         }
 
         LineString(final Point... points) {
-            this.coordinates = new double[points.length][2];
-            for (int i = 0; i < points.length; i++) {
-                this.coordinates[i] = points[i].coordinates;
+            for (final Point point : points) {
+                this.coordinates.add(point.coordinates);
             }
         }
 
@@ -133,11 +133,10 @@ public final class GeoJson {
 
             LineString that = (LineString) o;
 
-            if (!nestedArraysEquals(coordinates, that.coordinates)) {
+            if (!coordinates.equals(that.coordinates)) {
                 return false;
             }
-
-            if (type != null ? !type.equals(that.type) : that.type != null) {
+            if (!type.equals(that.type)) {
                 return false;
             }
 
@@ -146,41 +145,34 @@ public final class GeoJson {
 
         @Override
         public int hashCode() {
-            int result = type != null ? type.hashCode() : 0;
-            result = 31 * result + (coordinates != null ? Arrays.hashCode(coordinates) : 0);
+            int result = type.hashCode();
+            result = 31 * result + coordinates.hashCode();
             return result;
         }
 
         @Override
         public String toString() {
-            StringBuffer coordsAsString  = new StringBuffer();
-            for (int i = 0; i < coordinates.length; i++) {
-                double[] coordinate = coordinates[i];
-                coordsAsString.append(Arrays.toString(coordinate)).append(",");
-            }
             return "LineString{"
                    + "type='" + type + '\''
-                   + ", coordinates=" 
-                   + "["
-                   + coordsAsString
-            + "]" 
+                   + ", coordinates=" + coordinates
                    + '}';
         }
     }
 
     public static class Polygon {
         private final String type = "Polygon";
-        private double[][] coordinates;
+        private final List<List<List<Double>>> coordinates = new ArrayList<List<List<Double>>>();
 
         @SuppressWarnings("UnusedDeclaration") // used by Morphia
         private Polygon() {
         }
 
         Polygon(final Point... points) {
-            this.coordinates = new double[points.length][2];
-            for (int i = 0; i < points.length; i++) {
-                this.coordinates[i] = points[i].coordinates;
+            List<List<Double>> boundary = new ArrayList<List<Double>>();
+            for (Point point : points) {
+                boundary.add(point.coordinates);
             }
+            coordinates.add(boundary);
         }
 
         @Override
@@ -192,13 +184,12 @@ public final class GeoJson {
                 return false;
             }
 
-            Polygon that = (Polygon) o;
+            Polygon polygon = (Polygon) o;
 
-            if (!nestedArraysEquals(coordinates, that.coordinates)) {
+            if (!coordinates.equals(polygon.coordinates)) {
                 return false;
             }
-
-            if (type != null ? !type.equals(that.type) : that.type != null) {
+            if (!type.equals(polygon.type)) {
                 return false;
             }
 
@@ -207,21 +198,18 @@ public final class GeoJson {
 
         @Override
         public int hashCode() {
-            return type != null ? type.hashCode() : 0;
-        }
-    }
-
-    private static boolean nestedArraysEquals(final double[][] array1, final double[][] array2) {
-        if (array1.length != array2.length){
-            return false;
+            int result = type.hashCode();
+            result = 31 * result + coordinates.hashCode();
+            return result;
         }
 
-        for (int i = 0; i < array1.length; i++) {
-            if (!Arrays.equals(array1[i], array2[i])) {
-                return false;
-            }
+        @Override
+        public String toString() {
+            return "Polygon{"
+                   + "type='" + type + '\''
+                   + ", coordinates=" + coordinates
+                   + '}';
         }
-        return true;
     }
 
 }

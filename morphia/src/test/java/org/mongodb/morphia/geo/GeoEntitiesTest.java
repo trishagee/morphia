@@ -111,10 +111,10 @@ public class GeoEntitiesTest extends TestBase {
                                                                 + " area:  "
                                                                 + " {"
                                                                 + "  type: 'Polygon', "
-                                                                + "  coordinates: [ [ 2.0, 1.1],"
+                                                                + "  coordinates: [ [ [ 2.0, 1.1],"
                                                                 + "                   [ 3.5, 2.3],"
                                                                 + "                   [ 1.0, 3.7],"
-                                                                + "                   [ 2.0, 1.1] ]"
+                                                                + "                   [ 2.0, 1.1] ] ]"
                                                                 + " }"
                                                                 + "}"));
     }
