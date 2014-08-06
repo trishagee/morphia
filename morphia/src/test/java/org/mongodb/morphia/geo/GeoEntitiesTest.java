@@ -95,7 +95,7 @@ public class GeoEntitiesTest extends TestBase {
     @Test
     public void shouldSaveAnEntityWithAPolygonGeoJsonType() {
         // given
-        Area area = new Area("The Area", GeoJson.polygon(point(1.1, 2.0), point(2.3, 3.5), point(3.7, 1.0), point(1.1, 2.0)));
+        Area area = new Area("The Area", GeoJson.polygon(point(1.1, 2.0), point(2.3, 3.5), point(3.7, 1.0), point(1.1, 2.0)).build());
 
         // when
         getDs().save(area);
@@ -122,7 +122,7 @@ public class GeoEntitiesTest extends TestBase {
     @Test
     public void shouldRetrieveGeoJsonPolygon() {
         // given
-        Area area = new Area("The Area", GeoJson.polygon(point(1.1, 2.0), point(2.3, 3.5), point(3.7, 1.0), point(1.1, 2.0)));
+        Area area = new Area("The Area", GeoJson.polygon(point(1.1, 2.0), point(2.3, 3.5), point(3.7, 1.0), point(1.1, 2.0)).build());
         getDs().save(area);
 
         // when
@@ -137,10 +137,12 @@ public class GeoEntitiesTest extends TestBase {
     public void shouldSaveAnEntityWithAPolygonContainingInteriorRings() {
         // given
         String polygonName = "A polygon with holes";
-        GeoJson.SimplePolygon exteriorBoundary = GeoJson.polygon(point(1.1, 2.0), point(2.3, 3.5), point(3.7, 1.0), point(1.1, 2.0));
-        GeoJson.SimplePolygon hole1 = GeoJson.polygon(point(1.5, 2.0), point(1.9, 2.0), point(1.9, 1.8), point(1.5, 2.0));
-        GeoJson.SimplePolygon hole2 = GeoJson.polygon(point(2.2, 2.1), point(2.4, 1.9), point(2.4, 1.7), point(2.1, 1.8), point(2.2, 2.1));
-        Area area = new Area(polygonName, GeoJson.polygon(exteriorBoundary, hole1, hole2));
+        GeoJson.Polygon polygonWithHoles = GeoJson.polygon(point(1.1, 2.0), point(2.3, 3.5), point(3.7, 1.0), point(1.1, 2.0))
+                                                        .interiorRing(point(1.5, 2.0), point(1.9, 2.0), point(1.9, 1.8), point(1.5, 2.0))
+                                                        .interiorRing(point(2.2, 2.1), point(2.4, 1.9), point(2.4, 1.7), point(2.1, 1.8), 
+                                                                      point(2.2, 2.1))
+                                                        .build();
+        Area area = new Area(polygonName, polygonWithHoles);
 
         // when
         getDs().save(area);
@@ -182,10 +184,12 @@ public class GeoEntitiesTest extends TestBase {
     public void shouldRetrieveGeoJsonMultiRingPolygon() {
         // given
         String polygonName = "A polygon with holes";
-        GeoJson.SimplePolygon exteriorBoundary = GeoJson.polygon(point(1.1, 2.0), point(2.3, 3.5), point(3.7, 1.0), point(1.1, 2.0));
-        GeoJson.SimplePolygon hole1 = GeoJson.polygon(point(1.5, 2.0), point(1.9, 2.0), point(1.9, 1.8), point(1.5, 2.0));
-        GeoJson.SimplePolygon hole2 = GeoJson.polygon(point(2.2, 2.1), point(2.4, 1.9), point(2.4, 1.7), point(2.1, 1.8), point(2.2, 2.1));
-        Area area = new Area(polygonName, GeoJson.polygon(exteriorBoundary, hole1, hole2));
+        GeoJson.Polygon polygonWithHoles = GeoJson.polygon(point(1.1, 2.0), point(2.3, 3.5), point(3.7, 1.0), point(1.1, 2.0))
+                                                  .interiorRing(point(1.5, 2.0), point(1.9, 2.0), point(1.9, 1.8), point(1.5, 2.0))
+                                                  .interiorRing(point(2.2, 2.1), point(2.4, 1.9), point(2.4, 1.7), point(2.1, 1.8), 
+                                                                point(2.2, 2.1))
+                                                  .build();
+        Area area = new Area(polygonName, polygonWithHoles);
         getDs().save(area);
 
         // when

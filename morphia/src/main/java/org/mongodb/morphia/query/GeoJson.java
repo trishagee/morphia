@@ -44,27 +44,63 @@ public final class GeoJson {
      *
      * @param points an ordered series of Points that make up the polygon.  The first and last points should be the same to close the
      *               polygon
-     * @return a Polygon instance representing an area bounded by the given points.
+     * @return a PolygonBuilder to be used to build up the required Polygon
      * @throws java.lang.IllegalArgumentException if the start and end points are not the same
      */
-    public static SimplePolygon polygon(final Point... points) {
-        if (points.length > 0 && !points[0].equals(points[points.length - 1])) {
-            throw new IllegalArgumentException("A polygon requires the starting point to be the same as the end to ensure a closed area");
-        }
-        return new SimplePolygon(points);
+    public static PolygonBuilder polygon(final Point... points) {
+        return new PolygonBuilder(points);
     }
 
     /**
-     * Create a new Polygon representing a <a href="http://docs.mongodb.org/manual/apps/geospatial-indexes/#geojson-objects">GeoJSON</a>
-     * Polygon type.  Supported by server versions 2.4 an above.
-     *
-     * @param exteriorBoundary   a Polygon defining the exterior ring of the area
-     * @param interiorBoundaries zero or more Polygons defining any interior rings (or holes) inside that exterior ring
-     * @return a Polygon instance representing an area (defined by the exterior boundary) containing holes (defined by the interior
-     * boundaries)
+     * This builder allows you to define the properties of the GeoJSON Polygon to create.
      */
-    public static MultiRingPolygon polygon(final SimplePolygon exteriorBoundary, final SimplePolygon... interiorBoundaries) {
-        return new MultiRingPolygon(exteriorBoundary, interiorBoundaries);
+    public static class PolygonBuilder {
+        private final List<LineString> interiorRings = new ArrayList<LineString>();
+        private final LineString exteriorBoundary;
+
+        /**
+         * This builder will create a new Polygon representing a 
+         * <a href="http://docs.mongodb.org/manual/apps/geospatial-indexes/#geojson-objects">GeoJSON</a>
+         * Polygon type.  Supported by server versions 2.4 and above.
+         *
+         * @param points an ordered series of Points that make up the external boundary of the polygon.  The first and last points should be
+         *               the same to close the polygon
+         * @throws java.lang.IllegalArgumentException if the start and end points are not the same
+         */
+        public PolygonBuilder(final Point... points) {
+            ensurePolygonIsClosed(points);
+            exteriorBoundary = new LineString(points);
+        }
+
+        /**
+         * By adding a series of points here, you can define inner rings (i.e. holes) inside the polygon.
+         *
+         * @param points zero or more Points defining any interior rings (or holes) inside the boundary of the polygon
+         * @return this PolygonBuilder
+         * @throws java.lang.IllegalArgumentException if the start and end points are not the same
+         */
+        public PolygonBuilder interiorRing(final Point... points) {
+            ensurePolygonIsClosed(points);
+            interiorRings.add(new LineString(points));
+            return this;
+        }
+        
+        private static void ensurePolygonIsClosed(final Point[] points) {
+            if (points.length > 0 && !points[0].equals(points[points.length - 1])) {
+                throw new IllegalArgumentException("A polygon requires the starting point to be the same as the end to ensure a closed " 
+                                                   + "area");
+            }
+        }
+
+        /**
+         * Return a GeoJSON Polygon with the specification from this builder.
+         *
+         * @return a Polygon instance representing an area (defined by the exterior boundary) and optionally containing holes (defined by 
+         * the interior rings)
+         */
+        public Polygon build() {
+            return new Polygon(exteriorBoundary, interiorRings);
+        }
     }
 
     public static class Point {
@@ -172,77 +208,22 @@ public final class GeoJson {
         }
     }
 
-    public interface Polygon { }
-
-    public static class SimplePolygon implements Polygon {
-        private final String type = "Polygon";
-        private final List<List<List<Double>>> coordinates = new ArrayList<List<List<Double>>>();
-
-        @SuppressWarnings("UnusedDeclaration") // used by Morphia
-        private SimplePolygon() {
-        }
-
-        SimplePolygon(final Point... points) {
-            List<List<Double>> boundary = new ArrayList<List<Double>>();
-            for (Point point : points) {
-                boundary.add(point.coordinates);
-            }
-            coordinates.add(boundary);
-        }
-
-        @Override
-        public boolean equals(final Object o) {
-            if (this == o) {
-                return true;
-            }
-            if (o == null || getClass() != o.getClass()) {
-                return false;
-            }
-
-            SimplePolygon that = (SimplePolygon) o;
-
-            if (!coordinates.equals(that.coordinates)) {
-                return false;
-            }
-            if (!type.equals(that.type)) {
-                return false;
-            }
-
-            return true;
-        }
-
-        @Override
-        public int hashCode() {
-            int result = type.hashCode();
-            result = 31 * result + coordinates.hashCode();
-            return result;
-        }
-
-        @Override
-        public String toString() {
-            return "Polygon{"
-                   + "type='" + type + '\''
-                   + ", coordinates=" + coordinates
-                   + '}';
-        }
-    }
-
     /**
      * This class represents a more complex polygon that contains both an exterior boundary and zero or more interior boundaries (holes)
      * within it.  MultiRingPolygon relies on SimplePolygon to represent the outer and inner boundaries
      */
-    public static class MultiRingPolygon implements Polygon {
-    private final String type = "Polygon";
+    public static class Polygon {
+        private final String type = "Polygon";
         private final List<List<List<Double>>> coordinates = new ArrayList<List<List<Double>>>();
 
         @SuppressWarnings("UnusedDeclaration") // used by Morphia
-        private MultiRingPolygon() {
+        private Polygon() {
         }
 
-        MultiRingPolygon(final SimplePolygon exteriorBoundary, final SimplePolygon... interiorBoundaries) {
-            this.coordinates.add(exteriorBoundary.coordinates.get(0));
-            for (final SimplePolygon interiorBoundary : interiorBoundaries) {
-                this.coordinates.add(interiorBoundary.coordinates.get(0));
+        Polygon(final LineString exteriorBoundary, final List<LineString> interiorBoundaries) {
+            this.coordinates.add(exteriorBoundary.coordinates);
+            for (final LineString interiorBoundary : interiorBoundaries) {
+                this.coordinates.add(interiorBoundary.coordinates);
             }
         }
 
@@ -255,7 +236,7 @@ public final class GeoJson {
                 return false;
             }
 
-            MultiRingPolygon that = (MultiRingPolygon) o;
+            Polygon that = (Polygon) o;
 
             if (!coordinates.equals(that.coordinates)) {
                 return false;
