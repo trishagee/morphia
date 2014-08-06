@@ -37,6 +37,22 @@ public final class GeoJson {
         return new LineString(points);
     }
 
+    /**
+     * Create a new Polygon representing a <a href="http://docs.mongodb.org/manual/apps/geospatial-indexes/#geojson-objects">GeoJSON</a>
+     * Polygon type.  Supported by server versions 2.4 an above.
+     *
+     * @param points an ordered series of Points that make up the polygon.  The first and last points should be the same to close the
+     *               polygon
+     * @return a Polygon instance representing an area bounded by the given points.
+     * @throws java.lang.IllegalArgumentException if the start and end points are not the same
+     */
+    public static Polygon polygon(final Point... points) {
+        if (points.length > 0 && !points[0].equals(points[points.length - 1])) {
+            throw new IllegalArgumentException("A polygon requires the starting point to be the same as the end to ensure a closed area");
+        }
+        return new Polygon(points);
+    }
+
     public static class Point {
         private final String type = "Point";
         private double[] coordinates;
@@ -96,6 +112,18 @@ public final class GeoJson {
         private final double[][] coordinates;
 
         LineString(final Point... points) {
+            this.coordinates = new double[points.length][2];
+            for (int i = 0; i < points.length; i++) {
+                this.coordinates[i] = points[i].coordinates;
+            }
+        }
+    }
+
+    public static class Polygon {
+        private final String type = "Polygon";
+        private final double[][] coordinates;
+
+        public Polygon(final Point... points) {
             this.coordinates = new double[points.length][2];
             for (int i = 0; i < points.length; i++) {
                 this.coordinates[i] = points[i].coordinates;
