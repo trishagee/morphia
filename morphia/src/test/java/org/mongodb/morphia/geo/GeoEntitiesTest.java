@@ -5,13 +5,12 @@ import com.mongodb.DBObject;
 import org.junit.Test;
 import org.mongodb.morphia.TestBase;
 import org.mongodb.morphia.annotations.Entity;
-import org.mongodb.morphia.query.GeoJson;
 import org.mongodb.morphia.testutil.JSONMatcher;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
-import static org.mongodb.morphia.query.GeoJson.point;
+import static org.mongodb.morphia.geo.GeoJson.point;
 
 /**
  * Test driving features for Issue 643 - add support for saving entities with GeoJSON.
@@ -137,7 +136,7 @@ public class GeoEntitiesTest extends TestBase {
     public void shouldSaveAnEntityWithAPolygonContainingInteriorRings() {
         // given
         String polygonName = "A polygon with holes";
-        GeoJson.Polygon polygonWithHoles = GeoJson.polygon(point(1.1, 2.0), point(2.3, 3.5), point(3.7, 1.0), point(1.1, 2.0))
+        Polygon polygonWithHoles = GeoJson.polygon(point(1.1, 2.0), point(2.3, 3.5), point(3.7, 1.0), point(1.1, 2.0))
                                                         .interiorRing(point(1.5, 2.0), point(1.9, 2.0), point(1.9, 1.8), point(1.5, 2.0))
                                                         .interiorRing(point(2.2, 2.1), point(2.4, 1.9), point(2.4, 1.7), point(2.1, 1.8), 
                                                                       point(2.2, 2.1))
@@ -184,7 +183,7 @@ public class GeoEntitiesTest extends TestBase {
     public void shouldRetrieveGeoJsonMultiRingPolygon() {
         // given
         String polygonName = "A polygon with holes";
-        GeoJson.Polygon polygonWithHoles = GeoJson.polygon(point(1.1, 2.0), point(2.3, 3.5), point(3.7, 1.0), point(1.1, 2.0))
+        Polygon polygonWithHoles = GeoJson.polygon(point(1.1, 2.0), point(2.3, 3.5), point(3.7, 1.0), point(1.1, 2.0))
                                                   .interiorRing(point(1.5, 2.0), point(1.9, 2.0), point(1.9, 1.8), point(1.5, 2.0))
                                                   .interiorRing(point(2.2, 2.1), point(2.4, 1.9), point(2.4, 1.7), point(2.1, 1.8), 
                                                                 point(2.2, 2.1))
@@ -204,12 +203,12 @@ public class GeoEntitiesTest extends TestBase {
     @SuppressWarnings("UnusedDeclaration")
     private static final class Route {
         private String name;
-        private GeoJson.LineString route;
+        private LineString route;
 
         private Route() {
         }
 
-        private Route(final String name, final GeoJson.LineString route) {
+        private Route(final String name, final LineString route) {
             this.name = name;
             this.route = route;
         }
@@ -254,12 +253,12 @@ public class GeoEntitiesTest extends TestBase {
     @SuppressWarnings("UnusedDeclaration")
     private static final class Area {
         private String name;
-        private GeoJson.Polygon area;
+        private Polygon area;
 
         private Area() {
         }
 
-        private Area(final String name, final GeoJson.Polygon area) {
+        private Area(final String name, final Polygon area) {
             this.name = name;
             this.area = area;
         }

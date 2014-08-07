@@ -1,11 +1,12 @@
 package org.mongodb.morphia.query;
 
 import org.junit.Test;
+import org.mongodb.morphia.geo.GeoJson;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
-import static org.mongodb.morphia.query.GeoJson.point;
+import static org.mongodb.morphia.geo.GeoJson.point;
 
 /**
  * Unit test - more complete testing that uses the GeoJson factory is contained in functional Geo tests.

@@ -1,12 +1,11 @@
 package org.mongodb.morphia.geo;
 
 import org.mongodb.morphia.annotations.Indexed;
-import org.mongodb.morphia.query.GeoJson;
 import org.mongodb.morphia.utils.IndexDirection;
 
 public class City {
     @Indexed(IndexDirection.GEO2DSPHERE)
-    private GeoJson.Point location;
+    private Point location;
     private String name;
 
     //needed for Morphia serialisation
@@ -19,7 +18,7 @@ public class City {
         this.location = GeoJson.point(latitude, longitude);
     }
 
-    public City(final String name, final GeoJson.Point location) {
+    public City(final String name, final Point location) {
         this.name = name;
         this.location = location;
     }
