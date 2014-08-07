@@ -55,4 +55,16 @@ public final class GeoJson {
     public static MultiPoint multiPoint(final Point... points) {
         return new MultiPoint(points);
     }
+
+    /**
+     * Create a new MultiLineString representing a 
+     * <a href="http://docs.mongodb.org/manual/apps/geospatial-indexes/#geojson-objects">GeoJSON</a>
+     * MultiLineString type.  Supported by server versions 2.6 and above.
+     *
+     * @param lines a set of lines that make up the MultiLineString object
+     * @return a MultiLineString object containing all the given lines
+     */
+    public static MultiLineString multiLineString(final LineString... lines) {
+        return new MultiLineString(lines);
+    }
 }

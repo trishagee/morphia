@@ -4,7 +4,6 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import org.junit.Test;
 import org.mongodb.morphia.TestBase;
-import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.testutil.JSONMatcher;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -210,7 +209,7 @@ public class GeoEntitiesTest extends TestBase {
 
         // then use the underlying driver to ensure it was persisted correctly to the database
         DBObject storedObject = getDs().getCollection(Stores.class).findOne(new BasicDBObject("name", name),
-                                                                          new BasicDBObject("_id", 0).append("className", 0));
+                                                                            new BasicDBObject("_id", 0).append("className", 0));
         assertThat(storedObject, is(notNullValue()));
         assertThat(storedObject.toString(), JSONMatcher.jsonEqual("  {"
                                                                   + " name: " + name + ","
@@ -239,7 +238,63 @@ public class GeoEntitiesTest extends TestBase {
         assertThat(found, is(stores));
     }
 
-    @Entity
+    @Test
+    public void shouldSaveAnEntityWithAMultiLineStringGeoJsonType() {
+        // given
+        String name = "Many Paths";
+        Paths paths = new Paths(name, GeoJson.multiLineString(GeoJson.lineString(point(1, 2), point(3, 5), point(19, 13)),
+                                                              GeoJson.lineString(point(1.5, 2.0),
+                                                                                 point(1.9, 2.0),
+                                                                                 point(1.9, 1.8),
+                                                                                 point(1.5, 2.0))));
+
+        // when
+        getDs().save(paths);
+
+        // then use the underlying driver to ensure it was persisted correctly to the database
+        DBObject storedRoute = getDs().getCollection(Paths.class).findOne(new BasicDBObject("name", name),
+                                                                          new BasicDBObject("_id", 0).append("className", 0));
+        assertThat(storedRoute, is(notNullValue()));
+        // lat/long is always long/lat on the server
+        assertThat(storedRoute.toString(), JSONMatcher.jsonEqual("  {"
+                                                                 + " name: '" + name + "',"
+                                                                 + " paths:"
+                                                                 + " {"
+                                                                 + "  type: 'MultiLineString', "
+                                                                 + "  coordinates: "
+                                                                 + "     [ [ [ 2.0,  1.0],"
+                                                                 + "         [ 5.0,  3.0],"
+                                                                 + "         [13.0, 19.0] "
+                                                                 + "       ], "
+                                                                 + "       [ [ 2.0, 1.5],"
+                                                                 + "         [ 2.0, 1.9],"
+                                                                 + "         [ 1.8, 1.9],"
+                                                                 + "         [ 2.0, 1.5] "
+                                                                 + "       ]"
+                                                                 + "     ]"
+                                                                 + " }"
+                                                                 + "}"));
+    }
+
+    @Test
+    public void shouldRetrieveGeoJsonMultiLineString() {
+        // given
+        String name = "Many Paths";
+        Paths paths = new Paths(name, GeoJson.multiLineString(GeoJson.lineString(point(1, 2), point(3, 5), point(19, 13)),
+                                                              GeoJson.lineString(point(1.5, 2.0),
+                                                                                 point(1.9, 2.0),
+                                                                                 point(1.9, 1.8),
+                                                                                 point(1.5, 2.0))));
+        getDs().save(paths);
+
+        // when
+        Paths found = getDs().find(Paths.class).field("name").equal(name).get();
+
+        // then
+        assertThat(found, is(notNullValue()));
+        assertThat(found, is(paths));
+    }
+
     @SuppressWarnings("UnusedDeclaration")
     private static final class Route {
         private String name;
@@ -386,6 +441,56 @@ public class GeoEntitiesTest extends TestBase {
             return "Stores{"
                    + "name='" + name + '\''
                    + ", locations=" + locations
+                   + '}';
+        }
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    private static final class Paths {
+        private String name;
+        private MultiLineString paths;
+
+        private Paths() {
+        }
+
+        private Paths(final String name, final MultiLineString paths) {
+            this.name = name;
+            this.paths = paths;
+        }
+
+        @Override
+        public boolean equals(final Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+
+            Paths paths1 = (Paths) o;
+
+            if (!name.equals(paths1.name)) {
+                return false;
+            }
+            if (!paths.equals(paths1.paths)) {
+                return false;
+            }
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = name.hashCode();
+            result = 31 * result + paths.hashCode();
+            return result;
+        }
+
+        @Override
+        public String toString() {
+            return "Paths{"
+                   + "name='" + name + '\''
+                   + ", paths=" + paths
                    + '}';
         }
     }
