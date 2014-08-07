@@ -34,7 +34,7 @@ public final class GeoJson {
 
     /**
      * Create a new Polygon representing a <a href="http://docs.mongodb.org/manual/apps/geospatial-indexes/#geojson-objects">GeoJSON</a>
-     * Polygon type.  Supported by server versions 2.4 an above.
+     * Polygon type.  Supported by server versions 2.4 and above.
      *
      * @param points an ordered series of Points that make up the polygon.  The first and last points should be the same to close the
      *               polygon
@@ -45,4 +45,14 @@ public final class GeoJson {
         return new PolygonBuilder(points);
     }
 
+    /**
+     * Create a new MultiPoint representing a <a href="http://docs.mongodb.org/manual/apps/geospatial-indexes/#geojson-objects">GeoJSON</a>
+     * MultiPoint type.  Supported by server versions 2.6 and above.
+     *
+     * @param points a set of points that make up the MultiPoint object
+     * @return a MultiPoint object containing all the given points
+     */
+    public static MultiPoint multiPoint(final Point... points) {
+        return new MultiPoint(points);
+    }
 }

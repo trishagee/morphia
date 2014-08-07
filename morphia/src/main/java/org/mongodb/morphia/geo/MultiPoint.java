@@ -4,21 +4,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This class represents either a simple polygon enclosing an area, or a more complex polygon that contains both an exterior boundary and 
- * interior boundaries (holes) within it.  
+ * This class represents a series of points, which will saved into MongoDB as per the 
+ * <a href="http://geojson.org/geojson-spec.html#id5">GeoJSON specification</a>
  */
-public class Polygon {
-    private final String type = "Polygon";
-    private final List<List<List<Double>>> coordinates = new ArrayList<List<List<Double>>>();
+public class MultiPoint {
+    private final String type = "MultiPoint";
+    private final List<List<Double>> coordinates = new ArrayList<List<Double>>();
 
     @SuppressWarnings("UnusedDeclaration") // used by Morphia
-    Polygon() {
+    private MultiPoint() {
     }
 
-    Polygon(final LineString exteriorBoundary, final List<LineString> interiorBoundaries) {
-        this.coordinates.add(exteriorBoundary.getCoordinates());
-        for (final LineString interiorBoundary : interiorBoundaries) {
-            this.coordinates.add(interiorBoundary.getCoordinates());
+    MultiPoint(final Point... points) {
+        for (final Point point : points) {
+            this.coordinates.add(point.getCoordinates());
         }
     }
 
@@ -31,7 +30,7 @@ public class Polygon {
             return false;
         }
 
-        Polygon that = (Polygon) o;
+        MultiPoint that = (MultiPoint) o;
 
         if (!coordinates.equals(that.coordinates)) {
             return false;
@@ -52,7 +51,7 @@ public class Polygon {
 
     @Override
     public String toString() {
-        return "MultiRingPolygon{"
+        return "MultiPoint{"
                + "type='" + type + '\''
                + ", coordinates=" + coordinates
                + '}';

@@ -137,10 +137,10 @@ public class GeoEntitiesTest extends TestBase {
         // given
         String polygonName = "A polygon with holes";
         Polygon polygonWithHoles = GeoJson.polygon(point(1.1, 2.0), point(2.3, 3.5), point(3.7, 1.0), point(1.1, 2.0))
-                                                        .interiorRing(point(1.5, 2.0), point(1.9, 2.0), point(1.9, 1.8), point(1.5, 2.0))
-                                                        .interiorRing(point(2.2, 2.1), point(2.4, 1.9), point(2.4, 1.7), point(2.1, 1.8), 
-                                                                      point(2.2, 2.1))
-                                                        .build();
+                                          .interiorRing(point(1.5, 2.0), point(1.9, 2.0), point(1.9, 1.8), point(1.5, 2.0))
+                                          .interiorRing(point(2.2, 2.1), point(2.4, 1.9), point(2.4, 1.7), point(2.1, 1.8),
+                                                        point(2.2, 2.1))
+                                          .build();
         Area area = new Area(polygonName, polygonWithHoles);
 
         // when
@@ -184,10 +184,10 @@ public class GeoEntitiesTest extends TestBase {
         // given
         String polygonName = "A polygon with holes";
         Polygon polygonWithHoles = GeoJson.polygon(point(1.1, 2.0), point(2.3, 3.5), point(3.7, 1.0), point(1.1, 2.0))
-                                                  .interiorRing(point(1.5, 2.0), point(1.9, 2.0), point(1.9, 1.8), point(1.5, 2.0))
-                                                  .interiorRing(point(2.2, 2.1), point(2.4, 1.9), point(2.4, 1.7), point(2.1, 1.8), 
-                                                                point(2.2, 2.1))
-                                                  .build();
+                                          .interiorRing(point(1.5, 2.0), point(1.9, 2.0), point(1.9, 1.8), point(1.5, 2.0))
+                                          .interiorRing(point(2.2, 2.1), point(2.4, 1.9), point(2.4, 1.7), point(2.1, 1.8),
+                                                        point(2.2, 2.1))
+                                          .build();
         Area area = new Area(polygonName, polygonWithHoles);
         getDs().save(area);
 
@@ -197,6 +197,46 @@ public class GeoEntitiesTest extends TestBase {
         // then
         assertThat(found, is(notNullValue()));
         assertThat(found, is(area));
+    }
+
+    @Test
+    public void shouldSaveAnEntityWithALocationStoredAsAMultiPoint() {
+        // given
+        String name = "My stores";
+        Stores stores = new Stores(name, GeoJson.multiPoint(point(1, 2), point(3, 5), point(19, 13)));
+
+        // when
+        getDs().save(stores);
+
+        // then use the underlying driver to ensure it was persisted correctly to the database
+        DBObject storedObject = getDs().getCollection(Stores.class).findOne(new BasicDBObject("name", name),
+                                                                          new BasicDBObject("_id", 0).append("className", 0));
+        assertThat(storedObject, is(notNullValue()));
+        assertThat(storedObject.toString(), JSONMatcher.jsonEqual("  {"
+                                                                  + " name: " + name + ","
+                                                                  + " locations:  "
+                                                                  + " {"
+                                                                  + "  type: 'MultiPoint', "
+                                                                  + "  coordinates: [ [ 2.0,  1.0],"
+                                                                  + "                 [ 5.0,  3.0],"
+                                                                  + "                 [13.0, 19.0] ]"
+                                                                  + " }"
+                                                                  + "}"));
+    }
+
+    @Test
+    public void shouldRetrieveGeoJsonMultiPoint() {
+        // given
+        String name = "My stores";
+        Stores stores = new Stores(name, GeoJson.multiPoint(point(1, 2), point(3, 5), point(19, 13)));
+        getDs().save(stores);
+
+        // when
+        Stores found = getDs().find(Stores.class).field("name").equal(name).get();
+
+        // then
+        assertThat(found, is(notNullValue()));
+        assertThat(found, is(stores));
     }
 
     @Entity
@@ -296,6 +336,56 @@ public class GeoEntitiesTest extends TestBase {
             return "Area{"
                    + "name='" + name + '\''
                    + ", area=" + area
+                   + '}';
+        }
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    private static final class Stores {
+        private String name;
+        private MultiPoint locations;
+
+        private Stores() {
+        }
+
+        private Stores(final String name, final MultiPoint locations) {
+            this.name = name;
+            this.locations = locations;
+        }
+
+        @Override
+        public boolean equals(final Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+
+            Stores stores = (Stores) o;
+
+            if (!locations.equals(stores.locations)) {
+                return false;
+            }
+            if (!name.equals(stores.name)) {
+                return false;
+            }
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = name.hashCode();
+            result = 31 * result + locations.hashCode();
+            return result;
+        }
+
+        @Override
+        public String toString() {
+            return "Stores{"
+                   + "name='" + name + '\''
+                   + ", locations=" + locations
                    + '}';
         }
     }
