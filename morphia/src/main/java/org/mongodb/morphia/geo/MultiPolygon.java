@@ -4,21 +4,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This class represents either a simple polygon enclosing an area, or a more complex polygon that contains both an exterior boundary and 
- * interior boundaries (holes) within it.  
+ * This class represents a set of polygons, which will saved into MongoDB as per the 
+ * <a href="http://geojson.org/geojson-spec.html#id7">GeoJSON specification</a>
  */
-public class Polygon {
-    private final String type = "Polygon";
-    private final List<List<List<Double>>> coordinates = new ArrayList<List<List<Double>>>();
+public class MultiPolygon {
+    private final String type = "MultiPolygon";
+    // Sigh. But that's the representation that converts easiest to the MongoDB shape
+    private final List<List<List<List<Double>>>> coordinates = new ArrayList<List<List<List<Double>>>>();
 
     @SuppressWarnings("UnusedDeclaration") // used by Morphia
-    Polygon() {
+    private MultiPolygon() {
     }
 
-    Polygon(final LineString exteriorBoundary, final List<LineString> interiorBoundaries) {
-        this.coordinates.add(exteriorBoundary.getCoordinates());
-        for (final LineString interiorBoundary : interiorBoundaries) {
-            this.coordinates.add(interiorBoundary.getCoordinates());
+    MultiPolygon(final Polygon... polygons) {
+        for (final Polygon polygon : polygons) {
+            coordinates.add(polygon.getCoordinates());
         }
     }
 
@@ -31,7 +31,7 @@ public class Polygon {
             return false;
         }
 
-        Polygon that = (Polygon) o;
+        MultiPolygon that = (MultiPolygon) o;
 
         if (!coordinates.equals(that.coordinates)) {
             return false;
@@ -52,13 +52,9 @@ public class Polygon {
 
     @Override
     public String toString() {
-        return "MultiRingPolygon{"
+        return "MultiPolygon{"
                + "type='" + type + '\''
                + ", coordinates=" + coordinates
                + '}';
-    }
-
-    List<List<List<Double>>> getCoordinates() {
-        return coordinates;
     }
 }

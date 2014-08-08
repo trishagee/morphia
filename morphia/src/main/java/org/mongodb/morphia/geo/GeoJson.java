@@ -67,4 +67,16 @@ public final class GeoJson {
     public static MultiLineString multiLineString(final LineString... lines) {
         return new MultiLineString(lines);
     }
+
+    /**
+     * Create a new MultiPolygon representing a 
+     * <a href="http://docs.mongodb.org/manual/apps/geospatial-indexes/#geojson-objects">GeoJSON</a>
+     * MultiPolygon type.  Supported by server versions 2.6 and above.
+     *
+     * @param polygons a series of polygons (which may contain inner rings)
+     * @return a MultiPolygon object containing all the given polygons
+     */
+    public static MultiPolygon multiPolygon(final Polygon... polygons) {
+        return new MultiPolygon(polygons);
+    }
 }

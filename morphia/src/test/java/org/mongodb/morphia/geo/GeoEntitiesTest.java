@@ -295,6 +295,86 @@ public class GeoEntitiesTest extends TestBase {
         assertThat(found, is(paths));
     }
 
+    @Test
+    public void shouldSaveAnEntityWithAMultiPolygonGeoJsonType() {
+        // given
+        String name = "All these shapes";
+        Polygon polygonWithHoles = GeoJson.polygon(point(1.1, 2.0), point(2.3, 3.5), point(3.7, 1.0), point(1.1, 2.0))
+                                          .interiorRing(point(1.5, 2.0), point(1.9, 2.0), point(1.9, 1.8), point(1.5, 2.0))
+                                          .interiorRing(point(2.2, 2.1), point(2.4, 1.9), point(2.4, 1.7), point(2.1, 1.8),
+                                                        point(2.2, 2.1))
+                                          .build();
+        Regions regions = new Regions(name, GeoJson.multiPolygon(GeoJson.polygon(point(1.1, 2.0),
+                                                                                 point(2.3, 3.5),
+                                                                                 point(3.7, 1.0),
+                                                                                 point(1.1, 2.0)).build(),
+                                                                 polygonWithHoles));
+
+        // when
+        getDs().save(regions);
+
+        // then use the underlying driver to ensure it was persisted correctly to the database
+        DBObject storedArea = getDs().getCollection(Regions.class).findOne(new BasicDBObject("name", name),
+                                                                           new BasicDBObject("_id", 0)
+                                                                           .append("className", 0));
+        assertThat(storedArea, is(notNullValue()));
+        assertThat(storedArea.toString(), JSONMatcher.jsonEqual("  {"
+                                                                + " name: " + name + ","
+                                                                + " regions:  "
+                                                                + " {"
+                                                                + "  type: 'MultiPolygon', "
+                                                                + "  coordinates: [ [ [ [ 2.0, 1.1],"
+                                                                + "                     [ 3.5, 2.3],"
+                                                                + "                     [ 1.0, 3.7],"
+                                                                + "                     [ 2.0, 1.1],"
+                                                                + "                   ]"
+                                                                + "                 ],"
+                                                                + "                 [ [ [ 2.0, 1.1],"
+                                                                + "                     [ 3.5, 2.3],"
+                                                                + "                     [ 1.0, 3.7],"
+                                                                + "                     [ 2.0, 1.1] "
+                                                                + "                   ],"
+                                                                + "                   [ [ 2.0, 1.5],"
+                                                                + "                     [ 2.0, 1.9],"
+                                                                + "                     [ 1.8, 1.9],"
+                                                                + "                     [ 2.0, 1.5] "
+                                                                + "                   ],"
+                                                                + "                   [ [ 2.1, 2.2],"
+                                                                + "                     [ 1.9, 2.4],"
+                                                                + "                     [ 1.7, 2.4],"
+                                                                + "                     [ 1.8, 2.1],"
+                                                                + "                     [ 2.1, 2.2] "
+                                                                + "                   ]"
+                                                                + "                 ]"
+                                                                + "               ]"
+                                                                + " }"
+                                                                + "}"));
+    }
+
+    @Test
+    public void shouldRetrieveGeoJsonMultiPolygon() {
+        // given
+        String name = "All these shapes";
+        Polygon polygonWithHoles = GeoJson.polygon(point(1.1, 2.0), point(2.3, 3.5), point(3.7, 1.0), point(1.1, 2.0))
+                                          .interiorRing(point(1.5, 2.0), point(1.9, 2.0), point(1.9, 1.8), point(1.5, 2.0))
+                                          .interiorRing(point(2.2, 2.1), point(2.4, 1.9), point(2.4, 1.7), point(2.1, 1.8),
+                                                        point(2.2, 2.1))
+                                          .build();
+        Regions regions = new Regions(name, GeoJson.multiPolygon(GeoJson.polygon(point(1.1, 2.0),
+                                                                                 point(2.3, 3.5),
+                                                                                 point(3.7, 1.0),
+                                                                                 point(1.1, 2.0)).build(),
+                                                                 polygonWithHoles));
+        getDs().save(regions);
+
+        // when
+        Regions found = getDs().find(Regions.class).field("name").equal(name).get();
+
+        // then
+        assertThat(found, is(notNullValue()));
+        assertThat(found, is(regions));
+    }
+
     @SuppressWarnings("UnusedDeclaration")
     private static final class Route {
         private String name;
@@ -491,6 +571,56 @@ public class GeoEntitiesTest extends TestBase {
             return "Paths{"
                    + "name='" + name + '\''
                    + ", paths=" + paths
+                   + '}';
+        }
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    private static final class Regions {
+        private String name;
+        private MultiPolygon regions;
+
+        private Regions() {
+        }
+
+        private Regions(final String name, final MultiPolygon regions) {
+            this.name = name;
+            this.regions = regions;
+        }
+
+        @Override
+        public boolean equals(final Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+
+            Regions regions1 = (Regions) o;
+
+            if (!name.equals(regions1.name)) {
+                return false;
+            }
+            if (!regions.equals(regions1.regions)) {
+                return false;
+            }
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = name.hashCode();
+            result = 31 * result + regions.hashCode();
+            return result;
+        }
+
+        @Override
+        public String toString() {
+            return "Regions{"
+                   + "name='" + name + '\''
+                   + ", regions=" + regions
                    + '}';
         }
     }
