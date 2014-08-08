@@ -1,12 +1,22 @@
 package org.mongodb.morphia.geo;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
+import org.mongodb.morphia.annotations.Embedded;
+import org.mongodb.morphia.annotations.Entity;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Point {
+/**
+ * Represents a GeoJSON Point type.  Will be persisted into the database according to <a href="http://geojson.org/geojson-spec.html#id2">the
+ * specification</a>. Therefore because of this, this entity will never have its own ID or store the its Class name.
+ * <p/>
+ * The factory for creating a Point is the {@code GeoJson.point} method.
+ *
+ * @see org.mongodb.morphia.geo.GeoJson
+ */
+@Embedded
+@Entity(noClassnameStored = true)
+public class Point implements GeoJsonType {
     private final String type = "Point";
     private final List<Double> coordinates = new ArrayList<Double>(2);
 
@@ -17,11 +27,6 @@ public class Point {
     Point(final double latitude, final double longitude) {
         this.coordinates.add(longitude);
         this.coordinates.add(latitude);
-    }
-
-    //TODO: this needs to not be public
-    public DBObject asDBObject() {
-        return new BasicDBObject("type", type).append("coordinates", coordinates);
     }
 
     @Override
@@ -62,9 +67,14 @@ public class Point {
 
     /**
      * Returns the two co-ordinates for this point as a List with two Double values
+     *
      * @return a List with two Double values, the first is longitude the second latitude
      */
     List<Double> getCoordinates() {
         return coordinates;
+    }
+
+    String getType() {
+        return type;
     }
 }

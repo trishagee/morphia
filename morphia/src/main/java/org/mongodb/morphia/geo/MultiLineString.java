@@ -1,13 +1,23 @@
 package org.mongodb.morphia.geo;
 
+import org.mongodb.morphia.annotations.Embedded;
+import org.mongodb.morphia.annotations.Entity;
+
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * This class represents a series of lines, which will saved into MongoDB as per the 
- * <a href="http://geojson.org/geojson-spec.html#id6">GeoJSON specification</a>
+ * <a href="http://geojson.org/geojson-spec.html#id6">GeoJSON specification</a>. Therefore this entity will never have its own ID or 
+ * store the its Class name.
+ * <p/>
+ * The factory for creating a MultiLineString is the {@code GeoJson.multiLineString} method.
+ *
+ * @see org.mongodb.morphia.geo.GeoJson
  */
-public class MultiLineString {
+@Embedded
+@Entity(noClassnameStored = true)
+public class MultiLineString implements GeoJsonType {
     private final String type = "MultiLineString";
     private final List<List<List<Double>>> coordinates = new ArrayList<List<List<Double>>>();
 

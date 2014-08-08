@@ -33,7 +33,8 @@ public final class GeoJson {
     }
 
     /**
-     * Create a new Polygon representing a <a href="http://docs.mongodb.org/manual/apps/geospatial-indexes/#geojson-objects">GeoJSON</a>
+     * Create a new PolygonBuilder that will let you create a Polygon representing a 
+     * <a href="http://docs.mongodb.org/manual/apps/geospatial-indexes/#geojson-objects">GeoJSON</a>
      * Polygon type.  Supported by server versions 2.4 and above.
      *
      * @param points an ordered series of Points that make up the polygon.  The first and last points should be the same to close the
@@ -78,5 +79,16 @@ public final class GeoJson {
      */
     public static MultiPolygon multiPolygon(final Polygon... polygons) {
         return new MultiPolygon(polygons);
+    }
+
+    /**
+     * Return a GeometryCollectionBuilder that will let you create a GeometryCollection 
+     * <a href="http://docs.mongodb.org/manual/apps/geospatial-indexes/#geojson-objects">GeoJSON</a>
+     * GeometryCollection.  Supported by server version 2.6
+     *
+     * @return new GeometryCollectionBuilder that will allow you to build up a GeometryCollection
+     */
+    public static GeometryCollectionBuilder geometryCollection() {
+        return new GeometryCollectionBuilder();
     }
 }

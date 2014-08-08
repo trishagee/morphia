@@ -2,6 +2,7 @@ package org.mongodb.morphia.geo;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mongodb.morphia.TestBase;
 import org.mongodb.morphia.testutil.JSONMatcher;
@@ -9,6 +10,7 @@ import org.mongodb.morphia.testutil.JSONMatcher;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.mongodb.morphia.geo.GeoJson.lineString;
 import static org.mongodb.morphia.geo.GeoJson.point;
 
 /**
@@ -38,6 +40,26 @@ public class GeoEntitiesTest extends TestBase {
     }
 
     @Test
+    public void shouldConvertPointCorrectlyToDBObject() {
+        // given
+        City city = new City("New City", point(3.0, 7.0));
+
+        // when
+        DBObject dbObject = getMorphia().toDBObject(city);
+
+        assertThat(dbObject, is(notNullValue()));
+        assertThat(dbObject.toString(), JSONMatcher.jsonEqual("  {"
+                                                                + " name: 'New City'," 
+                                                                + " className: 'org.mongodb.morphia.geo.City',"
+                                                                + " location:  "
+                                                                + " {"
+                                                                + "  type: 'Point', "
+                                                                + "  coordinates: [7.0, 3.0]"
+                                                                + " }"
+                                                                + "}"));
+    }
+
+    @Test
     public void shouldRetrieveGeoJsonPoint() {
         // given
         City city = new City("New City", point(3.0, 7.0));
@@ -54,7 +76,7 @@ public class GeoEntitiesTest extends TestBase {
     @Test
     public void shouldSaveAnEntityWithALineStringGeoJsonType() {
         // given
-        Route route = new Route("My Route", GeoJson.lineString(point(1, 2), point(3, 5), point(19, 13)));
+        Route route = new Route("My Route", lineString(point(1, 2), point(3, 5), point(19, 13)));
 
         // when
         getDs().save(route);
@@ -79,7 +101,7 @@ public class GeoEntitiesTest extends TestBase {
     @Test
     public void shouldRetrieveGeoJsonLineString() {
         // given
-        Route route = new Route("My Route", GeoJson.lineString(point(1, 2), point(3, 5), point(19, 13)));
+        Route route = new Route("My Route", lineString(point(1, 2), point(3, 5), point(19, 13)));
         getDs().save(route);
 
         // when
@@ -242,21 +264,21 @@ public class GeoEntitiesTest extends TestBase {
     public void shouldSaveAnEntityWithAMultiLineStringGeoJsonType() {
         // given
         String name = "Many Paths";
-        Paths paths = new Paths(name, GeoJson.multiLineString(GeoJson.lineString(point(1, 2), point(3, 5), point(19, 13)),
-                                                              GeoJson.lineString(point(1.5, 2.0),
-                                                                                 point(1.9, 2.0),
-                                                                                 point(1.9, 1.8),
-                                                                                 point(1.5, 2.0))));
+        Paths paths = new Paths(name, GeoJson.multiLineString(lineString(point(1, 2), point(3, 5), point(19, 13)),
+                                                              lineString(point(1.5, 2.0),
+                                                                         point(1.9, 2.0),
+                                                                         point(1.9, 1.8),
+                                                                         point(1.5, 2.0))));
 
         // when
         getDs().save(paths);
 
         // then use the underlying driver to ensure it was persisted correctly to the database
-        DBObject storedRoute = getDs().getCollection(Paths.class).findOne(new BasicDBObject("name", name),
+        DBObject storedPaths = getDs().getCollection(Paths.class).findOne(new BasicDBObject("name", name),
                                                                           new BasicDBObject("_id", 0).append("className", 0));
-        assertThat(storedRoute, is(notNullValue()));
+        assertThat(storedPaths, is(notNullValue()));
         // lat/long is always long/lat on the server
-        assertThat(storedRoute.toString(), JSONMatcher.jsonEqual("  {"
+        assertThat(storedPaths.toString(), JSONMatcher.jsonEqual("  {"
                                                                  + " name: '" + name + "',"
                                                                  + " paths:"
                                                                  + " {"
@@ -280,11 +302,11 @@ public class GeoEntitiesTest extends TestBase {
     public void shouldRetrieveGeoJsonMultiLineString() {
         // given
         String name = "Many Paths";
-        Paths paths = new Paths(name, GeoJson.multiLineString(GeoJson.lineString(point(1, 2), point(3, 5), point(19, 13)),
-                                                              GeoJson.lineString(point(1.5, 2.0),
-                                                                                 point(1.9, 2.0),
-                                                                                 point(1.9, 1.8),
-                                                                                 point(1.5, 2.0))));
+        Paths paths = new Paths(name, GeoJson.multiLineString(lineString(point(1, 2), point(3, 5), point(19, 13)),
+                                                              lineString(point(1.5, 2.0),
+                                                                         point(1.9, 2.0),
+                                                                         point(1.9, 1.8),
+                                                                         point(1.5, 2.0))));
         getDs().save(paths);
 
         // when
@@ -314,41 +336,41 @@ public class GeoEntitiesTest extends TestBase {
         getDs().save(regions);
 
         // then use the underlying driver to ensure it was persisted correctly to the database
-        DBObject storedArea = getDs().getCollection(Regions.class).findOne(new BasicDBObject("name", name),
-                                                                           new BasicDBObject("_id", 0)
-                                                                           .append("className", 0));
-        assertThat(storedArea, is(notNullValue()));
-        assertThat(storedArea.toString(), JSONMatcher.jsonEqual("  {"
-                                                                + " name: " + name + ","
-                                                                + " regions:  "
-                                                                + " {"
-                                                                + "  type: 'MultiPolygon', "
-                                                                + "  coordinates: [ [ [ [ 2.0, 1.1],"
-                                                                + "                     [ 3.5, 2.3],"
-                                                                + "                     [ 1.0, 3.7],"
-                                                                + "                     [ 2.0, 1.1],"
-                                                                + "                   ]"
-                                                                + "                 ],"
-                                                                + "                 [ [ [ 2.0, 1.1],"
-                                                                + "                     [ 3.5, 2.3],"
-                                                                + "                     [ 1.0, 3.7],"
-                                                                + "                     [ 2.0, 1.1] "
-                                                                + "                   ],"
-                                                                + "                   [ [ 2.0, 1.5],"
-                                                                + "                     [ 2.0, 1.9],"
-                                                                + "                     [ 1.8, 1.9],"
-                                                                + "                     [ 2.0, 1.5] "
-                                                                + "                   ],"
-                                                                + "                   [ [ 2.1, 2.2],"
-                                                                + "                     [ 1.9, 2.4],"
-                                                                + "                     [ 1.7, 2.4],"
-                                                                + "                     [ 1.8, 2.1],"
-                                                                + "                     [ 2.1, 2.2] "
-                                                                + "                   ]"
-                                                                + "                 ]"
-                                                                + "               ]"
-                                                                + " }"
-                                                                + "}"));
+        DBObject storedRegions = getDs().getCollection(Regions.class).findOne(new BasicDBObject("name", name),
+                                                                              new BasicDBObject("_id", 0)
+                                                                              .append("className", 0));
+        assertThat(storedRegions, is(notNullValue()));
+        assertThat(storedRegions.toString(), JSONMatcher.jsonEqual("  {"
+                                                                   + " name: '" + name + "',"
+                                                                   + " regions:  "
+                                                                   + " {"
+                                                                   + "  type: 'MultiPolygon', "
+                                                                   + "  coordinates: [ [ [ [ 2.0, 1.1],"
+                                                                   + "                     [ 3.5, 2.3],"
+                                                                   + "                     [ 1.0, 3.7],"
+                                                                   + "                     [ 2.0, 1.1],"
+                                                                   + "                   ]"
+                                                                   + "                 ],"
+                                                                   + "                 [ [ [ 2.0, 1.1],"
+                                                                   + "                     [ 3.5, 2.3],"
+                                                                   + "                     [ 1.0, 3.7],"
+                                                                   + "                     [ 2.0, 1.1] "
+                                                                   + "                   ],"
+                                                                   + "                   [ [ 2.0, 1.5],"
+                                                                   + "                     [ 2.0, 1.9],"
+                                                                   + "                     [ 1.8, 1.9],"
+                                                                   + "                     [ 2.0, 1.5] "
+                                                                   + "                   ],"
+                                                                   + "                   [ [ 2.1, 2.2],"
+                                                                   + "                     [ 1.9, 2.4],"
+                                                                   + "                     [ 1.7, 2.4],"
+                                                                   + "                     [ 1.8, 2.1],"
+                                                                   + "                     [ 2.1, 2.2] "
+                                                                   + "                   ]"
+                                                                   + "                 ]"
+                                                                   + "               ]"
+                                                                   + " }"
+                                                                   + "}"));
     }
 
     @Test
@@ -373,6 +395,179 @@ public class GeoEntitiesTest extends TestBase {
         // then
         assertThat(found, is(notNullValue()));
         assertThat(found, is(regions));
+    }
+
+    @Test
+    public void shouldSaveAnEntityWithAGeoCollectionType() {
+        // given
+        String name = "What, everything?";
+        Point point = point(3.0, 7.0);
+        LineString lineString = lineString(point(1, 2), point(3, 5), point(19, 13));
+        Polygon polygonWithHoles = GeoJson.polygon(point(1.1, 2.0), point(2.3, 3.5), point(3.7, 1.0), point(1.1, 2.0))
+                                          .interiorRing(point(1.5, 2.0), point(1.9, 2.0), point(1.9, 1.8), point(1.5, 2.0))
+                                          .interiorRing(point(2.2, 2.1), point(2.4, 1.9), point(2.4, 1.7), point(2.1, 1.8),
+                                                        point(2.2, 2.1))
+                                          .build();
+        MultiPoint multiPoint = GeoJson.multiPoint(point(1, 2), point(3, 5), point(19, 13));
+        MultiLineString multiLineString = GeoJson.multiLineString(lineString(point(1, 2), point(3, 5), point(19, 13)),
+                                                                  lineString(point(1.5, 2.0),
+                                                                             point(1.9, 2.0),
+                                                                             point(1.9, 1.8),
+                                                                             point(1.5, 2.0)));
+        MultiPolygon multiPolygon = GeoJson.multiPolygon(GeoJson.polygon(point(1.1, 2.0),
+                                                                         point(2.3, 3.5),
+                                                                         point(3.7, 1.0),
+                                                                         point(1.1, 2.0)).build(),
+                                                         GeoJson.polygon(point(1.2, 3.0), point(2.5, 4.5), point(6.7, 1.9), point(1.2, 3.0))
+                                                                .interiorRing(point(3.5, 2.4),
+                                                                              point(1.7, 2.8),
+                                                                              point(3.5, 2.4))
+                                                                .build());
+        GeometryCollection geometryCollection = GeoJson.geometryCollection()
+                                                       .add(point)
+                                                       .add(lineString)
+                                                       .add(polygonWithHoles)
+                                                       .add(multiPoint)
+                                                       .add(multiLineString)
+                                                       .add(multiPolygon)
+                                                       .build();
+        AllTheThings allTheThings = new AllTheThings(name, geometryCollection);
+
+        // when
+        getDs().save(allTheThings);
+
+        // then use the underlying driver to ensure it was persisted correctly to the database
+        DBObject storedArea = getDs().getCollection(AllTheThings.class).findOne(new BasicDBObject("name", name),
+                                                                                new BasicDBObject("_id", 0)
+                                                                                .append("className", 0));
+        assertThat(storedArea, is(notNullValue()));
+        assertThat(storedArea.toString(), JSONMatcher.jsonEqual("  {"
+                                                                + " name: '" + name + "',"
+                                                                + " everything: "
+                                                                + " {"
+                                                                + "  type: 'GeometryCollection', "
+                                                                + "  geometries: "
+                                                                + "  ["
+                                                                + "    {"
+                                                                + "     type: 'Point', "
+                                                                + "     coordinates: [7.0, 3.0]"
+                                                                + "    }, "
+                                                                + "    {"
+                                                                + "     type: 'LineString', "
+                                                                + "     coordinates: [ [ 2.0,  1.0],"
+                                                                + "                    [ 5.0,  3.0],"
+                                                                + "                    [13.0, 19.0] ]"
+                                                                + "    },"
+                                                                + "    {"
+                                                                + "     type: 'Polygon', "
+                                                                + "     coordinates: "
+                                                                + "       [ [ [ 2.0, 1.1],"
+                                                                + "           [ 3.5, 2.3],"
+                                                                + "           [ 1.0, 3.7],"
+                                                                + "           [ 2.0, 1.1] "
+                                                                + "         ],"
+                                                                + "         [ [ 2.0, 1.5],"
+                                                                + "           [ 2.0, 1.9],"
+                                                                + "           [ 1.8, 1.9],"
+                                                                + "           [ 2.0, 1.5] "
+                                                                + "         ],"
+                                                                + "         [ [ 2.1, 2.2],"
+                                                                + "           [ 1.9, 2.4],"
+                                                                + "           [ 1.7, 2.4],"
+                                                                + "           [ 1.8, 2.1],"
+                                                                + "           [ 2.1, 2.2] "
+                                                                + "         ]"
+                                                                + "       ]"
+                                                                + "    },"
+                                                                + "    {"
+                                                                + "     type: 'MultiPoint', "
+                                                                + "     coordinates: [ [ 2.0,  1.0],"
+                                                                + "                    [ 5.0,  3.0],"
+                                                                + "                    [13.0, 19.0] ]"
+                                                                + "    },"
+                                                                + "    {"
+                                                                + "     type: 'MultiLineString', "
+                                                                + "     coordinates: "
+                                                                + "        [ [ [ 2.0,  1.0],"
+                                                                + "            [ 5.0,  3.0],"
+                                                                + "            [13.0, 19.0] "
+                                                                + "          ], "
+                                                                + "          [ [ 2.0, 1.5],"
+                                                                + "            [ 2.0, 1.9],"
+                                                                + "            [ 1.8, 1.9],"
+                                                                + "            [ 2.0, 1.5] "
+                                                                + "          ]"
+                                                                + "        ]"
+                                                                + "    },"
+                                                                + "    {"
+                                                                + "     type: 'MultiPolygon', "
+                                                                + "     coordinates: [ [ [ [ 2.0, 1.1],"
+                                                                + "                        [ 3.5, 2.3],"
+                                                                + "                        [ 1.0, 3.7],"
+                                                                + "                        [ 2.0, 1.1],"
+                                                                + "                      ]"
+                                                                + "                    ],"
+                                                                + "                    [ [ [ 3.0, 1.2],"
+                                                                + "                        [ 4.5, 2.5],"
+                                                                + "                        [ 1.9, 6.7],"
+                                                                + "                        [ 3.0, 1.2] "
+                                                                + "                      ],"
+                                                                + "                      [ [ 2.4, 3.5],"
+                                                                + "                        [ 2.8, 1.7],"
+                                                                + "                        [ 2.4, 3.5] "
+                                                                + "                      ],"
+                                                                + "                    ]"
+                                                                + "                  ]"
+                                                                + "    }"
+                                                                + "  ]"
+                                                                + " }"
+                                                                + "}"));
+    }
+
+    @Test
+    @Ignore("Not implemented yet - can serialise but not deserialise because of the GeoJsonType interface")
+    public void shouldRetrieveGeoCollectionType() {
+        // given
+        String name = "What, everything?";
+        Point point = point(3.0, 7.0);
+        LineString lineString = lineString(point(1, 2), point(3, 5), point(19, 13));
+        Polygon polygonWithHoles = GeoJson.polygon(point(1.1, 2.0), point(2.3, 3.5), point(3.7, 1.0), point(1.1, 2.0))
+                                          .interiorRing(point(1.5, 2.0), point(1.9, 2.0), point(1.9, 1.8), point(1.5, 2.0))
+                                          .interiorRing(point(2.2, 2.1), point(2.4, 1.9), point(2.4, 1.7), point(2.1, 1.8),
+                                                        point(2.2, 2.1))
+                                          .build();
+        MultiPoint multiPoint = GeoJson.multiPoint(point(1, 2), point(3, 5), point(19, 13));
+        MultiLineString multiLineString = GeoJson.multiLineString(lineString(point(1, 2), point(3, 5), point(19, 13)),
+                                                                  lineString(point(1.5, 2.0),
+                                                                             point(1.9, 2.0),
+                                                                             point(1.9, 1.8),
+                                                                             point(1.5, 2.0)));
+        MultiPolygon multiPolygon = GeoJson.multiPolygon(GeoJson.polygon(point(1.1, 2.0),
+                                                                         point(2.3, 3.5),
+                                                                         point(3.7, 1.0),
+                                                                         point(1.1, 2.0)).build(),
+                                                         GeoJson.polygon(point(1.2, 3.0), point(2.5, 4.5), point(6.7, 1.9), point(1.2, 3.0))
+                                                                .interiorRing(point(3.5, 2.4),
+                                                                              point(1.7, 2.8),
+                                                                              point(3.5, 2.4))
+                                                                .build());
+        GeometryCollection geometryCollection = GeoJson.geometryCollection()
+                                                       .add(point)
+                                                       .add(lineString)
+                                                       .add(polygonWithHoles)
+                                                       .add(multiPoint)
+                                                       .add(multiLineString)
+                                                       .add(multiPolygon)
+                                                       .build();
+        AllTheThings allTheThings = new AllTheThings(name, geometryCollection);
+        getDs().save(allTheThings);
+
+        // when
+        AllTheThings found = getDs().find(AllTheThings.class).field("name").equal(name).get();
+
+        // then
+        assertThat(found, is(notNullValue()));
+        assertThat(found, is(allTheThings));
     }
 
     @SuppressWarnings("UnusedDeclaration")
@@ -622,6 +817,20 @@ public class GeoEntitiesTest extends TestBase {
                    + "name='" + name + '\''
                    + ", regions=" + regions
                    + '}';
+        }
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    private static final class AllTheThings {
+        private GeometryCollection everything;
+        private String name;
+
+        private AllTheThings() {
+        }
+
+        private AllTheThings(final String name, final GeometryCollection everything) {
+            this.name = name;
+            this.everything = everything;
         }
     }
 }

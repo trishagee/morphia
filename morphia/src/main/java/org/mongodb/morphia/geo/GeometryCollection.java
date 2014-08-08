@@ -7,9 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This class represents a series of points, which will saved into MongoDB as per the 
- * <a href="http://geojson.org/geojson-spec.html#id5">GeoJSON specification</a>. Therefore this entity will never have its own ID or 
- * store the its Class name.
+ * This class represents a collection of mixed GeoJson objects as per the 
+ * <a href="http://geojson.org/geojson-spec.html#geometrycollection">GeoJSON specification</a>. Therefore this entity will never have its 
+ * own ID or store the its Class name.
  * <p/>
  * The factory for creating a MultiPoint is the {@code GeoJson.multiPoint} method.
  *
@@ -17,18 +17,16 @@ import java.util.List;
  */
 @Embedded
 @Entity(noClassnameStored = true)
-public class MultiPoint implements GeoJsonType {
-    private final String type = "MultiPoint";
-    private final List<List<Double>> coordinates = new ArrayList<List<Double>>();
+public class GeometryCollection {
+    private final String type = "GeometryCollection";
+    private List<GeoJsonType> geometries = new ArrayList<GeoJsonType>();
 
-    @SuppressWarnings("UnusedDeclaration") // used by Morphia
-    private MultiPoint() {
+    @SuppressWarnings("UnusedDeclaration") // needed by morphia
+    private GeometryCollection() {
     }
 
-    MultiPoint(final Point... points) {
-        for (final Point point : points) {
-            this.coordinates.add(point.getCoordinates());
-        }
+    GeometryCollection(final List<GeoJsonType> geometries) {
+        this.geometries = geometries;
     }
 
     @Override
@@ -40,9 +38,9 @@ public class MultiPoint implements GeoJsonType {
             return false;
         }
 
-        MultiPoint that = (MultiPoint) o;
+        GeometryCollection that = (GeometryCollection) o;
 
-        if (!coordinates.equals(that.coordinates)) {
+        if (!geometries.equals(that.geometries)) {
             return false;
         }
         if (!type.equals(that.type)) {
@@ -55,15 +53,15 @@ public class MultiPoint implements GeoJsonType {
     @Override
     public int hashCode() {
         int result = type.hashCode();
-        result = 31 * result + coordinates.hashCode();
+        result = 31 * result + geometries.hashCode();
         return result;
     }
 
     @Override
     public String toString() {
-        return "MultiPoint{"
+        return "GeometryCollection{"
                + "type='" + type + '\''
-               + ", coordinates=" + coordinates
+               + ", geometries=" + geometries
                + '}';
     }
 }

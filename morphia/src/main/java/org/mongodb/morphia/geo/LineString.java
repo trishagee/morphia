@@ -1,9 +1,23 @@
 package org.mongodb.morphia.geo;
 
+import org.mongodb.morphia.annotations.Embedded;
+import org.mongodb.morphia.annotations.Entity;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class LineString {
+/**
+ * Represents a GeoJSON LineString type.  Will be persisted into the database according to 
+ * <a href="http://geojson.org/geojson-spec.html#id3">the specification</a>. Therefore this entity will never have its own ID or store 
+ * the its Class name.
+ * <p/>
+ * The factory for creating a LineString is the {@code GeoJson.lineString} method.
+ *
+ * @see org.mongodb.morphia.geo.GeoJson
+ */
+@Embedded
+@Entity(noClassnameStored = true)
+public class LineString implements GeoJsonType {
     private final String type = "LineString";
     private final List<List<Double>> coordinates = new ArrayList<List<Double>>();
 
