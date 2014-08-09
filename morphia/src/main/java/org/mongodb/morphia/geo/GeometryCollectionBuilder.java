@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GeometryCollectionBuilder {
-    private List<GeoJsonType> geometries = new ArrayList<GeoJsonType>();
+    private List<Geometry> geometries = new ArrayList<Geometry>();
 
-    public GeometryCollectionBuilder add(final GeoJsonType geometry) {
+    public GeometryCollectionBuilder add(final Geometry geometry) {
         geometries.add(geometry);
         return this;
     }

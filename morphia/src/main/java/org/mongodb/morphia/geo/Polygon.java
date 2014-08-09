@@ -19,7 +19,7 @@ import java.util.List;
  */
 @Embedded
 @Entity(noClassnameStored = true)
-public class Polygon implements GeoJsonType {
+public class Polygon implements Geometry {
     private final String type = "Polygon";
     private final List<List<List<Double>>> coordinates = new ArrayList<List<List<Double>>>();
 

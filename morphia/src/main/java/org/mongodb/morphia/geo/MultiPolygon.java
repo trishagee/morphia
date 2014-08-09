@@ -15,7 +15,7 @@ import java.util.List;
  */
 @Embedded
 @Entity(noClassnameStored = true)
-public class MultiPolygon implements GeoJsonType{
+public class MultiPolygon implements Geometry {
     private final String type = "MultiPolygon";
     // Sigh. But that's the representation that converts easiest to the MongoDB shape
     private final List<List<List<List<Double>>>> coordinates = new ArrayList<List<List<List<Double>>>>();

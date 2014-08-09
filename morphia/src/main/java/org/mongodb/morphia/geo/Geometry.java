@@ -7,6 +7,6 @@ import org.mongodb.morphia.annotations.Embedded;
  * Marker interface to denote which entities are classes that will serialise into a MongoDB GeoJson object. 
  */
 @Embedded
-@Converters(GeoJsonTypeConverter.class)
-public interface GeoJsonType {
+@Converters(GeometryConverter.class)
+public interface Geometry {
 }

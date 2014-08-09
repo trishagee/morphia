@@ -17,7 +17,7 @@ import java.util.List;
  */
 @Embedded
 @Entity(noClassnameStored = true)
-public class MultiLineString implements GeoJsonType {
+public class MultiLineString implements Geometry {
     private final String type = "MultiLineString";
     private final List<List<List<Double>>> coordinates = new ArrayList<List<List<Double>>>();
 

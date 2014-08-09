@@ -17,18 +17,24 @@ import java.util.List;
  */
 @Embedded
 @Entity(noClassnameStored = true)
-public class LineString implements GeoJsonType {
+public class LineString implements Geometry {
     private final String type = "LineString";
-    private final List<List<Double>> coordinates = new ArrayList<List<Double>>();
+    private final List<List<Double>> coordinates;
 
     @SuppressWarnings("UnusedDeclaration") // used by Morphia
     LineString() {
+        coordinates = new ArrayList<List<Double>>();
     }
 
     LineString(final Point... points) {
+        this();
         for (final Point point : points) {
             this.coordinates.add(point.getCoordinates());
         }
+    }
+
+    LineString(final List<List<Double>> coordinates) {
+        this.coordinates = coordinates;
     }
 
     @Override

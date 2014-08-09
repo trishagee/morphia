@@ -525,7 +525,7 @@ public class GeoEntitiesTest extends TestBase {
     }
 
     @Test
-    @Ignore("Not implemented yet - GeoJsonTypeConverter only handles Points at the moment")
+    @Ignore("Not implemented yet - GeoJsonTypeConverter only handles Points and LineStrings at the moment")
     public void shouldRetrieveGeoCollectionType() {
         // given
         String name = "What, everything?";

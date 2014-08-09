@@ -12,12 +12,13 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mongodb.morphia.geo.GeoJson.lineString;
 import static org.mongodb.morphia.geo.GeoJson.point;
 
-public class GeoJsonTypeConvertersTest extends TestBase {
+public class GeometryConvertersTest extends TestBase {
     @Test
     @Ignore("honestly, I have no idea how to test converters without doing a full round trip")
-    public void shouldCorrectlyDeserialiseGeoCollectionContainingAPointFromDBObject() {
+    public void shouldCorrectlyDecodeGeoCollectionContainingAPointFromDBObject() {
         // given
 //        GeometryCollection geometryCollection = GeoJson.geometryCollection()
 //                                                       .add(point)
@@ -45,14 +46,27 @@ public class GeoJsonTypeConvertersTest extends TestBase {
     }
 
     @Test
-    public void shouldCorrectlyDeserialiseGeoCollectionContainingAPoint() {
+    public void shouldCorrectlyDecodeGeoCollectionContainingAPoint() {
         // given
-        getMorphia().map(GeometryCollection.class);
-        //        getMorphia().getMapper().getConverters().addConverter(new GeoJsonTypeConverter());
-
         Point point = point(3.0, 7.0);
         GeometryCollection geometryCollection = GeoJson.geometryCollection()
                                                        .add(point)
+                                                       .build();
+        getDs().save(geometryCollection);
+
+        // when
+        GeometryCollection found = getDs().find(GeometryCollection.class).get();
+
+        // then
+        assertThat(found, is(geometryCollection));
+    }
+
+    @Test
+    public void shouldCorrectlyDecodeGeoCollectionContainingALineString() {
+        // given
+        LineString lineString = lineString(point(1, 2), point(3, 5), point(19, 13));
+        GeometryCollection geometryCollection = GeoJson.geometryCollection()
+                                                       .add(lineString)
                                                        .build();
         getDs().save(geometryCollection);
 

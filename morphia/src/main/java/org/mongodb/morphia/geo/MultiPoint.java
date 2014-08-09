@@ -17,7 +17,7 @@ import java.util.List;
  */
 @Embedded
 @Entity(noClassnameStored = true)
-public class MultiPoint implements GeoJsonType {
+public class MultiPoint implements Geometry {
     private final String type = "MultiPoint";
     private final List<List<Double>> coordinates = new ArrayList<List<Double>>();
 

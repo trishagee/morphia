@@ -16,17 +16,23 @@ import java.util.List;
  */
 @Embedded
 @Entity(noClassnameStored = true)
-public class Point implements GeoJsonType {
+public class Point implements Geometry {
     private final String type = "Point";
-    private final List<Double> coordinates = new ArrayList<Double>(2);
+    private final List<Double> coordinates;
 
     @SuppressWarnings("unused") //needed for Morphia serialisation
     private Point() {
+        coordinates = new ArrayList<Double>(2);
     }
 
     Point(final double latitude, final double longitude) {
+        this();
         this.coordinates.add(longitude);
         this.coordinates.add(latitude);
+    }
+
+    Point(final List<Double> coordinates) {
+        this.coordinates = coordinates;
     }
 
     @Override
