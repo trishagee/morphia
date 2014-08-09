@@ -18,7 +18,7 @@ import java.util.List;
 @Embedded
 @Entity(noClassnameStored = true)
 public class LineString implements Geometry {
-    private final String type = "LineString";
+    private final String type = GeoJsonType.LINE_STRING.getType();
     private final List<List<Double>> coordinates;
 
     @SuppressWarnings("UnusedDeclaration") // used by Morphia

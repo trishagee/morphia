@@ -16,18 +16,24 @@ import java.util.List;
 @Embedded
 @Entity(noClassnameStored = true)
 public class MultiPolygon implements Geometry {
-    private final String type = "MultiPolygon";
+    private final String type = GeoJsonType.MULTI_POLYGON.getType();
     // Sigh. But that's the representation that converts easiest to the MongoDB shape
-    private final List<List<List<List<Double>>>> coordinates = new ArrayList<List<List<List<Double>>>>();
+    private final List<List<List<List<Double>>>> coordinates;
 
     @SuppressWarnings("UnusedDeclaration") // used by Morphia
     private MultiPolygon() {
+        this.coordinates = new ArrayList<List<List<List<Double>>>>();
     }
 
     MultiPolygon(final Polygon... polygons) {
+        this();
         for (final Polygon polygon : polygons) {
             coordinates.add(polygon.getCoordinates());
         }
+    }
+
+    MultiPolygon(final List<List<List<List<Double>>>> coordinates) {
+        this.coordinates = coordinates;
     }
 
     @Override

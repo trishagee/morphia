@@ -18,17 +18,23 @@ import java.util.List;
 @Embedded
 @Entity(noClassnameStored = true)
 public class MultiPoint implements Geometry {
-    private final String type = "MultiPoint";
-    private final List<List<Double>> coordinates = new ArrayList<List<Double>>();
+    private final String type = GeoJsonType.MULTI_POINT.getType();
+    private final List<List<Double>> coordinates;
 
     @SuppressWarnings("UnusedDeclaration") // used by Morphia
     private MultiPoint() {
+        this.coordinates = new ArrayList<List<Double>>();
     }
 
     MultiPoint(final Point... points) {
+        this();
         for (final Point point : points) {
             this.coordinates.add(point.getCoordinates());
         }
+    }
+
+    MultiPoint(final List<List<Double>> coordinates) {
+        this.coordinates = coordinates;
     }
 
     @Override

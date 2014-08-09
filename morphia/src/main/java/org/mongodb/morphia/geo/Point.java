@@ -17,7 +17,7 @@ import java.util.List;
 @Embedded
 @Entity(noClassnameStored = true)
 public class Point implements Geometry {
-    private final String type = "Point";
+    private final String type = GeoJsonType.POINT.getType();
     private final List<Double> coordinates;
 
     @SuppressWarnings("unused") //needed for Morphia serialisation

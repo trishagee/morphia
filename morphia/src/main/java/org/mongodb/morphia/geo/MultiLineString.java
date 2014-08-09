@@ -18,17 +18,23 @@ import java.util.List;
 @Embedded
 @Entity(noClassnameStored = true)
 public class MultiLineString implements Geometry {
-    private final String type = "MultiLineString";
-    private final List<List<List<Double>>> coordinates = new ArrayList<List<List<Double>>>();
+    private final String type = GeoJsonType.MULTI_LINE_STRING.getType();
+    private final List<List<List<Double>>> coordinates;
 
     @SuppressWarnings("UnusedDeclaration") // needed for Morphia
     private MultiLineString() {
+        this.coordinates = new ArrayList<List<List<Double>>>();
     }
 
     MultiLineString(final LineString... lineStrings) {
+        this();
         for (final LineString lineString : lineStrings) {
             this.coordinates.add(lineString.getCoordinates());
         }
+    }
+
+    MultiLineString(final List<List<List<Double>>> coordinates) {
+        this.coordinates = coordinates;
     }
 
     @Override

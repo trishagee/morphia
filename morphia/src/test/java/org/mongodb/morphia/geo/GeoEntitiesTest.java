@@ -2,7 +2,6 @@ package org.mongodb.morphia.geo;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mongodb.morphia.TestBase;
 import org.mongodb.morphia.testutil.JSONMatcher;
@@ -525,7 +524,6 @@ public class GeoEntitiesTest extends TestBase {
     }
 
     @Test
-    @Ignore("Not implemented yet - GeoJsonTypeConverter only handles Points and LineStrings at the moment")
     public void shouldRetrieveGeoCollectionType() {
         // given
         String name = "What, everything?";

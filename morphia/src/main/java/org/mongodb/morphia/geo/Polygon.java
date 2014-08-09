@@ -20,18 +20,24 @@ import java.util.List;
 @Embedded
 @Entity(noClassnameStored = true)
 public class Polygon implements Geometry {
-    private final String type = "Polygon";
-    private final List<List<List<Double>>> coordinates = new ArrayList<List<List<Double>>>();
+    private final String type = GeoJsonType.POLYGON.getType();
+    private final List<List<List<Double>>> coordinates;
 
     @SuppressWarnings("UnusedDeclaration") // used by Morphia
     Polygon() {
+        this.coordinates = new ArrayList<List<List<Double>>>();
     }
 
     Polygon(final LineString exteriorBoundary, final List<LineString> interiorBoundaries) {
+        this();
         this.coordinates.add(exteriorBoundary.getCoordinates());
         for (final LineString interiorBoundary : interiorBoundaries) {
             this.coordinates.add(interiorBoundary.getCoordinates());
         }
+    }
+
+    Polygon(final List<List<List<Double>>> coordinates) {
+        this.coordinates = coordinates;
     }
 
     @Override
@@ -64,7 +70,7 @@ public class Polygon implements Geometry {
 
     @Override
     public String toString() {
-        return "MultiRingPolygon{"
+        return "Polygon{"
                + "type='" + type + '\''
                + ", coordinates=" + coordinates
                + '}';
