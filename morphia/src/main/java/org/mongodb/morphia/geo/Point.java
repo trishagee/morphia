@@ -10,9 +10,10 @@ import java.util.List;
  * Represents a GeoJSON Point type.  Will be persisted into the database according to <a href="http://geojson.org/geojson-spec.html#id2">the
  * specification</a>. Therefore because of this, this entity will never have its own ID or store the its Class name.
  * <p/>
- * The factory for creating a Point is the {@code GeoJson.point} method.
+ * The builder for creating a Point is the {@code GeoJson.pointBuilder} method, or the helper {@code GeoJson.point} factory method.
  *
- * @see org.mongodb.morphia.geo.GeoJson
+ * @see org.mongodb.morphia.geo.GeoJson#point(double, double)
+ * @see GeoJson#pointBuilder()
  */
 @Embedded
 @Entity(noClassnameStored = true)
@@ -35,6 +36,14 @@ public class Point implements Geometry {
         this.coordinates = coordinates;
     }
 
+    /*
+     * Not for public consumption, used by package methods for creating more complex types that contain Points.
+     */
+    List<Double> getCoordinates() {
+        return coordinates;
+    }
+
+    /* equals, hashCode and toString. Useful primarily for testing and debugging. Don't forget to re-create when changing this class */
     @Override
     public boolean equals(final Object o) {
         if (this == o) {
@@ -69,18 +78,5 @@ public class Point implements Geometry {
                + "type='" + type + '\''
                + ", coordinates=" + coordinates
                + '}';
-    }
-
-    /**
-     * Returns the two co-ordinates for this point as a List with two Double values
-     *
-     * @return a List with two Double values, the first is longitude the second latitude
-     */
-    List<Double> getCoordinates() {
-        return coordinates;
-    }
-
-    String getType() {
-        return type;
     }
 }

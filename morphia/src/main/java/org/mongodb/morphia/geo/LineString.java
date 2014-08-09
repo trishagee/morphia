@@ -13,7 +13,7 @@ import java.util.List;
  * <p/>
  * The factory for creating a LineString is the {@code GeoJson.lineString} method.
  *
- * @see org.mongodb.morphia.geo.GeoJson
+ * @see org.mongodb.morphia.geo.GeoJson#lineString(Point...) 
  */
 @Embedded
 @Entity(noClassnameStored = true)
@@ -22,7 +22,7 @@ public class LineString implements Geometry {
     private final List<List<Double>> coordinates;
 
     @SuppressWarnings("UnusedDeclaration") // used by Morphia
-    LineString() {
+    private LineString() {
         coordinates = new ArrayList<List<Double>>();
     }
 
@@ -37,6 +37,14 @@ public class LineString implements Geometry {
         this.coordinates = coordinates;
     }
 
+    /*
+     * Not for public consumption, used by package methods for creating more complex types that contain Points.
+     */
+    List<List<Double>> getCoordinates() {
+        return coordinates;
+    }
+
+    /* equals, hashCode and toString. Useful primarily for testing and debugging. Don't forget to re-create when changing this class */
     @Override
     public boolean equals(final Object o) {
         if (this == o) {
@@ -71,9 +79,5 @@ public class LineString implements Geometry {
                + "type='" + type + '\''
                + ", coordinates=" + coordinates
                + '}';
-    }
-
-    List<List<Double>> getCoordinates() {
-        return coordinates;
     }
 }

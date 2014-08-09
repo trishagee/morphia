@@ -11,7 +11,9 @@ import java.util.List;
  * <a href="http://geojson.org/geojson-spec.html#id7">GeoJSON specification</a>. Therefore this entity will never have its own ID or store 
  * the its Class name.
  * <p/>
- * The factory for creating a LineString is the {@code GeoJson.lineString} method.
+ * The factory for creating a MultiPolygon is the {@code GeoJson.multiPolygon} method.
+ * 
+ * @see org.mongodb.morphia.geo.GeoJson#multiPolygon(Polygon...) 
  */
 @Embedded
 @Entity(noClassnameStored = true)
@@ -36,6 +38,7 @@ public class MultiPolygon implements Geometry {
         this.coordinates = coordinates;
     }
 
+    /* equals, hashCode and toString. Useful primarily for testing and debugging. Don't forget to re-create when changing this class */
     @Override
     public boolean equals(final Object o) {
         if (this == o) {

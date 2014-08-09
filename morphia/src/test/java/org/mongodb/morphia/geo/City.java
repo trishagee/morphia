@@ -13,11 +13,6 @@ public class City {
     public City() {
     }
 
-    public City(final String name, final double latitude, final double longitude) {
-        this.name = name;
-        this.location = GeoJson.point(latitude, longitude);
-    }
-
     public City(final String name, final Point location) {
         this.name = name;
         this.location = location;

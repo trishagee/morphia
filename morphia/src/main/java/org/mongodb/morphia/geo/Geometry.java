@@ -1,12 +1,12 @@
 package org.mongodb.morphia.geo;
 
 import org.mongodb.morphia.annotations.Converters;
-import org.mongodb.morphia.annotations.Embedded;
 
 /**
- * Marker interface to denote which entities are classes that will serialise into a MongoDB GeoJson object. 
+ * Marker interface to denote which entities are classes that will serialise into a MongoDB GeoJson object. As this is an interface, not a
+ * concrete class, and as the implementations do not store the class names, this requires a TypeConverter to define how to decode each
+ * implementation from the database.
  */
-@Embedded
 @Converters(GeometryConverter.class)
 public interface Geometry {
 }

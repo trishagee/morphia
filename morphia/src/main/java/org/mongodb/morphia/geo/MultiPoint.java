@@ -13,7 +13,7 @@ import java.util.List;
  * <p/>
  * The factory for creating a MultiPoint is the {@code GeoJson.multiPoint} method.
  *
- * @see org.mongodb.morphia.geo.GeoJson
+ * @see org.mongodb.morphia.geo.GeoJson#multiPoint(Point...) 
  */
 @Embedded
 @Entity(noClassnameStored = true)
@@ -37,6 +37,7 @@ public class MultiPoint implements Geometry {
         this.coordinates = coordinates;
     }
 
+    /* equals, hashCode and toString. Useful primarily for testing and debugging. Don't forget to re-create when changing this class */
     @Override
     public boolean equals(final Object o) {
         if (this == o) {
