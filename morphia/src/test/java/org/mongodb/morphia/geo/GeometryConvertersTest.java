@@ -13,7 +13,7 @@ public class GeometryConvertersTest extends TestBase {
     public void shouldCorrectlyDecodeGeoCollectionContainingAPoint() {
         // given
         Point point = point(3.0, 7.0);
-        GeometryCollection geometryCollection = GeoJson.geometryCollection()
+        GeometryCollection geometryCollection = GeoJson.geometryCollectionBuilder()
                                                        .add(point)
                                                        .build();
         getDs().save(geometryCollection);
@@ -29,7 +29,7 @@ public class GeometryConvertersTest extends TestBase {
     public void shouldCorrectlyDecodeGeoCollectionContainingALineString() {
         // given
         LineString lineString = lineString(point(1, 2), point(3, 5), point(19, 13));
-        GeometryCollection geometryCollection = GeoJson.geometryCollection()
+        GeometryCollection geometryCollection = GeoJson.geometryCollectionBuilder()
                                                        .add(lineString)
                                                        .build();
         getDs().save(geometryCollection);

@@ -11,14 +11,30 @@ public final class GeoJson {
 
     /**
      * Create a new Point representing a <a href="http://docs.mongodb.org/manual/apps/geospatial-indexes/#geojson-objects">GeoJSON</a> point
-     * type.  Supported by server versions 2.4 and above.
+     * type.  For a safer way to create points with latitude and longitude coordinates without mixing up the order, see pointBuilder().
+     * <p/>
+     * Supported by server versions 2.4 and above.
      *
      * @param latitude  the point's latitude coordinate
      * @param longitude the point's longitude coordinate
      * @return a Point instance representing a single location point defined by the given latitude and longitude
+     * @see GeoJson#pointBuilder()
      */
     public static Point point(final double latitude, final double longitude) {
-        return new Point(latitude, longitude);
+        return pointBuilder().latitude(latitude).longitude(longitude).build();
+    }
+
+    /**
+     * Get a PointBuilder to create Point instances representing a 
+     * <a href="http://docs.mongodb.org/manual/apps/geospatial-indexes/#geojson-objects">GeoJSON</a>
+     * point type. The advantage of using the builder is to reduce confusion of the order of the latitude and longitude double values.
+     * <p/>
+     * Supported by server versions 2.4 and above.
+     *
+     * @return a PointBuilder for creating Point instances
+     */
+    public static PointBuilder pointBuilder() {
+        return new PointBuilder();
     }
 
     /**
@@ -33,16 +49,35 @@ public final class GeoJson {
     }
 
     /**
+     * Create a new Polygon representing a <a href="http://docs.mongodb.org/manual/apps/geospatial-indexes/#geojson-objects">GeoJSON</a>
+     * Polygon type. This helper method uses polygonBuilder to create just the external boundary of a simple polygon.  For more complex
+     * polygons, use {@code polygonBuilder}.
+     * <p/>
+     * Supported by server versions 2.4 and above.
+     *
+     * @param points an ordered series of Points that make up the polygon.  The first and last points should be the same to close the
+     *               polygon
+     * @return a Polygon as defined by the points.
+     * @throws java.lang.IllegalArgumentException if the start and end points are not the same
+     * @see org.mongodb.morphia.geo.GeoJson#polygonBuilder(Point...)
+     */
+    public static Polygon polygon(final Point... points) {
+        return polygonBuilder(points).build();
+    }
+
+    /**
      * Create a new PolygonBuilder that will let you create a Polygon representing a 
      * <a href="http://docs.mongodb.org/manual/apps/geospatial-indexes/#geojson-objects">GeoJSON</a>
-     * Polygon type.  Supported by server versions 2.4 and above.
+     * Polygon type. The builder is especially useful for defining polygons with inner rings.
+     * <p/>
+     * Supported by server versions 2.4 and above.
      *
      * @param points an ordered series of Points that make up the polygon.  The first and last points should be the same to close the
      *               polygon
      * @return a PolygonBuilder to be used to build up the required Polygon
      * @throws java.lang.IllegalArgumentException if the start and end points are not the same
      */
-    public static PolygonBuilder polygon(final Point... points) {
+    public static PolygonBuilder polygonBuilder(final Point... points) {
         return new PolygonBuilder(points);
     }
 
@@ -88,7 +123,7 @@ public final class GeoJson {
      *
      * @return new GeometryCollectionBuilder that will allow you to build up a GeometryCollection
      */
-    public static GeometryCollectionBuilder geometryCollection() {
+    public static GeometryCollectionBuilder geometryCollectionBuilder() {
         return new GeometryCollectionBuilder();
     }
 }

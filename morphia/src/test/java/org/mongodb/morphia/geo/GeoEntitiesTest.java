@@ -19,7 +19,7 @@ public class GeoEntitiesTest extends TestBase {
     @Test
     public void shouldSaveAnEntityWithALocationStoredAsAPoint() {
         // given
-        City city = new City("New City", point(3.0, 7.0));
+        City city = new City("New City", GeoJson.pointBuilder().latitude(3.0).longitude(7.0).build());
 
         // when
         getDs().save(city);
@@ -48,14 +48,14 @@ public class GeoEntitiesTest extends TestBase {
 
         assertThat(dbObject, is(notNullValue()));
         assertThat(dbObject.toString(), JSONMatcher.jsonEqual("  {"
-                                                                + " name: 'New City'," 
-                                                                + " className: 'org.mongodb.morphia.geo.City',"
-                                                                + " location:  "
-                                                                + " {"
-                                                                + "  type: 'Point', "
-                                                                + "  coordinates: [7.0, 3.0]"
-                                                                + " }"
-                                                                + "}"));
+                                                              + " name: 'New City',"
+                                                              + " className: 'org.mongodb.morphia.geo.City',"
+                                                              + " location:  "
+                                                              + " {"
+                                                              + "  type: 'Point', "
+                                                              + "  coordinates: [7.0, 3.0]"
+                                                              + " }"
+                                                              + "}"));
     }
 
     @Test
@@ -114,7 +114,7 @@ public class GeoEntitiesTest extends TestBase {
     @Test
     public void shouldSaveAnEntityWithAPolygonGeoJsonType() {
         // given
-        Area area = new Area("The Area", GeoJson.polygon(point(1.1, 2.0), point(2.3, 3.5), point(3.7, 1.0), point(1.1, 2.0)).build());
+        Area area = new Area("The Area", GeoJson.polygon(point(1.1, 2.0), point(2.3, 3.5), point(3.7, 1.0), point(1.1, 2.0)));
 
         // when
         getDs().save(area);
@@ -141,7 +141,7 @@ public class GeoEntitiesTest extends TestBase {
     @Test
     public void shouldRetrieveGeoJsonPolygon() {
         // given
-        Area area = new Area("The Area", GeoJson.polygon(point(1.1, 2.0), point(2.3, 3.5), point(3.7, 1.0), point(1.1, 2.0)).build());
+        Area area = new Area("The Area", GeoJson.polygon(point(1.1, 2.0), point(2.3, 3.5), point(3.7, 1.0), point(1.1, 2.0)));
         getDs().save(area);
 
         // when
@@ -156,7 +156,7 @@ public class GeoEntitiesTest extends TestBase {
     public void shouldSaveAnEntityWithAPolygonContainingInteriorRings() {
         // given
         String polygonName = "A polygon with holes";
-        Polygon polygonWithHoles = GeoJson.polygon(point(1.1, 2.0), point(2.3, 3.5), point(3.7, 1.0), point(1.1, 2.0))
+        Polygon polygonWithHoles = GeoJson.polygonBuilder(point(1.1, 2.0), point(2.3, 3.5), point(3.7, 1.0), point(1.1, 2.0))
                                           .interiorRing(point(1.5, 2.0), point(1.9, 2.0), point(1.9, 1.8), point(1.5, 2.0))
                                           .interiorRing(point(2.2, 2.1), point(2.4, 1.9), point(2.4, 1.7), point(2.1, 1.8),
                                                         point(2.2, 2.1))
@@ -203,7 +203,7 @@ public class GeoEntitiesTest extends TestBase {
     public void shouldRetrieveGeoJsonMultiRingPolygon() {
         // given
         String polygonName = "A polygon with holes";
-        Polygon polygonWithHoles = GeoJson.polygon(point(1.1, 2.0), point(2.3, 3.5), point(3.7, 1.0), point(1.1, 2.0))
+        Polygon polygonWithHoles = GeoJson.polygonBuilder(point(1.1, 2.0), point(2.3, 3.5), point(3.7, 1.0), point(1.1, 2.0))
                                           .interiorRing(point(1.5, 2.0), point(1.9, 2.0), point(1.9, 1.8), point(1.5, 2.0))
                                           .interiorRing(point(2.2, 2.1), point(2.4, 1.9), point(2.4, 1.7), point(2.1, 1.8),
                                                         point(2.2, 2.1))
@@ -320,7 +320,7 @@ public class GeoEntitiesTest extends TestBase {
     public void shouldSaveAnEntityWithAMultiPolygonGeoJsonType() {
         // given
         String name = "All these shapes";
-        Polygon polygonWithHoles = GeoJson.polygon(point(1.1, 2.0), point(2.3, 3.5), point(3.7, 1.0), point(1.1, 2.0))
+        Polygon polygonWithHoles = GeoJson.polygonBuilder(point(1.1, 2.0), point(2.3, 3.5), point(3.7, 1.0), point(1.1, 2.0))
                                           .interiorRing(point(1.5, 2.0), point(1.9, 2.0), point(1.9, 1.8), point(1.5, 2.0))
                                           .interiorRing(point(2.2, 2.1), point(2.4, 1.9), point(2.4, 1.7), point(2.1, 1.8),
                                                         point(2.2, 2.1))
@@ -328,7 +328,7 @@ public class GeoEntitiesTest extends TestBase {
         Regions regions = new Regions(name, GeoJson.multiPolygon(GeoJson.polygon(point(1.1, 2.0),
                                                                                  point(2.3, 3.5),
                                                                                  point(3.7, 1.0),
-                                                                                 point(1.1, 2.0)).build(),
+                                                                                 point(1.1, 2.0)),
                                                                  polygonWithHoles));
 
         // when
@@ -376,7 +376,7 @@ public class GeoEntitiesTest extends TestBase {
     public void shouldRetrieveGeoJsonMultiPolygon() {
         // given
         String name = "All these shapes";
-        Polygon polygonWithHoles = GeoJson.polygon(point(1.1, 2.0), point(2.3, 3.5), point(3.7, 1.0), point(1.1, 2.0))
+        Polygon polygonWithHoles = GeoJson.polygonBuilder(point(1.1, 2.0), point(2.3, 3.5), point(3.7, 1.0), point(1.1, 2.0))
                                           .interiorRing(point(1.5, 2.0), point(1.9, 2.0), point(1.9, 1.8), point(1.5, 2.0))
                                           .interiorRing(point(2.2, 2.1), point(2.4, 1.9), point(2.4, 1.7), point(2.1, 1.8),
                                                         point(2.2, 2.1))
@@ -384,7 +384,7 @@ public class GeoEntitiesTest extends TestBase {
         Regions regions = new Regions(name, GeoJson.multiPolygon(GeoJson.polygon(point(1.1, 2.0),
                                                                                  point(2.3, 3.5),
                                                                                  point(3.7, 1.0),
-                                                                                 point(1.1, 2.0)).build(),
+                                                                                 point(1.1, 2.0)),
                                                                  polygonWithHoles));
         getDs().save(regions);
 
@@ -402,7 +402,7 @@ public class GeoEntitiesTest extends TestBase {
         String name = "What, everything?";
         Point point = point(3.0, 7.0);
         LineString lineString = lineString(point(1, 2), point(3, 5), point(19, 13));
-        Polygon polygonWithHoles = GeoJson.polygon(point(1.1, 2.0), point(2.3, 3.5), point(3.7, 1.0), point(1.1, 2.0))
+        Polygon polygonWithHoles = GeoJson.polygonBuilder(point(1.1, 2.0), point(2.3, 3.5), point(3.7, 1.0), point(1.1, 2.0))
                                           .interiorRing(point(1.5, 2.0), point(1.9, 2.0), point(1.9, 1.8), point(1.5, 2.0))
                                           .interiorRing(point(2.2, 2.1), point(2.4, 1.9), point(2.4, 1.7), point(2.1, 1.8),
                                                         point(2.2, 2.1))
@@ -416,13 +416,16 @@ public class GeoEntitiesTest extends TestBase {
         MultiPolygon multiPolygon = GeoJson.multiPolygon(GeoJson.polygon(point(1.1, 2.0),
                                                                          point(2.3, 3.5),
                                                                          point(3.7, 1.0),
-                                                                         point(1.1, 2.0)).build(),
-                                                         GeoJson.polygon(point(1.2, 3.0), point(2.5, 4.5), point(6.7, 1.9), point(1.2, 3.0))
+                                                                         point(1.1, 2.0)),
+                                                         GeoJson.polygonBuilder(point(1.2, 3.0),
+                                                                                point(2.5, 4.5),
+                                                                                point(6.7, 1.9),
+                                                                                point(1.2, 3.0))
                                                                 .interiorRing(point(3.5, 2.4),
                                                                               point(1.7, 2.8),
                                                                               point(3.5, 2.4))
                                                                 .build());
-        GeometryCollection geometryCollection = GeoJson.geometryCollection()
+        GeometryCollection geometryCollection = GeoJson.geometryCollectionBuilder()
                                                        .add(point)
                                                        .add(lineString)
                                                        .add(polygonWithHoles)
@@ -529,7 +532,7 @@ public class GeoEntitiesTest extends TestBase {
         String name = "What, everything?";
         Point point = point(3.0, 7.0);
         LineString lineString = lineString(point(1, 2), point(3, 5), point(19, 13));
-        Polygon polygonWithHoles = GeoJson.polygon(point(1.1, 2.0), point(2.3, 3.5), point(3.7, 1.0), point(1.1, 2.0))
+        Polygon polygonWithHoles = GeoJson.polygonBuilder(point(1.1, 2.0), point(2.3, 3.5), point(3.7, 1.0), point(1.1, 2.0))
                                           .interiorRing(point(1.5, 2.0), point(1.9, 2.0), point(1.9, 1.8), point(1.5, 2.0))
                                           .interiorRing(point(2.2, 2.1), point(2.4, 1.9), point(2.4, 1.7), point(2.1, 1.8),
                                                         point(2.2, 2.1))
@@ -543,13 +546,16 @@ public class GeoEntitiesTest extends TestBase {
         MultiPolygon multiPolygon = GeoJson.multiPolygon(GeoJson.polygon(point(1.1, 2.0),
                                                                          point(2.3, 3.5),
                                                                          point(3.7, 1.0),
-                                                                         point(1.1, 2.0)).build(),
-                                                         GeoJson.polygon(point(1.2, 3.0), point(2.5, 4.5), point(6.7, 1.9), point(1.2, 3.0))
+                                                                         point(1.1, 2.0)),
+                                                         GeoJson.polygonBuilder(point(1.2, 3.0),
+                                                                                point(2.5, 4.5),
+                                                                                point(6.7, 1.9),
+                                                                                point(1.2, 3.0))
                                                                 .interiorRing(point(3.5, 2.4),
                                                                               point(1.7, 2.8),
                                                                               point(3.5, 2.4))
                                                                 .build());
-        GeometryCollection geometryCollection = GeoJson.geometryCollection()
+        GeometryCollection geometryCollection = GeoJson.geometryCollectionBuilder()
                                                        .add(point)
                                                        .add(lineString)
                                                        .add(polygonWithHoles)
