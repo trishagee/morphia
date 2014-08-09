@@ -19,7 +19,6 @@ public class GeometryCollectionTest extends TestBase {
         GeometryCollection geometryCollection = GeoJson.geometryCollection()
                                                        .add(point)
                                                        .build();
-        //        getMorphia().getMapper().addMappedClass(Point.class);
 
         // when
         DBObject dbObject = getMorphia().toDBObject(geometryCollection);
@@ -159,31 +158,31 @@ public class GeometryCollectionTest extends TestBase {
 
         assertThat(dbObject, is(notNullValue()));
         assertThat(dbObject.toString(), JSONMatcher.jsonEqual("  {"
-                                                                + "  type: 'GeometryCollection', "
-                                                                + "  geometries: "
-                                                                + "  ["
-                                                                + "    {"
-                                                                + "     type: 'MultiPolygon', "
-                                                                + "     coordinates: [ [ [ [ 2.0, 1.1],"
-                                                                + "                        [ 3.5, 2.3],"
-                                                                + "                        [ 1.0, 3.7],"
-                                                                + "                        [ 2.0, 1.1],"
-                                                                + "                      ]"
-                                                                + "                    ],"
-                                                                + "                    [ [ [ 3.0, 1.2],"
-                                                                + "                        [ 4.5, 2.5],"
-                                                                + "                        [ 1.9, 6.7],"
-                                                                + "                        [ 3.0, 1.2] "
-                                                                + "                      ],"
-                                                                + "                      [ [ 2.4, 3.5],"
-                                                                + "                        [ 2.8, 1.7],"
-                                                                + "                        [ 2.4, 3.5] "
-                                                                + "                      ],"
-                                                                + "                    ]"
-                                                                + "                  ]"
-                                                                + "    }"
-                                                                + "  ]"
-                                                                + " }"
-                                                                + "}"));
+                                                              + "  type: 'GeometryCollection', "
+                                                              + "  geometries: "
+                                                              + "  ["
+                                                              + "    {"
+                                                              + "     type: 'MultiPolygon', "
+                                                              + "     coordinates: [ [ [ [ 2.0, 1.1],"
+                                                              + "                        [ 3.5, 2.3],"
+                                                              + "                        [ 1.0, 3.7],"
+                                                              + "                        [ 2.0, 1.1],"
+                                                              + "                      ]"
+                                                              + "                    ],"
+                                                              + "                    [ [ [ 3.0, 1.2],"
+                                                              + "                        [ 4.5, 2.5],"
+                                                              + "                        [ 1.9, 6.7],"
+                                                              + "                        [ 3.0, 1.2] "
+                                                              + "                      ],"
+                                                              + "                      [ [ 2.4, 3.5],"
+                                                              + "                        [ 2.8, 1.7],"
+                                                              + "                        [ 2.4, 3.5] "
+                                                              + "                      ],"
+                                                              + "                    ]"
+                                                              + "                  ]"
+                                                              + "    }"
+                                                              + "  ]"
+                                                              + " }"
+                                                              + "}"));
     }
 }

@@ -525,7 +525,7 @@ public class GeoEntitiesTest extends TestBase {
     }
 
     @Test
-    @Ignore("Not implemented yet - can serialise but not deserialise because of the GeoJsonType interface")
+    @Ignore("Not implemented yet - GeoJsonTypeConverter only handles Points at the moment")
     public void shouldRetrieveGeoCollectionType() {
         // given
         String name = "What, everything?";
@@ -831,6 +831,42 @@ public class GeoEntitiesTest extends TestBase {
         private AllTheThings(final String name, final GeometryCollection everything) {
             this.name = name;
             this.everything = everything;
+        }
+
+        @Override
+        public boolean equals(final Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+
+            AllTheThings that = (AllTheThings) o;
+
+            if (!everything.equals(that.everything)) {
+                return false;
+            }
+            if (!name.equals(that.name)) {
+                return false;
+            }
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = everything.hashCode();
+            result = 31 * result + name.hashCode();
+            return result;
+        }
+
+        @Override
+        public String toString() {
+            return "AllTheThings{"
+                   + "everything=" + everything
+                   + ", name='" + name + '\''
+                   + '}';
         }
     }
 }
