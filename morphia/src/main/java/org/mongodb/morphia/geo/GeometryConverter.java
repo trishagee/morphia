@@ -53,6 +53,7 @@ public class GeometryConverter extends TypeConverter implements SimpleValueConve
             List<List<List<List<Double>>>> coordinates = (List<List<List<List<Double>>>>) dbObject.get("coordinates");
             return new MultiPolygon(coordinates);
         }
-        return null;
+        throw new IllegalArgumentException(String.format("Cannot decode object into Geometry instance. Type= '%s', Object: '%s'", 
+                                                         type, fromDBObject));
     }
 }

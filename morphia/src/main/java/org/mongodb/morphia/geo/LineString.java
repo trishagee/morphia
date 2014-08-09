@@ -38,7 +38,7 @@ public class LineString implements Geometry {
     }
 
     /*
-     * Not for public consumption, used by package methods for creating more complex types that contain Points.
+     * Not for public consumption, used by package methods for creating more complex types that contain LinePoints.
      */
     List<List<Double>> getCoordinates() {
         return coordinates;
