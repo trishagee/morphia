@@ -34,23 +34,18 @@ public class GeometryConverter extends TypeConverter implements SimpleValueConve
     public Object decode(final Class<?> targetClass, final Object fromDBObject, final MappedField optionalExtraInfo) {
         DBObject dbObject = (DBObject) fromDBObject;
         String type = (String) dbObject.get("type");
+        List coordinates = (List) dbObject.get("coordinates");
         if (type.equals(POINT.getType())) {
-            List<Double> coordinates = (List<Double>) dbObject.get("coordinates");
             return new Point(coordinates);
         } else if (type.equals(LINE_STRING.getType())) {
-            List<List<Double>> coordinates = (List<List<Double>>) dbObject.get("coordinates");
             return new LineString(coordinates);
         } else if (type.equals(POLYGON.getType())) {
-            List<List<List<Double>>> coordinates = (List<List<List<Double>>>) dbObject.get("coordinates");
             return new Polygon(coordinates);
         } else if (type.equals(MULTI_POINT.getType())) {
-            List<List<Double>> coordinates = (List<List<Double>>) dbObject.get("coordinates");
             return new MultiPoint(coordinates);
         } else if (type.equals(MULTI_LINE_STRING.getType())) {
-            List<List<List<Double>>> coordinates = (List<List<List<Double>>>) dbObject.get("coordinates");
             return new MultiLineString(coordinates);
         } else if (type.equals(MULTI_POLYGON.getType())) {
-            List<List<List<List<Double>>>> coordinates = (List<List<List<List<Double>>>>) dbObject.get("coordinates");
             return new MultiPolygon(coordinates);
         }
         throw new IllegalArgumentException(String.format("Cannot decode object into Geometry instance. Type= '%s', Object: '%s'", 
