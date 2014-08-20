@@ -17,7 +17,7 @@ import java.util.List;
  */
 @Embedded
 @Entity(noClassnameStored = true)
-public class MultiPoint implements Geometry {
+public class MultiPoint implements Geometry, PointCollection {
     private final String type = GeoJsonType.MULTI_POINT.getType();
     private final List<List<Double>> coordinates;
 
@@ -35,6 +35,11 @@ public class MultiPoint implements Geometry {
 
     MultiPoint(final List<List<Double>> coordinates) {
         this.coordinates = coordinates;
+    }
+
+    @Override
+    public List<Point> getPoints() {
+        throw new UnsupportedOperationException("Not implemented yet!");
     }
 
     /* equals, hashCode and toString. Useful primarily for testing and debugging. Don't forget to re-create when changing this class */

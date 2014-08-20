@@ -4,6 +4,7 @@ import org.mongodb.morphia.annotations.Embedded;
 import org.mongodb.morphia.annotations.Entity;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -18,23 +19,23 @@ import java.util.List;
 @Embedded
 @Entity(noClassnameStored = true)
 public class MultiLineString implements Geometry {
-    private final String type = GeoJsonType.MULTI_LINE_STRING.getType();
-    private final List<List<List<Double>>> coordinates;
+    private final List<LineString> coordinates;
 
     @SuppressWarnings("UnusedDeclaration") // needed for Morphia
     private MultiLineString() {
-        this.coordinates = new ArrayList<List<List<Double>>>();
+        this.coordinates = new ArrayList<LineString>();
     }
 
     MultiLineString(final LineString... lineStrings) {
-        this();
-        for (final LineString lineString : lineStrings) {
-            this.coordinates.add(lineString.getCoordinates());
-        }
+        coordinates = Arrays.asList(lineStrings);
     }
 
-    MultiLineString(final List<List<List<Double>>> coordinates) {
+    MultiLineString(final List<LineString> coordinates) {
         this.coordinates = coordinates;
+    }
+
+    public List<LineString> getLineStrings() {
+        return coordinates;
     }
 
     /* equals, hashCode and toString. Useful primarily for testing and debugging. Don't forget to re-create when changing this class */
@@ -49,10 +50,7 @@ public class MultiLineString implements Geometry {
 
         MultiLineString that = (MultiLineString) o;
 
-        if (!coordinates.equals(that.coordinates)) {
-            return false;
-        }
-        if (!type.equals(that.type)) {
+        if (coordinates != null ? !coordinates.equals(that.coordinates) : that.coordinates != null) {
             return false;
         }
 
@@ -61,16 +59,13 @@ public class MultiLineString implements Geometry {
 
     @Override
     public int hashCode() {
-        int result = type.hashCode();
-        result = 31 * result + coordinates.hashCode();
-        return result;
+        return coordinates != null ? coordinates.hashCode() : 0;
     }
 
     @Override
     public String toString() {
         return "MultiLineString{"
-               + "type='" + type + '\''
-               + ", coordinates=" + coordinates
+               + "coordinates=" + coordinates
                + '}';
     }
 }

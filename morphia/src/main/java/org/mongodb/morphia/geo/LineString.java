@@ -20,23 +20,17 @@ import java.util.List;
 @Embedded
 @Entity(noClassnameStored = true)
 @Converters(LineStringConverter.class)
-public class LineString implements Geometry {
-//    private final List<List<Double>> coordinates;
+public class LineString implements Geometry, PointCollection {
     private List<Point> coordinates;
 
     @SuppressWarnings("UnusedDeclaration") // used by Morphia
     private LineString() {
-//        coordinates = new ArrayList<List<Double>>();
     }
 
     LineString(final Point... points) {
         this();
         this.coordinates = Arrays.asList(points);
     }
-
-//    LineString(final List<List<Double>> coordinates) {
-//        this.coordinates = coordinates;
-//    }
 
     LineString(final List<Point> points) {
         coordinates = points;
@@ -54,7 +48,7 @@ public class LineString implements Geometry {
         return list;
     }
 
-    List<Point> getPoints() {
+    public List<Point> getPoints() {
         return coordinates;
     }
 

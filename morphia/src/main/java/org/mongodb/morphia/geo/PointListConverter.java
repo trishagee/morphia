@@ -8,20 +8,20 @@ import org.mongodb.morphia.mapping.MappedField;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PolygonBoundaryConverter extends TypeConverter implements SimpleValueConverter {
+public class PointListConverter extends TypeConverter implements SimpleValueConverter {
     private final CoordinateConverter coordinateConverter = new CoordinateConverter();
 
-    public PolygonBoundaryConverter() {
-        super(Polygon.PolygonBoundary.class);
+    public PointListConverter() {
+        super(PointCollection.class, Polygon.PolygonBoundary.class, LineString.class);
         coordinateConverter.setMapper(getMapper());
     }
 
     @Override
     public Object encode(final Object value, final MappedField optionalExtraInfo) {
-        Polygon.PolygonBoundary polygonBoundary = (Polygon.PolygonBoundary) value;
+        PointCollection pointCollection = (PointCollection) value;
         BasicDBList dbList = new BasicDBList();
-        for (final Point point : polygonBoundary.getPoints()) {
-            dbList.add(PointConverter.getEncodablePointCoordinates(point));
+        for (final Point point : pointCollection.getPoints()) {
+            dbList.add(coordinateConverter.encode(point));
         }
         return dbList;
     }
@@ -29,11 +29,11 @@ public class PolygonBoundaryConverter extends TypeConverter implements SimpleVal
     @Override
     @SuppressWarnings("unchecked") //always going to have unchecked casts when decoding
     public Object decode(final Class<?> targetClass, final Object fromDBObject, final MappedField optionalExtraInfo) {
-        List list = (List) fromDBObject;
+        List coordinates = (List) fromDBObject;
         List<Point> points = new ArrayList<Point>();
-        for (final Object pointsAsArray : list) {
+        for (final Object pointsAsArray : coordinates) {
             points.add((Point) coordinateConverter.decode(Point.class, pointsAsArray, optionalExtraInfo));
         }
-        return new Polygon.PolygonBoundary(points);
+        return points;
     }
 }

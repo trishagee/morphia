@@ -12,17 +12,23 @@ import java.util.List;
 import static org.mongodb.morphia.geo.Polygon.PolygonBoundary;
 
 public class PolygonConverter extends TypeConverter implements SimpleValueConverter {
+    private final PointListConverter pointListConverter = new PointListConverter();
 
     public PolygonConverter() {
         super(Polygon.class);
+        pointListConverter.setMapper(getMapper());
     }
 
     @Override
     public Object encode(final Object value, final MappedField optionalExtraInfo) {
         Polygon polygon = (Polygon) value;
-        BasicDBObject dbObject = new BasicDBObject("type", GeoJsonType.POLYGON.getType())
-                                 .append("coordinates", getMapper().getConverters().encode(polygon.getAllBoundaries()));
-        return dbObject;
+        List<PolygonBoundary> allBoundaries = polygon.getAllBoundaries();
+        List encodedBoundaries = new ArrayList();
+        for (PolygonBoundary boundary : allBoundaries) {
+            encodedBoundaries.add(pointListConverter.encode(boundary, optionalExtraInfo));
+        }
+        return new BasicDBObject("type", GeoJsonType.POLYGON.getType())
+               .append("coordinates", encodedBoundaries);
     }
 
     @Override
@@ -32,7 +38,8 @@ public class PolygonConverter extends TypeConverter implements SimpleValueConver
         List<PolygonBoundary> boundaries = new ArrayList();
         List<List> coordinates = (List<List>) dbObject.get("coordinates");
         for (final List coordinate : coordinates) {
-            boundaries.add((PolygonBoundary) getMapper().getConverters().decode(PolygonBoundary.class, coordinate, optionalExtraInfo));
+            Object listOfPoints = pointListConverter.decode(targetClass, coordinate, optionalExtraInfo);
+            boundaries.add(new PolygonBoundary((List<Point>) listOfPoints));
         }
         return new Polygon(boundaries);
     }

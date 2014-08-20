@@ -112,7 +112,7 @@ public class Polygon implements Geometry {
                + '}';
     }
 
-    public static class PolygonBoundary {
+    public static class PolygonBoundary implements PointCollection {
         private final List<Point> points;
 
         public PolygonBoundary(final Point... points) {
