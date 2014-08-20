@@ -23,23 +23,16 @@ public class PointConverter extends TypeConverter implements SimpleValueConverte
     @Override
     @SuppressWarnings("unchecked") // always going to have unchecked warnings when converting from/to the raw DBObject
     public Object encode(final Object value, final MappedField optionalExtraInfo) {
-        double[] coordinates = getEncodablePointCoordinates((Point) value);
+        double[] coordinates = CoordinateConverter.encode((Point) value);
         return new BasicDBObject("type", GeoJsonType.POINT.getType())
                .append("coordinates", getMapper().getConverters().encode(coordinates));
-    }
-
-    static double[] getEncodablePointCoordinates(final Point point) {
-        return new double[]{point.getLongitude(), point.getLatitude()};
     }
 
     @Override
     @SuppressWarnings("unchecked") // always going to have unchecked warnings when converting from/to the raw DBObject
     public Object decode(final Class<?> targetClass, final Object fromDBObject, final MappedField optionalExtraInfo) {
         DBObject dbObject = (DBObject) fromDBObject;
-        return createPointFromDBObject((List<Double>) dbObject.get("coordinates"));
-    }
-
-    static Point createPointFromDBObject(final List<Double> coordinates) {
-        return new Point(coordinates.get(1), coordinates.get(0));
+        List<Double> coordinates = (List<Double>) dbObject.get("coordinates");
+        return CoordinateConverter.decode(coordinates);
     }
 }

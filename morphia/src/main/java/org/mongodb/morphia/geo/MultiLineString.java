@@ -19,22 +19,22 @@ import java.util.List;
 @Embedded
 @Entity(noClassnameStored = true)
 public class MultiLineString implements Geometry {
-    private final List<LineString> coordinates;
+    private final List<PointCollection> coordinates;
 
     @SuppressWarnings("UnusedDeclaration") // needed for Morphia
     private MultiLineString() {
-        this.coordinates = new ArrayList<LineString>();
+        this.coordinates = new ArrayList<PointCollection>();
     }
 
     MultiLineString(final LineString... lineStrings) {
-        coordinates = Arrays.asList(lineStrings);
+        coordinates = Arrays.<PointCollection>asList(lineStrings);
     }
 
-    MultiLineString(final List<LineString> coordinates) {
+    MultiLineString(final List<PointCollection> coordinates) {
         this.coordinates = coordinates;
     }
 
-    public List<LineString> getLineStrings() {
+    public List<PointCollection> getLineStrings() {
         return coordinates;
     }
 

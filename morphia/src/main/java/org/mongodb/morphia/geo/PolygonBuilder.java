@@ -7,7 +7,7 @@ import java.util.List;
  * This builder allows you to define the properties of the GeoJSON Polygon to create.
  */
 public class PolygonBuilder {
-    private final List<Polygon.PolygonBoundary> interiorRings = new ArrayList<Polygon.PolygonBoundary>();
+    private final List<PointCollection> interiorRings = new ArrayList<PointCollection>();
     private final Polygon.PolygonBoundary exteriorBoundary;
 
     /**

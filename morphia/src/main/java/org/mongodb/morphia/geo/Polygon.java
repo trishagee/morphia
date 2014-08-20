@@ -25,24 +25,24 @@ import java.util.List;
 @Converters({PolygonConverter.class})
 public class Polygon implements Geometry {
     private PolygonBoundary exteriorBoundary;
-    private final List<PolygonBoundary> interiorBoundaries;
+    private final List<PointCollection> interiorBoundaries;
 
     @SuppressWarnings("UnusedDeclaration") // used by Morphia
     private Polygon() {
-        interiorBoundaries = new ArrayList<PolygonBoundary>();
+        interiorBoundaries = new ArrayList<PointCollection>();
     }
 
-    Polygon(final PolygonBoundary exteriorBoundary, final List<PolygonBoundary> interiorBoundaries) {
+    Polygon(final PolygonBoundary exteriorBoundary, final List<PointCollection> interiorBoundaries) {
         this.exteriorBoundary = exteriorBoundary;
         this.interiorBoundaries = interiorBoundaries;
     }
 
-    Polygon(final List<PolygonBoundary> points) {
-        exteriorBoundary = points.get(0);
+    public Polygon(final List<PointCollection> points) {
+        exteriorBoundary = (PolygonBoundary) points.get(0);
         if (points.size() > 1) {
             interiorBoundaries = points.subList(1, points.size());
         } else {
-            interiorBoundaries = new ArrayList<PolygonBoundary>();
+            interiorBoundaries = new ArrayList<PointCollection>();
         }
     }
 
@@ -53,7 +53,7 @@ public class Polygon implements Geometry {
         List<List<List<Double>>> list = new ArrayList<List<List<Double>>>();
 
         list.add(exteriorBoundary.getCoordinates());
-        for (final PolygonBoundary interiorBoundary : interiorBoundaries) {
+        for (final PointCollection interiorBoundary : interiorBoundaries) {
             list.add(interiorBoundary.getCoordinates());
         }
         return list;
@@ -63,13 +63,13 @@ public class Polygon implements Geometry {
         return exteriorBoundary;
     }
 
-    public List<PolygonBoundary> getInteriorBoundaries() {
+    public List<PointCollection> getInteriorBoundaries() {
         //TODO this should be immutable or a copy
         return interiorBoundaries;
     }
 
-    List<PolygonBoundary> getAllBoundaries() {
-        List<PolygonBoundary> polygonBoundaries = new ArrayList<PolygonBoundary>();
+    List<PointCollection> getAllBoundaries() {
+        List<PointCollection> polygonBoundaries = new ArrayList<PointCollection>();
         polygonBoundaries.add(exteriorBoundary);
         polygonBoundaries.addAll(interiorBoundaries);
         return polygonBoundaries;
@@ -113,7 +113,10 @@ public class Polygon implements Geometry {
     }
 
     public static class PolygonBoundary implements PointCollection {
-        private final List<Point> points;
+        private List<Point> points;
+
+        private PolygonBoundary() {
+        }
 
         public PolygonBoundary(final Point... points) {
             this.points = Arrays.asList(points);
@@ -127,13 +130,19 @@ public class Polygon implements Geometry {
             return points;
         }
 
-        List<List<Double>> getCoordinates() {
+        @Override
+        public List<List<Double>> getCoordinates() {
             //TODO: this method needs removing once all the converters are done
             List<List<Double>> list = new ArrayList<List<Double>>();
             for (final Point coordinate : points) {
                 list.add(coordinate.getCoordinates());
             }
             return list;
+        }
+
+        @Override
+        public PointCollection createCollection(final List<Point> points) {
+            return new PolygonBoundary(points);
         }
 
         @Override

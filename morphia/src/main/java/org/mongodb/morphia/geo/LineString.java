@@ -39,7 +39,8 @@ public class LineString implements Geometry, PointCollection {
     /*
      * Not for public consumption, used by package methods for creating more complex types that contain LinePoints.
      */
-    List<List<Double>> getCoordinates() {
+    @Override
+    public List<List<Double>> getCoordinates() {
         //TODO: this method needs removing once all the converters are done
         List<List<Double>> list = new ArrayList<List<Double>>();
         for (final Point coordinate : coordinates) {
@@ -50,6 +51,11 @@ public class LineString implements Geometry, PointCollection {
 
     public List<Point> getPoints() {
         return coordinates;
+    }
+
+    @Override
+    public PointCollection createCollection(final List<Point> points) {
+        return new LineString(points);
     }
 
     /* equals, hashCode and toString. Useful primarily for testing and debugging. Don't forget to re-create when changing this class */

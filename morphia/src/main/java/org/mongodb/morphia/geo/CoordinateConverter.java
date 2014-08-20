@@ -16,14 +16,20 @@ public class CoordinateConverter extends TypeConverter implements SimpleValueCon
 
     @Override
     public Object encode(final Object value, final MappedField optionalExtraInfo) {
-        Point point = (Point) value;
+        return encode((Point) value);
+    }
+
+    static double[] encode(final Point point) {
         return new double[]{point.getLongitude(), point.getLatitude()};
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public Object decode(final Class<?> targetClass, final Object fromDBObject, final MappedField optionalExtraInfo) {
-        List<Double> coordinateList = (List<Double>) fromDBObject;
-        return new Point(coordinateList.get(1), coordinateList.get(0));
+        return decode((List<Double>) fromDBObject);
+    }
+
+    static Point decode(final List<Double> coordinates) {
+        return new Point(coordinates.get(1), coordinates.get(0));
     }
 }
