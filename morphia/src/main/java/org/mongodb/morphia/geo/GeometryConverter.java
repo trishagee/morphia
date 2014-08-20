@@ -38,7 +38,7 @@ public class GeometryConverter extends TypeConverter implements SimpleValueConve
         if (type.equals(POINT.getType())) {
             return new Point(coordinates);
         } else if (type.equals(LINE_STRING.getType())) {
-            return new LineString(coordinates);
+            return getMapper().getConverters().decode(LineString.class, fromDBObject, optionalExtraInfo);
         } else if (type.equals(POLYGON.getType())) {
             return new Polygon(coordinates);
         } else if (type.equals(MULTI_POINT.getType())) {

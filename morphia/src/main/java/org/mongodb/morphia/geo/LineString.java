@@ -1,9 +1,11 @@
 package org.mongodb.morphia.geo;
 
+import org.mongodb.morphia.annotations.Converters;
 import org.mongodb.morphia.annotations.Embedded;
 import org.mongodb.morphia.annotations.Entity;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -17,30 +19,42 @@ import java.util.List;
  */
 @Embedded
 @Entity(noClassnameStored = true)
+@Converters(LineStringConverter.class)
 public class LineString implements Geometry {
-    private final String type = GeoJsonType.LINE_STRING.getType();
-    private final List<List<Double>> coordinates;
+//    private final List<List<Double>> coordinates;
+    private List<Point> coordinates;
 
     @SuppressWarnings("UnusedDeclaration") // used by Morphia
     private LineString() {
-        coordinates = new ArrayList<List<Double>>();
+//        coordinates = new ArrayList<List<Double>>();
     }
 
     LineString(final Point... points) {
         this();
-        for (final Point point : points) {
-            this.coordinates.add(point.getCoordinates());
-        }
+        this.coordinates = Arrays.asList(points);
     }
 
-    LineString(final List<List<Double>> coordinates) {
-        this.coordinates = coordinates;
+//    LineString(final List<List<Double>> coordinates) {
+//        this.coordinates = coordinates;
+//    }
+
+    LineString(final List<Point> points) {
+        coordinates = points;
     }
 
     /*
      * Not for public consumption, used by package methods for creating more complex types that contain LinePoints.
      */
     List<List<Double>> getCoordinates() {
+        //TODO: this method needs removing once all the converters are done
+        List<List<Double>> list = new ArrayList<List<Double>>();
+        for (final Point coordinate : coordinates) {
+            list.add(coordinate.getCoordinates());
+        }
+        return list;
+    }
+
+    List<Point> getPoints() {
         return coordinates;
     }
 
@@ -59,25 +73,19 @@ public class LineString implements Geometry {
         if (!coordinates.equals(that.coordinates)) {
             return false;
         }
-        if (!type.equals(that.type)) {
-            return false;
-        }
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = type.hashCode();
-        result = 31 * result + coordinates.hashCode();
-        return result;
+        return coordinates.hashCode();
     }
 
     @Override
     public String toString() {
         return "LineString{"
-               + "type='" + type + '\''
-               + ", coordinates=" + coordinates
+               + "coordinates=" + coordinates
                + '}';
     }
 }
