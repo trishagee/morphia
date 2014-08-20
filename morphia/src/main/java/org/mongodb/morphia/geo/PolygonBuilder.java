@@ -7,12 +7,12 @@ import java.util.List;
  * This builder allows you to define the properties of the GeoJSON Polygon to create.
  */
 public class PolygonBuilder {
-    private final List<LineString> interiorRings = new ArrayList<LineString>();
-    private final LineString exteriorBoundary;
+    private final List<Polygon.PolygonBoundary> interiorRings = new ArrayList<Polygon.PolygonBoundary>();
+    private final Polygon.PolygonBoundary exteriorBoundary;
 
     /**
-     * This builder will create a new Polygon representing a 
-     * <a href="http://docs.mongodb.org/manual/apps/geospatial-indexes/#geojson-objects">GeoJSON</a>
+     * This builder will create a new Polygon representing a <a href="http://docs.mongodb
+     * .org/manual/apps/geospatial-indexes/#geojson-objects">GeoJSON</a>
      * Polygon type.  Supported by server versions 2.4 and above.
      *
      * @param points an ordered series of Points that make up the external boundary of the polygon.  The first and last points should be the
@@ -21,7 +21,7 @@ public class PolygonBuilder {
      */
     public PolygonBuilder(final Point... points) {
         ensurePolygonIsClosed(points);
-        exteriorBoundary = new LineString(points);
+        exteriorBoundary = new Polygon.PolygonBoundary(points);
     }
 
     /**
@@ -33,7 +33,7 @@ public class PolygonBuilder {
      */
     public PolygonBuilder interiorRing(final Point... points) {
         ensurePolygonIsClosed(points);
-        interiorRings.add(new LineString(points));
+        interiorRings.add(new Polygon.PolygonBoundary(points));
         return this;
     }
 

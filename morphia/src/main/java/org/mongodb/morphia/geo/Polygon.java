@@ -5,6 +5,7 @@ import org.mongodb.morphia.annotations.Embedded;
 import org.mongodb.morphia.annotations.Entity;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -21,30 +22,33 @@ import java.util.List;
  */
 @Embedded
 @Entity(noClassnameStored = true)
-@Converters(PolygonConverter.class)
+@Converters({PolygonConverter.class})
 @SuppressWarnings("unchecked") //always going to have unchecked casts when decoding
 public class Polygon implements Geometry {
-    private List<List<Point>> coordinates;
+    private PolygonBoundary exteriorBoundary;
+    private final List<PolygonBoundary> interiorBoundaries;
 
     @SuppressWarnings("UnusedDeclaration") // used by Morphia
-    Polygon() {
-        this.coordinates = new ArrayList<List<Point>>();
+    private Polygon() {
+        interiorBoundaries = new ArrayList<PolygonBoundary>();
     }
 
-    Polygon(final LineString exteriorBoundary, final List<LineString> interiorBoundaries) {
-        this();
-        this.coordinates.add(exteriorBoundary.getPoints());
-        for (final LineString interiorBoundary : interiorBoundaries) {
-            this.coordinates.add(interiorBoundary.getPoints());
+    Polygon(final PolygonBoundary exteriorBoundary, final List<PolygonBoundary> interiorBoundaries) {
+        this.exteriorBoundary = exteriorBoundary;
+        this.interiorBoundaries = interiorBoundaries;
+    }
+
+    //    Polygon(final List<List<List<Double>>> coordinates) {
+    //        this.coordinates = coordinates;
+    //    }
+
+    public Polygon(final List<PolygonBoundary> points) {
+        exteriorBoundary = points.get(0);
+        if (points.size() > 1) {
+            interiorBoundaries = points.subList(1, points.size());
+        } else {
+            interiorBoundaries = new ArrayList<PolygonBoundary>();
         }
-    }
-
-//    Polygon(final List<List<List<Double>>> coordinates) {
-//        this.coordinates = coordinates;
-//    }
-
-    public Polygon(final List<List<Point>> points) {
-        this.coordinates = points;
     }
 
     /*
@@ -52,18 +56,21 @@ public class Polygon implements Geometry {
      */
     List<List<List<Double>>> getCoordinates() {
         List<List<List<Double>>> list = new ArrayList<List<List<Double>>>();
-        for (List<Point> coordinate : coordinates) {
-            ArrayList arrayList = new ArrayList();
-            list.add(arrayList);
-            for (Point point : coordinate) {
-                arrayList.add(point.getCoordinates());
-            }
+
+        list.add(exteriorBoundary.getCoordinates());
+        for (final PolygonBoundary interiorBoundary : interiorBoundaries) {
+            list.add(interiorBoundary.getCoordinates());
         }
         return list;
     }
 
-    List<List<Point>> getPoints() {
-        return coordinates;
+    public PolygonBoundary getExteriorBoundary() {
+        return exteriorBoundary;
+    }
+
+    public List<PolygonBoundary> getInteriorBoundaries() {
+        //TODO this should be immutable or a copy
+        return interiorBoundaries;
     }
 
     /* equals, hashCode and toString. Useful primarily for testing and debugging. Don't forget to re-create when changing this class */
@@ -79,7 +86,10 @@ public class Polygon implements Geometry {
 
         Polygon polygon = (Polygon) o;
 
-        if (!coordinates.equals(polygon.coordinates)) {
+        if (exteriorBoundary != null ? !exteriorBoundary.equals(polygon.exteriorBoundary) : polygon.exteriorBoundary != null) {
+            return false;
+        }
+        if (interiorBoundaries != null ? !interiorBoundaries.equals(polygon.interiorBoundaries) : polygon.interiorBoundaries != null) {
             return false;
         }
 
@@ -88,13 +98,71 @@ public class Polygon implements Geometry {
 
     @Override
     public int hashCode() {
-        return coordinates.hashCode();
+        int result = exteriorBoundary != null ? exteriorBoundary.hashCode() : 0;
+        result = 31 * result + (interiorBoundaries != null ? interiorBoundaries.hashCode() : 0);
+        return result;
     }
 
     @Override
     public String toString() {
         return "Polygon{"
-               + "coordinates=" + coordinates
+               + "exteriorBoundary=" + exteriorBoundary
+               + ", interiorBoundaries=" + interiorBoundaries
                + '}';
+    }
+
+    public static class PolygonBoundary {
+        private final List<Point> points;
+
+        public PolygonBoundary(final Point... points) {
+            this.points = Arrays.asList(points);
+        }
+
+        public PolygonBoundary(final List<Point> points) {
+            this.points = points;
+        }
+
+        public List<Point> getPoints() {
+            return points;
+        }
+
+        List<List<Double>> getCoordinates() {
+            //TODO: this method needs removing once all the converters are done
+            List<List<Double>> list = new ArrayList<List<Double>>();
+            for (final Point coordinate : points) {
+                list.add(coordinate.getCoordinates());
+            }
+            return list;
+        }
+
+        @Override
+        public boolean equals(final Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+
+            PolygonBoundary that = (PolygonBoundary) o;
+
+            if (!points.equals(that.points)) {
+                return false;
+            }
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            return points.hashCode();
+        }
+
+        @Override
+        public String toString() {
+            return "PolygonBoundary{"
+                   + "points=" + points
+                   + '}';
+        }
     }
 }

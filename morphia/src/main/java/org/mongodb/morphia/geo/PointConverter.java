@@ -36,7 +36,10 @@ public class PointConverter extends TypeConverter implements SimpleValueConverte
     @SuppressWarnings("unchecked") // always going to have unchecked warnings when converting from/to the raw DBObject
     public Object decode(final Class<?> targetClass, final Object fromDBObject, final MappedField optionalExtraInfo) {
         DBObject dbObject = (DBObject) fromDBObject;
-        List<Double> coordinates = (List<Double>) dbObject.get("coordinates");
+        return createPointFromDBObject((List<Double>) dbObject.get("coordinates"));
+    }
+
+    static Point createPointFromDBObject(final List<Double> coordinates) {
         return new Point(coordinates.get(1), coordinates.get(0));
     }
 }

@@ -22,14 +22,15 @@ public class PolygonConverter extends TypeConverter implements SimpleValueConver
         Polygon polygon = (Polygon) value;
         BasicDBObject dbObject = new BasicDBObject("type", GeoJsonType.POLYGON.getType());
         BasicDBList dbList = new BasicDBList();
-        for (final List<Point> points : polygon.getPoints()) {
-            ArrayList polygonList = new ArrayList();
-            dbList.add(polygonList);
-            for (Point point : points) {
-                polygonList.add(PointConverter.getEncodablePointCoordinates(point));
-            }
-        }
-        dbObject.append("coordinates", dbList);
+
+        dbList.add(getMapper().getConverters().encode(polygon.getExteriorBoundary().getPoints()));
+
+        List<Polygon.PolygonBoundary> polygonBoundaries = new ArrayList<Polygon.PolygonBoundary>();
+        polygonBoundaries.add(polygon.getExteriorBoundary());
+        polygonBoundaries.addAll(polygon.getInteriorBoundaries());
+
+        Object coordinates = getMapper().getConverters().encode(polygonBoundaries);
+        dbObject.append("coordinates", coordinates);
         return dbObject;
 
     }
@@ -37,15 +38,12 @@ public class PolygonConverter extends TypeConverter implements SimpleValueConver
     @Override
     public Object decode(final Class<?> targetClass, final Object fromDBObject, final MappedField optionalExtraInfo) {
         DBObject dbObject = (DBObject) fromDBObject;
+        List<Polygon.PolygonBoundary> list = new ArrayList();
         List<List> coordinates = (List<List>) dbObject.get("coordinates");
-        List<List<Point>> points = new ArrayList<List<Point>>();
         for (List coordinate : coordinates) {
-            List polygon = new ArrayList();
-            points.add(polygon);
-            for (Object o : coordinate) {
-                polygon.add(new Point((List) o));
-            }
+            Object decoded = getMapper().getConverters().decode(Polygon.PolygonBoundary.class, coordinate, optionalExtraInfo);
+            list.add((Polygon.PolygonBoundary) decoded);
         }
-        return new Polygon(points);
+        return new Polygon(list);
     }
 }
