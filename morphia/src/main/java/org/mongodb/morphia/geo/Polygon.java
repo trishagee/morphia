@@ -5,7 +5,7 @@ import org.mongodb.morphia.annotations.Embedded;
 import org.mongodb.morphia.annotations.Entity;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -24,25 +24,25 @@ import java.util.List;
 @Entity(noClassnameStored = true)
 @Converters({PolygonConverter.class})
 public class Polygon implements Geometry {
-    private PolygonBoundary exteriorBoundary;
-    private final List<PointCollection> interiorBoundaries;
+    private LineString exteriorBoundary;
+    private final List<LineString> interiorBoundaries;
 
     @SuppressWarnings("UnusedDeclaration") // used by Morphia
     private Polygon() {
-        interiorBoundaries = new ArrayList<PointCollection>();
+        interiorBoundaries = new ArrayList<LineString>();
     }
 
-    Polygon(final PolygonBoundary exteriorBoundary, final List<PointCollection> interiorBoundaries) {
+    Polygon(final LineString exteriorBoundary, final List<LineString> interiorBoundaries) {
         this.exteriorBoundary = exteriorBoundary;
         this.interiorBoundaries = interiorBoundaries;
     }
 
-    public Polygon(final List<PointCollection> points) {
-        exteriorBoundary = (PolygonBoundary) points.get(0);
+    public Polygon(final List<LineString> points) {
+        exteriorBoundary = points.get(0);
         if (points.size() > 1) {
             interiorBoundaries = points.subList(1, points.size());
         } else {
-            interiorBoundaries = new ArrayList<PointCollection>();
+            interiorBoundaries = new ArrayList<LineString>();
         }
     }
 
@@ -59,13 +59,12 @@ public class Polygon implements Geometry {
         return list;
     }
 
-    public PolygonBoundary getExteriorBoundary() {
+    public LineString getExteriorBoundary() {
         return exteriorBoundary;
     }
 
-    public List<PointCollection> getInteriorBoundaries() {
-        //TODO this should be immutable or a copy
-        return interiorBoundaries;
+    public List<LineString> getInteriorBoundaries() {
+        return Collections.unmodifiableList(interiorBoundaries);
     }
 
     List<PointCollection> getAllBoundaries() {
@@ -110,69 +109,5 @@ public class Polygon implements Geometry {
                + "exteriorBoundary=" + exteriorBoundary
                + ", interiorBoundaries=" + interiorBoundaries
                + '}';
-    }
-
-    public static class PolygonBoundary implements PointCollection {
-        private List<Point> points;
-
-        private PolygonBoundary() {
-        }
-
-        public PolygonBoundary(final Point... points) {
-            this.points = Arrays.asList(points);
-        }
-
-        public PolygonBoundary(final List<Point> points) {
-            this.points = points;
-        }
-
-        public List<Point> getPoints() {
-            return points;
-        }
-
-        @Override
-        public List<List<Double>> getCoordinates() {
-            //TODO: this method needs removing once all the converters are done
-            List<List<Double>> list = new ArrayList<List<Double>>();
-            for (final Point coordinate : points) {
-                list.add(coordinate.getCoordinates());
-            }
-            return list;
-        }
-
-        @Override
-        public PointCollection createCollection(final List<Point> points) {
-            return new PolygonBoundary(points);
-        }
-
-        @Override
-        public boolean equals(final Object o) {
-            if (this == o) {
-                return true;
-            }
-            if (o == null || getClass() != o.getClass()) {
-                return false;
-            }
-
-            PolygonBoundary that = (PolygonBoundary) o;
-
-            if (!points.equals(that.points)) {
-                return false;
-            }
-
-            return true;
-        }
-
-        @Override
-        public int hashCode() {
-            return points.hashCode();
-        }
-
-        @Override
-        public String toString() {
-            return "PolygonBoundary{"
-                   + "points=" + points
-                   + '}';
-        }
     }
 }

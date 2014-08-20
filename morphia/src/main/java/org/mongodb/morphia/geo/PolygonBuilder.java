@@ -7,8 +7,8 @@ import java.util.List;
  * This builder allows you to define the properties of the GeoJSON Polygon to create.
  */
 public class PolygonBuilder {
-    private final List<PointCollection> interiorRings = new ArrayList<PointCollection>();
-    private final Polygon.PolygonBoundary exteriorBoundary;
+    private final List<LineString> interiorRings = new ArrayList<LineString>();
+    private final LineString exteriorBoundary;
 
     /**
      * This builder will create a new Polygon representing a <a href="http://docs.mongodb
@@ -21,7 +21,7 @@ public class PolygonBuilder {
      */
     public PolygonBuilder(final Point... points) {
         ensurePolygonIsClosed(points);
-        exteriorBoundary = new Polygon.PolygonBoundary(points);
+        exteriorBoundary = new LineString(points);
     }
 
     /**
@@ -33,7 +33,7 @@ public class PolygonBuilder {
      */
     public PolygonBuilder interiorRing(final Point... points) {
         ensurePolygonIsClosed(points);
-        interiorRings.add(new Polygon.PolygonBoundary(points));
+        interiorRings.add(new LineString(points));
         return this;
     }
 

@@ -7,13 +7,11 @@ import org.mongodb.morphia.mapping.MappedField;
 
 import java.util.List;
 
-import static org.mongodb.morphia.geo.Polygon.PolygonBoundary;
-
 public class PolygonConverter extends TypeConverter implements SimpleValueConverter {
     private final PointListConverter pointListConverter = new PointListConverter();
     private final IteratingConverter iteratingConverter = new IteratingConverter(pointListConverter, 
                                                                                  GeoJsonType.POLYGON, 
-                                                                                 PolygonBoundary.class);
+                                                                                 LineString.class);
 
     public PolygonConverter() {
         super(Polygon.class);

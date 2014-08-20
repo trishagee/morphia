@@ -3,7 +3,6 @@ package org.mongodb.morphia.geo;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import org.mongodb.morphia.converters.TypeConverter;
-import org.mongodb.morphia.mapping.DefaultCreator;
 import org.mongodb.morphia.mapping.MappedField;
 
 import java.util.ArrayList;
@@ -31,11 +30,11 @@ public class IteratingConverter {
     }
 
     @SuppressWarnings("unchecked") // always have unchecked casts when dealing with raw classes
-    public List<PointCollection> decode(final List<List> coordinates, final MappedField optionalExtraInfo) {
-        List<PointCollection> pointCollections = new ArrayList();
+    public List<LineString> decode(final List<List> coordinates, final MappedField optionalExtraInfo) {
+        List<LineString> pointCollections = new ArrayList<LineString>();
         for (final List coordinate : coordinates) {
             Object listOfPoints = converter.decode(targetClass, coordinate, optionalExtraInfo);
-            pointCollections.add(((PointCollection) DefaultCreator.createInst(targetClass)).createCollection((List<Point>) listOfPoints));
+            pointCollections.add(new LineString((List<Point>) listOfPoints));
         }
         return pointCollections;
     }

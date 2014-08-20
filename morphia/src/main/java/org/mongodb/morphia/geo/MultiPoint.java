@@ -40,11 +40,6 @@ public class MultiPoint implements Geometry, PointCollection {
     }
 
     @Override
-    public PointCollection createCollection(final List<Point> points) {
-        return new MultiPoint(points);
-    }
-
-    @Override
     public List<List<Double>> getCoordinates() {
         throw new UnsupportedOperationException("Not implemented yet!");
     }

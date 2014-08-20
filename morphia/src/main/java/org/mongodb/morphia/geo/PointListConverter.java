@@ -12,7 +12,7 @@ public class PointListConverter extends TypeConverter implements SimpleValueConv
     private final CoordinateConverter coordinateConverter = new CoordinateConverter();
 
     public PointListConverter() {
-        super(PointCollection.class, Polygon.PolygonBoundary.class, LineString.class);
+        super(PointCollection.class, LineString.class);
         coordinateConverter.setMapper(getMapper());
     }
 

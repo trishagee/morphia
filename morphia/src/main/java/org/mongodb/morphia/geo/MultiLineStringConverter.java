@@ -9,7 +9,7 @@ import java.util.List;
 
 public class MultiLineStringConverter extends TypeConverter implements SimpleValueConverter {
     private final PointListConverter pointListConverter = new PointListConverter();
-    private final IteratingConverter iteratingConverter = new IteratingConverter(pointListConverter, 
+    private final IteratingConverter iteratingConverter = new IteratingConverter(pointListConverter,
                                                                                  GeoJsonType.MULTI_LINE_STRING,
                                                                                  LineString.class);
 

@@ -53,11 +53,6 @@ public class LineString implements Geometry, PointCollection {
         return coordinates;
     }
 
-    @Override
-    public PointCollection createCollection(final List<Point> points) {
-        return new LineString(points);
-    }
-
     /* equals, hashCode and toString. Useful primarily for testing and debugging. Don't forget to re-create when changing this class */
     @Override
     public boolean equals(final Object o) {

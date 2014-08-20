@@ -71,14 +71,14 @@ public class PolygonConverterTest extends TestBase {
         // then
         assertThat(decoded, is(instanceOf(Polygon.class)));
         
-        Polygon.PolygonBoundary polygonExteriorBoundary = ((Polygon) decoded).getExteriorBoundary();
+        LineString polygonExteriorBoundary = ((Polygon) decoded).getExteriorBoundary();
         assertThat(polygonExteriorBoundary.getPoints().size(), is(1));
         
         Point pointExteriorBoundary = polygonExteriorBoundary.getPoints().get(0);
         assertThat(pointExteriorBoundary.getLongitude(), is(2.0));
         assertThat(pointExteriorBoundary.getLatitude(), is(1.1));
         
-        List<PointCollection> pointInteriorBoundaries = ((Polygon) decoded).getInteriorBoundaries();
+        List<LineString> pointInteriorBoundaries = ((Polygon) decoded).getInteriorBoundaries();
         assertThat(pointInteriorBoundaries.size(), is(1));
         assertThat(pointInteriorBoundaries.get(0).getPoints().size(), is(1));
         
