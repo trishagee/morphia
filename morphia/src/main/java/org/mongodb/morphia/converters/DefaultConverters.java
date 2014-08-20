@@ -6,6 +6,7 @@ import com.mongodb.DBObject;
 import org.mongodb.morphia.geo.GeometryConverter;
 import org.mongodb.morphia.geo.LineStringConverter;
 import org.mongodb.morphia.geo.PointConverter;
+import org.mongodb.morphia.geo.PolygonConverter;
 import org.mongodb.morphia.logging.Logger;
 import org.mongodb.morphia.logging.MorphiaLoggerFactory;
 import org.mongodb.morphia.mapping.MappedField;
@@ -70,6 +71,7 @@ public class DefaultConverters {
         // Converters for Geo entities
         addConverter(new PointConverter());
         addConverter(new LineStringConverter());
+        addConverter(new PolygonConverter());
         addConverter(new GeometryConverter());
 
         //generic converter that will just pass things through.
