@@ -42,13 +42,13 @@ public class GeometryConverter extends TypeConverter implements SimpleValueConve
         } else if (type.equals(POLYGON.getType())) {
             return getMapper().getConverters().decode(Polygon.class, fromDBObject, optionalExtraInfo);
         } else if (type.equals(MULTI_POINT.getType())) {
-            return new MultiPoint(coordinates);
+            return getMapper().getConverters().decode(MultiPoint.class, fromDBObject, optionalExtraInfo);
         } else if (type.equals(MULTI_LINE_STRING.getType())) {
             return getMapper().getConverters().decode(MultiLineString.class, fromDBObject, optionalExtraInfo);
         } else if (type.equals(MULTI_POLYGON.getType())) {
             return new MultiPolygon(coordinates);
         }
-        throw new IllegalArgumentException(String.format("Cannot decode object into Geometry instance. Type= '%s', Object: '%s'", 
+        throw new IllegalArgumentException(String.format("Cannot decode object into Geometry instance. Type= '%s', Object: '%s'",
                                                          type, fromDBObject));
     }
 }

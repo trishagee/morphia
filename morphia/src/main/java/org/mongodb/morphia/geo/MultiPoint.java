@@ -4,42 +4,39 @@ import org.mongodb.morphia.annotations.Embedded;
 import org.mongodb.morphia.annotations.Entity;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
- * This class represents a series of points, which will saved into MongoDB as per the 
- * <a href="http://geojson.org/geojson-spec.html#id5">GeoJSON specification</a>. Therefore this entity will never have its own ID or 
- * store the its Class name.
+ * This class represents a series of points, which will saved into MongoDB as per the <a href="http://geojson.org/geojson-spec
+ * .html#id5">GeoJSON
+ * specification</a>. Therefore this entity will never have its own ID or store the its Class name.
  * <p/>
  * The factory for creating a MultiPoint is the {@code GeoJson.multiPoint} method.
  *
- * @see org.mongodb.morphia.geo.GeoJson#multiPoint(Point...) 
+ * @see org.mongodb.morphia.geo.GeoJson#multiPoint(Point...)
  */
 @Embedded
 @Entity(noClassnameStored = true)
 public class MultiPoint implements Geometry, PointCollection {
-    private final String type = GeoJsonType.MULTI_POINT.getType();
-    private final List<List<Double>> coordinates;
+    private final List<Point> coordinates;
 
     @SuppressWarnings("UnusedDeclaration") // used by Morphia
     private MultiPoint() {
-        this.coordinates = new ArrayList<List<Double>>();
+        this.coordinates = new ArrayList<Point>();
     }
 
     MultiPoint(final Point... points) {
-        this();
-        for (final Point point : points) {
-            this.coordinates.add(point.getCoordinates());
-        }
+        this.coordinates = Arrays.asList(points);
     }
 
-    MultiPoint(final List<List<Double>> coordinates) {
+    MultiPoint(final List<Point> coordinates) {
         this.coordinates = coordinates;
     }
 
     @Override
     public List<Point> getPoints() {
-        throw new UnsupportedOperationException("Not implemented yet!");
+        return coordinates;
     }
 
     /* equals, hashCode and toString. Useful primarily for testing and debugging. Don't forget to re-create when changing this class */
@@ -57,25 +54,19 @@ public class MultiPoint implements Geometry, PointCollection {
         if (!coordinates.equals(that.coordinates)) {
             return false;
         }
-        if (!type.equals(that.type)) {
-            return false;
-        }
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = type.hashCode();
-        result = 31 * result + coordinates.hashCode();
-        return result;
+        return coordinates.hashCode();
     }
 
     @Override
     public String toString() {
         return "MultiPoint{"
-               + "type='" + type + '\''
-               + ", coordinates=" + coordinates
+               + "coordinates=" + coordinates
                + '}';
     }
 }

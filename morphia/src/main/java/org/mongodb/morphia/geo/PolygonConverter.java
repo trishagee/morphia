@@ -23,8 +23,8 @@ public class PolygonConverter extends TypeConverter implements SimpleValueConver
     public Object encode(final Object value, final MappedField optionalExtraInfo) {
         Polygon polygon = (Polygon) value;
         List<PolygonBoundary> allBoundaries = polygon.getAllBoundaries();
-        List encodedBoundaries = new ArrayList();
-        for (PolygonBoundary boundary : allBoundaries) {
+        List<Object> encodedBoundaries = new ArrayList<Object>();
+        for (final PolygonBoundary boundary : allBoundaries) {
             encodedBoundaries.add(pointListConverter.encode(boundary, optionalExtraInfo));
         }
         return new BasicDBObject("type", GeoJsonType.POLYGON.getType())

@@ -20,15 +20,16 @@ public class MultiLineStringConverter extends TypeConverter implements SimpleVal
     public Object encode(final Object value, final MappedField optionalExtraInfo) {
         MultiLineString multiLineString = (MultiLineString) value;
         List<LineString> lineStrings = multiLineString.getLineStrings();
-        List encodedLineStrings = new ArrayList();
-        for (LineString lineString : lineStrings) {
+        List<Object> encodedLineStrings = new ArrayList<Object>();
+        for (final LineString lineString : lineStrings) {
             encodedLineStrings.add(pointListConverter.encode(lineString, optionalExtraInfo));
         }
         return new BasicDBObject("type", GeoJsonType.MULTI_LINE_STRING.getType())
-                                 .append("coordinates", encodedLineStrings);
+               .append("coordinates", encodedLineStrings);
     }
 
     @Override
+    @SuppressWarnings("unchecked") //always going to have unchecked warnings casting from the raw objects
     public Object decode(final Class<?> targetClass, final Object fromDBObject, final MappedField optionalExtraInfo) {
         DBObject dbObject = (DBObject) fromDBObject;
         List<LineString> lineStrings = new ArrayList();
