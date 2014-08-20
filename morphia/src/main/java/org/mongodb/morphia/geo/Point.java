@@ -3,7 +3,7 @@ package org.mongodb.morphia.geo;
 import org.mongodb.morphia.annotations.Embedded;
 import org.mongodb.morphia.annotations.Entity;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -18,29 +18,45 @@ import java.util.List;
 @Embedded
 @Entity(noClassnameStored = true)
 public class Point implements Geometry {
-    private final String type = GeoJsonType.POINT.getType();
-    private final List<Double> coordinates;
+    private double latitude;
+    private double longitude;
 
     @SuppressWarnings("unused") //needed for Morphia serialisation
     private Point() {
-        coordinates = new ArrayList<Double>(2);
     }
 
     Point(final double latitude, final double longitude) {
-        this();
-        this.coordinates.add(longitude);
-        this.coordinates.add(latitude);
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
     Point(final List<Double> coordinates) {
-        this.coordinates = coordinates;
+        this(coordinates.get(1), coordinates.get(0));
     }
 
     /*
      * Not for public consumption, used by package methods for creating more complex types that contain Points.
      */
     List<Double> getCoordinates() {
-        return coordinates;
+        return Arrays.asList(longitude, latitude);
+    }
+
+    /**
+     * Return the latitude of this point.
+     *
+     * @return the Point's latitude
+     */
+    public double getLatitude() {
+        return latitude;
+    }
+
+    /**
+     * Return the longitude of this point.
+     *
+     * @return the Point's longitude
+     */
+    public double getLongitude() {
+        return longitude;
     }
 
     /* equals, hashCode and toString. Useful primarily for testing and debugging. Don't forget to re-create when changing this class */
@@ -55,10 +71,10 @@ public class Point implements Geometry {
 
         Point point = (Point) o;
 
-        if (!coordinates.equals(point.coordinates)) {
+        if (Double.compare(point.latitude, latitude) != 0) {
             return false;
         }
-        if (!type.equals(point.type)) {
+        if (Double.compare(point.longitude, longitude) != 0) {
             return false;
         }
 
@@ -67,16 +83,20 @@ public class Point implements Geometry {
 
     @Override
     public int hashCode() {
-        int result = type.hashCode();
-        result = 31 * result + coordinates.hashCode();
+        int result;
+        long temp;
+        temp = Double.doubleToLongBits(latitude);
+        result = (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(longitude);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
         return result;
     }
 
     @Override
     public String toString() {
         return "Point{"
-               + "type='" + type + '\''
-               + ", coordinates=" + coordinates
+               + "latitude=" + latitude
+               + ", longitude=" + longitude
                + '}';
     }
 }

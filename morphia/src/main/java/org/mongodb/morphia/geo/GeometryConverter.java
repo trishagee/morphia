@@ -23,7 +23,7 @@ import static org.mongodb.morphia.geo.GeoJsonType.POLYGON;
  */
 public class GeometryConverter extends TypeConverter implements SimpleValueConverter {
     /**
-     * Sets up this converter to work with
+     * Sets up this converter to work with things that implement the Geometry interface
      */
     public GeometryConverter() {
         super(Geometry.class);
