@@ -23,7 +23,6 @@ import java.util.List;
 @Embedded
 @Entity(noClassnameStored = true)
 @Converters({PolygonConverter.class})
-@SuppressWarnings("unchecked") //always going to have unchecked casts when decoding
 public class Polygon implements Geometry {
     private PolygonBoundary exteriorBoundary;
     private final List<PolygonBoundary> interiorBoundaries;
@@ -38,11 +37,7 @@ public class Polygon implements Geometry {
         this.interiorBoundaries = interiorBoundaries;
     }
 
-    //    Polygon(final List<List<List<Double>>> coordinates) {
-    //        this.coordinates = coordinates;
-    //    }
-
-    public Polygon(final List<PolygonBoundary> points) {
+    Polygon(final List<PolygonBoundary> points) {
         exteriorBoundary = points.get(0);
         if (points.size() > 1) {
             interiorBoundaries = points.subList(1, points.size());
@@ -73,8 +68,14 @@ public class Polygon implements Geometry {
         return interiorBoundaries;
     }
 
-    /* equals, hashCode and toString. Useful primarily for testing and debugging. Don't forget to re-create when changing this class */
+    List<PolygonBoundary> getAllBoundaries() {
+        List<PolygonBoundary> polygonBoundaries = new ArrayList<PolygonBoundary>();
+        polygonBoundaries.add(exteriorBoundary);
+        polygonBoundaries.addAll(interiorBoundaries);
+        return polygonBoundaries;
+    }
 
+    /* equals, hashCode and toString. Useful primarily for testing and debugging. Don't forget to re-create when changing this class */
     @Override
     public boolean equals(final Object o) {
         if (this == o) {

@@ -69,15 +69,22 @@ public class PolygonConverterTest extends TestBase {
         Object decoded = converter.decode(Polygon.class, dbObject);
 
         // then
-        // TODO: blargh, this really needs cleaning up
         assertThat(decoded, is(instanceOf(Polygon.class)));
-        assertThat(((Polygon) decoded).getExteriorBoundary().getPoints().size(), is(1));
-        assertThat(((Polygon) decoded).getExteriorBoundary().getPoints().get(0).getLongitude(), is(2.0));
-        assertThat(((Polygon) decoded).getExteriorBoundary().getPoints().get(0).getLatitude(), is(1.1));
-        assertThat(((Polygon) decoded).getInteriorBoundaries().size(), is(1));
-        assertThat(((Polygon) decoded).getInteriorBoundaries().get(0).getPoints().size(), is(1));
-        assertThat(((Polygon) decoded).getInteriorBoundaries().get(0).getPoints().get(0).getLongitude(), is(3.1));
-        assertThat(((Polygon) decoded).getInteriorBoundaries().get(0).getPoints().get(0).getLatitude(), is(4.5));
+        
+        Polygon.PolygonBoundary polygonExteriorBoundary = ((Polygon) decoded).getExteriorBoundary();
+        assertThat(polygonExteriorBoundary.getPoints().size(), is(1));
+        
+        Point pointExteriorBoundary = polygonExteriorBoundary.getPoints().get(0);
+        assertThat(pointExteriorBoundary.getLongitude(), is(2.0));
+        assertThat(pointExteriorBoundary.getLatitude(), is(1.1));
+        
+        List<Polygon.PolygonBoundary> pointInteriorBoundaries = ((Polygon) decoded).getInteriorBoundaries();
+        assertThat(pointInteriorBoundaries.size(), is(1));
+        assertThat(pointInteriorBoundaries.get(0).getPoints().size(), is(1));
+        
+        Point pointInteriorBoundary = pointInteriorBoundaries.get(0).getPoints().get(0);
+        assertThat(pointInteriorBoundary.getLongitude(), is(3.1));
+        assertThat(pointInteriorBoundary.getLatitude(), is(4.5));
     }
 
 }
