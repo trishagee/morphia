@@ -1,15 +1,42 @@
 package org.mongodb.morphia.geo;
 
+import java.util.List;
+
 /**
  * Enumerates all the GeoJson types that are currently supported by Morphia.
  */
-public enum GeoJsonType {
-    POINT("Point", Point.class),
-    LINE_STRING("LineString", LineString.class),
-    POLYGON("Polygon", Polygon.class),
-    MULTI_POINT("MultiPoint", MultiPoint.class),
-    MULTI_LINE_STRING("MultiLineString", MultiLineString.class),
-    MULTI_POLYGON("MultiPolygon", MultiPolygon.class);
+@SuppressWarnings("unchecked") // can't know, or define generics for, the Lists in the factory
+public enum GeoJsonType implements GeometryFactory {
+    POINT("Point", Point.class) {
+        public Geometry createGeometry(final List coordinates) {
+            return new Point(coordinates);
+        }
+    },
+    LINE_STRING("LineString", LineString.class) {
+        public Geometry createGeometry(final List objects) {
+            return new LineString(objects);
+        }
+    },
+    POLYGON("Polygon", Polygon.class) {
+        public Geometry createGeometry(final List boundaries) {
+            return new Polygon(boundaries);
+        }
+    },
+    MULTI_POINT("MultiPoint", MultiPoint.class) {
+        public Geometry createGeometry(final List points) {
+            return new MultiPoint(points);
+        }
+    },
+    MULTI_LINE_STRING("MultiLineString", MultiLineString.class) {
+        public Geometry createGeometry(final List lineStrings) {
+            return new MultiLineString(lineStrings);
+        }
+    },
+    MULTI_POLYGON("MultiPolygon", MultiPolygon.class) {
+        public Geometry createGeometry(final List polygons) {
+            return new MultiPolygon(polygons);
+        }
+    };
 
     private final String type;
     private final Class<? extends Geometry> typeClass;
@@ -43,8 +70,8 @@ public enum GeoJsonType {
      * Allows you to turn String values of types into the Enum that corresponds to this type.
      *
      * @param type a String, one of the values from 
-     *             <a href="http://docs.mongodb.org/manual/applications/geospatial-indexes/#geojson-objects">this list</a> of supported 
-     *             types
+     *             <a href="http://docs.mongodb.org/manual/applications/geospatial-indexes/#geojson-objects">this
+     *             list</a> of supported types
      * @return the GeoJsonType that corresponds to this type String
      */
     public static GeoJsonType fromString(final String type) {
