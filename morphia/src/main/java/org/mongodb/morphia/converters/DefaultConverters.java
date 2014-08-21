@@ -3,8 +3,8 @@ package org.mongodb.morphia.converters;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
-import org.mongodb.morphia.geo.GeoConverter;
 import org.mongodb.morphia.geo.GeometryConverter;
+import org.mongodb.morphia.geo.GeometryShapeConverter;
 import org.mongodb.morphia.logging.Logger;
 import org.mongodb.morphia.logging.MorphiaLoggerFactory;
 import org.mongodb.morphia.mapping.MappedField;
@@ -67,12 +67,12 @@ public class DefaultConverters {
         addConverter(new TimestampConverter());
 
         // Converters for Geo entities
-        addConverter(new GeoConverter.PointConverter());
-        addConverter(new GeoConverter.LineStringConverter());
-        addConverter(new GeoConverter.MultiPointConverter());
-        addConverter(new GeoConverter.MultiLineStringConverter());
-        addConverter(new GeoConverter.PolygonConverter());
-        addConverter(new GeoConverter.MultiPolygonConverter());
+        addConverter(new GeometryShapeConverter.PointConverter());
+        addConverter(new GeometryShapeConverter.LineStringConverter());
+        addConverter(new GeometryShapeConverter.MultiPointConverter());
+        addConverter(new GeometryShapeConverter.MultiLineStringConverter());
+        addConverter(new GeometryShapeConverter.PolygonConverter());
+        addConverter(new GeometryShapeConverter.MultiPolygonConverter());
         addConverter(new GeometryConverter());
 
         //generic converter that will just pass things through.

@@ -8,11 +8,11 @@ import static org.junit.Assert.assertThat;
 import static org.mongodb.morphia.geo.GeoJson.lineString;
 import static org.mongodb.morphia.geo.GeoJson.point;
 
-public class GeoConverterTest extends TestBase{
+public class GeometryShapeConverterTest extends TestBase{
     @Test
     public void shouldEncodeAnEntityWithAMultiPolygonGeoJsonType() {
         // given
-        GeoConverter.MultiPolygonConverter converter = new GeoConverter.MultiPolygonConverter();
+        GeometryShapeConverter.MultiPolygonConverter converter = new GeometryShapeConverter.MultiPolygonConverter();
         converter.setMapper(getMorphia().getMapper());
         Polygon polygonWithHoles = GeoJson.polygonBuilder(point(1.1, 2.0), point(2.3, 3.5), point(3.7, 1.0), point(1.1, 2.0))
                                           .interiorRing(point(1.5, 2.0), point(1.9, 2.0), point(1.9, 1.8), point(1.5, 2.0))
@@ -61,7 +61,7 @@ public class GeoConverterTest extends TestBase{
     @Test
     public void shouldConvertAnEntityWithAPolygonGeoJsonType() {
         // given
-        GeoConverter.PolygonConverter converter = new GeoConverter.PolygonConverter();
+        GeometryShapeConverter.PolygonConverter converter = new GeometryShapeConverter.PolygonConverter();
         converter.setMapper(getMorphia().getMapper());
         Polygon polygon = GeoJson.polygonBuilder(point(1.1, 2.0), point(2.3, 3.5), point(3.7, 1.0), point(1.1, 2.0))
                                  .interiorRing(point(1.5, 2.0), point(1.9, 2.0), point(1.9, 1.8), point(1.5, 2.0))
@@ -99,7 +99,7 @@ public class GeoConverterTest extends TestBase{
     @Test
     public void shouldEncodeAnEntityWithAMultiLineStringGeoJsonType() {
         // given
-        GeoConverter.MultiLineStringConverter converter = new GeoConverter.MultiLineStringConverter();
+        GeometryShapeConverter.MultiLineStringConverter converter = new GeometryShapeConverter.MultiLineStringConverter();
         converter.setMapper(getMorphia().getMapper());
         MultiLineString multiLineString = GeoJson.multiLineString(lineString(point(1, 2), point(3, 5), point(19, 13)),
                                                                   lineString(point(1.5, 2.0),
@@ -130,7 +130,7 @@ public class GeoConverterTest extends TestBase{
     @Test
     public void shouldSaveAnEntityWithALineStringGeoJsonType() {
         // given
-        GeoConverter.LineStringConverter converter = new GeoConverter.LineStringConverter();
+        GeometryShapeConverter.LineStringConverter converter = new GeometryShapeConverter.LineStringConverter();
         converter.setMapper(getMorphia().getMapper());
         LineString lineString = lineString(point(1, 2), point(3, 5), point(19, 13));
 
@@ -149,7 +149,7 @@ public class GeoConverterTest extends TestBase{
     @Test
     public void shouldCorrectlyEncodePointsIntoEntityDocument() {
         // given
-        GeoConverter.PointConverter pointConverter = new GeoConverter.PointConverter();
+        GeometryShapeConverter.PointConverter pointConverter = new GeometryShapeConverter.PointConverter();
         pointConverter.setMapper(getMorphia().getMapper());
 
         Point point = point(3.0, 7.0);

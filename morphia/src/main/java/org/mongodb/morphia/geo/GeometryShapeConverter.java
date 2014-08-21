@@ -10,12 +10,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class GeoConverter extends TypeConverter implements SimpleValueConverter {
+public class GeometryShapeConverter extends TypeConverter implements SimpleValueConverter {
     private final GeoJsonType geoJsonType;
     private final List<GeometryFactory> factories;
 
-    public GeoConverter(final Class<? extends Geometry> geometryClass, final GeoJsonType geoJsonType,
-                        final List<GeometryFactory> factories) {
+    protected GeometryShapeConverter(final Class<? extends Geometry> geometryClass, final GeoJsonType geoJsonType,
+                                     final List<GeometryFactory> factories) {
         super(geometryClass);
         this.geoJsonType = geoJsonType;
         this.factories = factories;
@@ -62,7 +62,7 @@ public class GeoConverter extends TypeConverter implements SimpleValueConverter 
         return getMapper().getConverters().encode(fromDBObject);
     }
 
-    public static class MultiPolygonConverter extends GeoConverter {
+    public static class MultiPolygonConverter extends GeometryShapeConverter {
         public MultiPolygonConverter() {
             super(MultiPolygon.class, GeoJsonType.MULTI_POLYGON, Arrays.<GeometryFactory>asList(new MultiPolygonFactory(),
                                                                                                 new PolygonFactory(),
@@ -71,7 +71,7 @@ public class GeoConverter extends TypeConverter implements SimpleValueConverter 
         }
     }
 
-    public static class PolygonConverter extends GeoConverter {
+    public static class PolygonConverter extends GeometryShapeConverter {
         public PolygonConverter() {
             super(Polygon.class, GeoJsonType.POLYGON, Arrays.<GeometryFactory>asList(new PolygonFactory(),
                                                                                      new LineStringFactory(),
@@ -79,7 +79,7 @@ public class GeoConverter extends TypeConverter implements SimpleValueConverter 
         }
     }
 
-    public static class MultiLineStringConverter extends GeoConverter {
+    public static class MultiLineStringConverter extends GeometryShapeConverter {
         public MultiLineStringConverter() {
             super(MultiLineString.class, GeoJsonType.MULTI_LINE_STRING, Arrays.<GeometryFactory>asList(new MultiLineStringFactory(),
                                                                                                        new LineStringFactory(),
@@ -87,13 +87,13 @@ public class GeoConverter extends TypeConverter implements SimpleValueConverter 
         }
     }
 
-    public static class MultiPointConverter extends GeoConverter {
+    public static class MultiPointConverter extends GeometryShapeConverter {
         public MultiPointConverter() {
             super(MultiPoint.class, GeoJsonType.MULTI_POINT, Arrays.<GeometryFactory>asList(new MultiPointFactory(), new PointFactory()));
         }
     }
 
-    public static class LineStringConverter extends GeoConverter {
+    public static class LineStringConverter extends GeometryShapeConverter {
         public LineStringConverter() {
             super(LineString.class, GeoJsonType.LINE_STRING, Arrays.<GeometryFactory>asList(new LineStringFactory(), new PointFactory()));
         }
@@ -103,7 +103,7 @@ public class GeoConverter extends TypeConverter implements SimpleValueConverter 
      * Converts the Point class from and to MongoDB-shaped DBObjects. This means the Point class can be a prettier, 
      * more usable object since all the serialisation logic is in the converter.
      */
-    public static class PointConverter extends GeoConverter {
+    public static class PointConverter extends GeometryShapeConverter {
         /**
          * Create a new converter.  Registers itself to convert Point classes.
          */
