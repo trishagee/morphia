@@ -1,37 +1,41 @@
 package org.mongodb.morphia.geo;
 
 import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
 import org.mongodb.morphia.converters.SimpleValueConverter;
 import org.mongodb.morphia.converters.TypeConverter;
 import org.mongodb.morphia.mapping.MappedField;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class GeoConverter extends TypeConverter implements SimpleValueConverter {
     private final GeoJsonType geoJsonType;
     private final List<GeometryFactory> factories;
 
-    public GeoConverter(final GeoJsonType geoJsonType,
+    public GeoConverter(final Class<? extends Geometry> geometryClass, final GeoJsonType geoJsonType,
                         final List<GeometryFactory> factories) {
+        super(geometryClass);
         this.geoJsonType = geoJsonType;
         this.factories = factories;
     }
 
     @Override
     public Object encode(final Object value, final MappedField optionalExtraInfo) {
-        List<Object> encodedObjects = encodeObjects((List) value);
+        Object encodedObjects = encodeObjects(((Geometry) value).getCoordinates());
         return new BasicDBObject("type", geoJsonType.getType())
                .append("coordinates", encodedObjects);
     }
 
-    private List<Object> encodeObjects(final List value) {
+    private Object encodeObjects(final List value) {
         List<Object> encodedObjects = new ArrayList<Object>();
         for (final Object object : (List) value) {
-            if (object instanceof Point) {
-                encodedObjects.add(CoordinateConverter.encode((Point) object));
-            } else {
+            if (object instanceof Geometry) {
+                //iterate through the list of geometry objects recursively until you find the lowest-level
                 encodedObjects.add(encodeObjects(((Geometry) object).getCoordinates()));
+            } else {
+                encodedObjects.add(getMapper().getConverters().encode(object));
             }
         }
         return encodedObjects;
@@ -39,7 +43,7 @@ public class GeoConverter extends TypeConverter implements SimpleValueConverter 
 
     @Override
     public Object decode(final Class<?> targetClass, final Object fromDBObject, final MappedField optionalExtraInfo) {
-        return decodeObject(fromDBObject, factories);
+        return decodeObject(((DBObject) fromDBObject).get("coordinates"), factories);
     }
 
     @SuppressWarnings("unchecked") // always have unchecked casts when dealing with raw classes
@@ -57,8 +61,54 @@ public class GeoConverter extends TypeConverter implements SimpleValueConverter 
         }
         return getMapper().getConverters().encode(fromDBObject);
     }
-    
-    interface GeometryFactory<T> {
-        Geometry createGeometry(List<T> geometries);
+
+    public static class MultiPolygonConverter extends GeoConverter {
+        public MultiPolygonConverter() {
+            super(MultiPolygon.class, GeoJsonType.MULTI_POLYGON, Arrays.<GeometryFactory>asList(new MultiPolygonFactory(),
+                                                                                                new PolygonFactory(),
+                                                                                                new LineStringFactory(),
+                                                                                                new PointFactory()));
+        }
+    }
+
+    public static class PolygonConverter extends GeoConverter {
+        public PolygonConverter() {
+            super(Polygon.class, GeoJsonType.POLYGON, Arrays.<GeometryFactory>asList(new PolygonFactory(),
+                                                                                     new LineStringFactory(),
+                                                                                     new PointFactory()));
+        }
+    }
+
+    public static class MultiLineStringConverter extends GeoConverter {
+        public MultiLineStringConverter() {
+            super(MultiLineString.class, GeoJsonType.MULTI_LINE_STRING, Arrays.<GeometryFactory>asList(new MultiLineStringFactory(),
+                                                                                                       new LineStringFactory(),
+                                                                                                       new PointFactory()));
+        }
+    }
+
+    public static class MultiPointConverter extends GeoConverter {
+        public MultiPointConverter() {
+            super(MultiPoint.class, GeoJsonType.MULTI_POINT, Arrays.<GeometryFactory>asList(new MultiPointFactory(), new PointFactory()));
+        }
+    }
+
+    public static class LineStringConverter extends GeoConverter {
+        public LineStringConverter() {
+            super(LineString.class, GeoJsonType.LINE_STRING, Arrays.<GeometryFactory>asList(new LineStringFactory(), new PointFactory()));
+        }
+    }
+
+    /**
+     * Converts the Point class from and to MongoDB-shaped DBObjects. This means the Point class can be a prettier, 
+     * more usable object since all the serialisation logic is in the converter.
+     */
+    public static class PointConverter extends GeoConverter {
+        /**
+         * Create a new converter.  Registers itself to convert Point classes.
+         */
+        public PointConverter() {
+            super(Point.class, GeoJsonType.POINT, Arrays.<GeometryFactory>asList(new PointFactory()));
+        }
     }
 }

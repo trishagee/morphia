@@ -40,8 +40,8 @@ public class MultiPoint implements Geometry, PointCollection {
     }
 
     @Override
-    public List<List<Double>> getCoordinates() {
-        throw new UnsupportedOperationException("Not implemented yet!");
+    public List<Point> getCoordinates() {
+        return coordinates;
     }
 
     /* equals, hashCode and toString. Useful primarily for testing and debugging. Don't forget to re-create when changing this class */

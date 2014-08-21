@@ -1,6 +1,5 @@
 package org.mongodb.morphia.geo;
 
-import org.mongodb.morphia.annotations.Converters;
 import org.mongodb.morphia.annotations.Embedded;
 import org.mongodb.morphia.annotations.Entity;
 
@@ -18,7 +17,6 @@ import java.util.List;
  */
 @Embedded
 @Entity(noClassnameStored = true)
-@Converters(LineStringConverter.class)
 public class LineString implements Geometry, PointCollection {
     private List<Point> coordinates;
 

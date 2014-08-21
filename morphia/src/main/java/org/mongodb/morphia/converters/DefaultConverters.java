@@ -3,13 +3,8 @@ package org.mongodb.morphia.converters;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+import org.mongodb.morphia.geo.GeoConverter;
 import org.mongodb.morphia.geo.GeometryConverter;
-import org.mongodb.morphia.geo.LineStringConverter;
-import org.mongodb.morphia.geo.MultiLineStringConverter;
-import org.mongodb.morphia.geo.MultiPointConverter;
-import org.mongodb.morphia.geo.MultiPolygonConverter;
-import org.mongodb.morphia.geo.PointConverter;
-import org.mongodb.morphia.geo.PolygonConverter;
 import org.mongodb.morphia.logging.Logger;
 import org.mongodb.morphia.logging.MorphiaLoggerFactory;
 import org.mongodb.morphia.mapping.MappedField;
@@ -72,12 +67,12 @@ public class DefaultConverters {
         addConverter(new TimestampConverter());
 
         // Converters for Geo entities
-        addConverter(new PointConverter());
-        addConverter(new LineStringConverter());
-        addConverter(new MultiPointConverter());
-        addConverter(new MultiLineStringConverter());
-        addConverter(new PolygonConverter());
-        addConverter(new MultiPolygonConverter());
+        addConverter(new GeoConverter.PointConverter());
+        addConverter(new GeoConverter.LineStringConverter());
+        addConverter(new GeoConverter.MultiPointConverter());
+        addConverter(new GeoConverter.MultiLineStringConverter());
+        addConverter(new GeoConverter.PolygonConverter());
+        addConverter(new GeoConverter.MultiPolygonConverter());
         addConverter(new GeometryConverter());
 
         //generic converter that will just pass things through.
