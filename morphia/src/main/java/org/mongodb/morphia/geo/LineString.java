@@ -4,7 +4,6 @@ import org.mongodb.morphia.annotations.Converters;
 import org.mongodb.morphia.annotations.Embedded;
 import org.mongodb.morphia.annotations.Entity;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -36,20 +35,12 @@ public class LineString implements Geometry, PointCollection {
         coordinates = points;
     }
 
-    /*
-     * Not for public consumption, used by package methods for creating more complex types that contain LinePoints.
-     */
-    @Override
-    public List<List<Double>> getCoordinates() {
-        //TODO: this method needs removing once all the converters are done
-        List<List<Double>> list = new ArrayList<List<Double>>();
-        for (final Point coordinate : coordinates) {
-            list.add(coordinate.getCoordinates());
-        }
-        return list;
-    }
-
     public List<Point> getPoints() {
+        return coordinates;
+    }
+    
+    
+    public List<Point> getCoordinates() {
         return coordinates;
     }
 

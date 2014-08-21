@@ -3,7 +3,7 @@ package org.mongodb.morphia.geo;
 import org.mongodb.morphia.annotations.Embedded;
 import org.mongodb.morphia.annotations.Entity;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -18,24 +18,25 @@ import java.util.List;
 @Embedded
 @Entity(noClassnameStored = true)
 public class MultiPolygon implements Geometry {
-    private final String type = GeoJsonType.MULTI_POLYGON.getType();
-    // Sigh. But that's the representation that converts easiest to the MongoDB shape
-    private final List<List<List<List<Double>>>> coordinates;
+    private List<Polygon> coordinates;
 
     @SuppressWarnings("UnusedDeclaration") // used by Morphia
     private MultiPolygon() {
-        this.coordinates = new ArrayList<List<List<List<Double>>>>();
     }
 
     MultiPolygon(final Polygon... polygons) {
-        this();
-        for (final Polygon polygon : polygons) {
-            coordinates.add(polygon.getCoordinates());
-        }
+        coordinates = Arrays.asList(polygons);
     }
 
-    MultiPolygon(final List<List<List<List<Double>>>> coordinates) {
-        this.coordinates = coordinates;
+    MultiPolygon(final List<Polygon> polygons) {
+        coordinates = polygons;
+    }
+
+    public List<Polygon> getPolygons() {
+        return coordinates;
+    }
+    public List<Polygon> getCoordinates() {
+        return coordinates;
     }
 
     /* equals, hashCode and toString. Useful primarily for testing and debugging. Don't forget to re-create when changing this class */
@@ -53,25 +54,19 @@ public class MultiPolygon implements Geometry {
         if (!coordinates.equals(that.coordinates)) {
             return false;
         }
-        if (!type.equals(that.type)) {
-            return false;
-        }
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = type.hashCode();
-        result = 31 * result + coordinates.hashCode();
-        return result;
+        return coordinates.hashCode();
     }
 
     @Override
     public String toString() {
         return "MultiPolygon{"
-               + "type='" + type + '\''
-               + ", coordinates=" + coordinates
+               + "coordinates=" + coordinates
                + '}';
     }
 }

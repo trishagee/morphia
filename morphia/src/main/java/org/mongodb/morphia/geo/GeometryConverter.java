@@ -5,8 +5,6 @@ import org.mongodb.morphia.converters.SimpleValueConverter;
 import org.mongodb.morphia.converters.TypeConverter;
 import org.mongodb.morphia.mapping.MappedField;
 
-import java.util.List;
-
 import static org.mongodb.morphia.geo.GeoJsonType.LINE_STRING;
 import static org.mongodb.morphia.geo.GeoJsonType.MULTI_LINE_STRING;
 import static org.mongodb.morphia.geo.GeoJsonType.MULTI_POINT;
@@ -34,9 +32,8 @@ public class GeometryConverter extends TypeConverter implements SimpleValueConve
     public Object decode(final Class<?> targetClass, final Object fromDBObject, final MappedField optionalExtraInfo) {
         DBObject dbObject = (DBObject) fromDBObject;
         String type = (String) dbObject.get("type");
-        List coordinates = (List) dbObject.get("coordinates");
         if (type.equals(POINT.getType())) {
-            return new Point(coordinates);
+            return getMapper().getConverters().decode(Point.class, fromDBObject, optionalExtraInfo);
         } else if (type.equals(LINE_STRING.getType())) {
             return getMapper().getConverters().decode(LineString.class, fromDBObject, optionalExtraInfo);
         } else if (type.equals(POLYGON.getType())) {
@@ -46,7 +43,7 @@ public class GeometryConverter extends TypeConverter implements SimpleValueConve
         } else if (type.equals(MULTI_LINE_STRING.getType())) {
             return getMapper().getConverters().decode(MultiLineString.class, fromDBObject, optionalExtraInfo);
         } else if (type.equals(MULTI_POLYGON.getType())) {
-            return new MultiPolygon(coordinates);
+            return getMapper().getConverters().decode(MultiPolygon.class, fromDBObject, optionalExtraInfo);
         }
         throw new IllegalArgumentException(String.format("Cannot decode object into Geometry instance. Type= '%s', Object: '%s'",
                                                          type, fromDBObject));

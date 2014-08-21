@@ -37,6 +37,9 @@ public class MultiLineString implements Geometry {
     public List<LineString> getLineStrings() {
         return coordinates;
     }
+    public List<LineString> getCoordinates() {
+        return coordinates;
+    }
 
     /* equals, hashCode and toString. Useful primarily for testing and debugging. Don't forget to re-create when changing this class */
     @Override

@@ -37,27 +37,15 @@ public class Polygon implements Geometry {
         this.interiorBoundaries = interiorBoundaries;
     }
 
-    public Polygon(final List<LineString> points) {
-        exteriorBoundary = points.get(0);
-        if (points.size() > 1) {
-            interiorBoundaries = points.subList(1, points.size());
+    Polygon(final List<LineString> boundaries) {
+        exteriorBoundary = boundaries.get(0);
+        if (boundaries.size() > 1) {
+            interiorBoundaries = boundaries.subList(1, boundaries.size());
         } else {
             interiorBoundaries = new ArrayList<LineString>();
         }
     }
 
-    /*
-     * Not for public consumption, used by package methods for creating more complex types that contain Polygons.
-     */
-    List<List<List<Double>>> getCoordinates() {
-        List<List<List<Double>>> list = new ArrayList<List<List<Double>>>();
-
-        list.add(exteriorBoundary.getCoordinates());
-        for (final PointCollection interiorBoundary : interiorBoundaries) {
-            list.add(interiorBoundary.getCoordinates());
-        }
-        return list;
-    }
 
     public LineString getExteriorBoundary() {
         return exteriorBoundary;
@@ -69,6 +57,13 @@ public class Polygon implements Geometry {
 
     List<PointCollection> getAllBoundaries() {
         List<PointCollection> polygonBoundaries = new ArrayList<PointCollection>();
+        polygonBoundaries.add(exteriorBoundary);
+        polygonBoundaries.addAll(interiorBoundaries);
+        return polygonBoundaries;
+    }
+
+    public List<LineString> getCoordinates() {
+        List<LineString> polygonBoundaries = new ArrayList<LineString>();
         polygonBoundaries.add(exteriorBoundary);
         polygonBoundaries.addAll(interiorBoundaries);
         return polygonBoundaries;

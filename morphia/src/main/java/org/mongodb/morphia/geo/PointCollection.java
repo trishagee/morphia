@@ -4,6 +4,4 @@ import java.util.List;
 
 public interface PointCollection {
     List<Point> getPoints();
-
-    List<List<Double>> getCoordinates();
 }

@@ -37,7 +37,7 @@ public class Point implements Geometry {
     /*
      * Not for public consumption, used by package methods for creating more complex types that contain Points.
      */
-    List<Double> getCoordinates() {
+    public List<Double> getCoordinates() {
         return Arrays.asList(longitude, latitude);
     }
 
