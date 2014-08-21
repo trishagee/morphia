@@ -18,11 +18,13 @@ import java.util.List;
 @Embedded
 @Entity(noClassnameStored = true)
 public class Point implements Geometry {
-    private double latitude;
-    private double longitude;
+    private final double latitude;
+    private final double longitude;
 
     @SuppressWarnings("unused") //needed for Morphia serialisation
     private Point() {
+        longitude = 0;
+        latitude = 0;
     }
 
     Point(final double latitude, final double longitude) {
@@ -34,9 +36,7 @@ public class Point implements Geometry {
         this(coordinates.get(1), coordinates.get(0));
     }
 
-    /*
-     * Not for public consumption, used by package methods for creating more complex types that contain Points.
-     */
+    @Override
     public List<Double> getCoordinates() {
         return Arrays.asList(longitude, latitude);
     }

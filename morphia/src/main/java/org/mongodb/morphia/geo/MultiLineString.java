@@ -1,23 +1,17 @@
 package org.mongodb.morphia.geo;
 
-import org.mongodb.morphia.annotations.Embedded;
-import org.mongodb.morphia.annotations.Entity;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 /**
  * This class represents a series of lines, which will saved into MongoDB as per the 
- * <a href="http://geojson.org/geojson-spec.html#id6">GeoJSON specification</a>. Therefore this entity will never have its own ID or 
- * store the its Class name.
+ * <a href="http://geojson.org/geojson-spec.html#id6">GeoJSON specification</a>. 
  * <p/>
  * The factory for creating a MultiLineString is the {@code GeoJson.multiLineString} method.
  *
  * @see org.mongodb.morphia.geo.GeoJson#multiLineString(LineString...) 
  */
-@Embedded
-@Entity(noClassnameStored = true)
 public class MultiLineString implements Geometry {
     private final List<LineString> coordinates;
 
@@ -34,9 +28,7 @@ public class MultiLineString implements Geometry {
         this.coordinates = coordinates;
     }
 
-    public List<LineString> getLineStrings() {
-        return coordinates;
-    }
+    @Override
     public List<LineString> getCoordinates() {
         return coordinates;
     }
@@ -53,7 +45,7 @@ public class MultiLineString implements Geometry {
 
         MultiLineString that = (MultiLineString) o;
 
-        if (coordinates != null ? !coordinates.equals(that.coordinates) : that.coordinates != null) {
+        if (!coordinates.equals(that.coordinates)) {
             return false;
         }
 
@@ -62,7 +54,7 @@ public class MultiLineString implements Geometry {
 
     @Override
     public int hashCode() {
-        return coordinates != null ? coordinates.hashCode() : 0;
+        return coordinates.hashCode();
     }
 
     @Override

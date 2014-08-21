@@ -1,24 +1,18 @@
 package org.mongodb.morphia.geo;
 
-import org.mongodb.morphia.annotations.Embedded;
-import org.mongodb.morphia.annotations.Entity;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 /**
  * This class represents a series of points, which will saved into MongoDB as per the <a href="http://geojson.org/geojson-spec
- * .html#id5">GeoJSON
- * specification</a>. Therefore this entity will never have its own ID or store the its Class name.
+ * .html#id5">GeoJSON specification</a>. 
  * <p/>
  * The factory for creating a MultiPoint is the {@code GeoJson.multiPoint} method.
  *
  * @see org.mongodb.morphia.geo.GeoJson#multiPoint(Point...)
  */
-@Embedded
-@Entity(noClassnameStored = true)
-public class MultiPoint implements Geometry, PointCollection {
+public class MultiPoint implements Geometry {
     private final List<Point> coordinates;
 
     @SuppressWarnings("UnusedDeclaration") // used by Morphia
@@ -32,11 +26,6 @@ public class MultiPoint implements Geometry, PointCollection {
 
     MultiPoint(final List<Point> coordinates) {
         this.coordinates = coordinates;
-    }
-
-    @Override
-    public List<Point> getPoints() {
-        return coordinates;
     }
 
     @Override

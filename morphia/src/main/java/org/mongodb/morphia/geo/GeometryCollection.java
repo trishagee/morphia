@@ -19,10 +19,11 @@ import java.util.List;
 @Entity(noClassnameStored = true)
 public class GeometryCollection {
     private final String type = "GeometryCollection";
-    private List<Geometry> geometries = new ArrayList<Geometry>();
+    private final List<Geometry> geometries;
 
     @SuppressWarnings("UnusedDeclaration") // needed by morphia
     private GeometryCollection() {
+        geometries = new ArrayList<Geometry>();
     }
 
     GeometryCollection(final List<Geometry> geometries) {

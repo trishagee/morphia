@@ -21,7 +21,6 @@ public class GeometryConverter extends TypeConverter implements SimpleValueConve
     }
 
     @Override
-    @SuppressWarnings("unchecked") // always going to have to cast getting raw objects from the database
     public Object decode(final Class<?> targetClass, final Object fromDBObject, final MappedField optionalExtraInfo) {
         DBObject dbObject = (DBObject) fromDBObject;
         String type = (String) dbObject.get("type");

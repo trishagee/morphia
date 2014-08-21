@@ -1,8 +1,5 @@
 package org.mongodb.morphia.geo;
 
-import org.mongodb.morphia.annotations.Embedded;
-import org.mongodb.morphia.annotations.Entity;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -10,8 +7,7 @@ import java.util.List;
 /**
  * This class represents either a simple polygon enclosing an area, or a more complex polygon that contains both an exterior boundary and
  * interior boundaries (holes) within it.  It will be persisted into the database according to <a
- * href="http://geojson.org/geojson-spec.html#id4">the specification</a>. Therefore this entity will never have its own ID or store the its
- * Class name.
+ * href="http://geojson.org/geojson-spec.html#id4">the specification</a>.
  * <p/>
  * The factory for creating a Polygon is {@code PolygonBuilder}, which is accessible via the {@code GeoJson.polygonBuilder} method.
  * Alternatively, simple polygons without inner rings can be created via the {@code GeoJson.polygon} factory method.
@@ -19,14 +15,13 @@ import java.util.List;
  * @see org.mongodb.morphia.geo.GeoJson#polygonBuilder(Point...)
  * @see org.mongodb.morphia.geo.GeoJson#polygon(Point...)
  */
-@Embedded
-@Entity(noClassnameStored = true)
 public class Polygon implements Geometry {
-    private LineString exteriorBoundary;
+    private final LineString exteriorBoundary;
     private final List<LineString> interiorBoundaries;
 
     @SuppressWarnings("UnusedDeclaration") // used by Morphia
     private Polygon() {
+        exteriorBoundary = null;
         interiorBoundaries = new ArrayList<LineString>();
     }
 
@@ -44,22 +39,26 @@ public class Polygon implements Geometry {
         }
     }
 
-
+    /**
+     * Returns a LineString representing the exterior boundary of this Polygon.  Polygons should have an exterior boundary where the end
+     * point is the same as the start point.
+     *
+     * @return a LineString containing the points that make up the external boundary of this Polygon.
+     */
     public LineString getExteriorBoundary() {
         return exteriorBoundary;
     }
 
+    /**
+     * Returns a (possibly empty) List of LineStrings, one for each hole inside the external boundary of this polygon.
+     *
+     * @return a List of LineStrings where each LineString represents an internal boundary or hole.
+     */
     public List<LineString> getInteriorBoundaries() {
         return Collections.unmodifiableList(interiorBoundaries);
     }
 
-    List<PointCollection> getAllBoundaries() {
-        List<PointCollection> polygonBoundaries = new ArrayList<PointCollection>();
-        polygonBoundaries.add(exteriorBoundary);
-        polygonBoundaries.addAll(interiorBoundaries);
-        return polygonBoundaries;
-    }
-
+    @Override
     public List<LineString> getCoordinates() {
         List<LineString> polygonBoundaries = new ArrayList<LineString>();
         polygonBoundaries.add(exteriorBoundary);
@@ -79,10 +78,10 @@ public class Polygon implements Geometry {
 
         Polygon polygon = (Polygon) o;
 
-        if (exteriorBoundary != null ? !exteriorBoundary.equals(polygon.exteriorBoundary) : polygon.exteriorBoundary != null) {
+        if (!exteriorBoundary.equals(polygon.exteriorBoundary)) {
             return false;
         }
-        if (interiorBoundaries != null ? !interiorBoundaries.equals(polygon.interiorBoundaries) : polygon.interiorBoundaries != null) {
+        if (!interiorBoundaries.equals(polygon.interiorBoundaries)) {
             return false;
         }
 
@@ -91,8 +90,8 @@ public class Polygon implements Geometry {
 
     @Override
     public int hashCode() {
-        int result = exteriorBoundary != null ? exteriorBoundary.hashCode() : 0;
-        result = 31 * result + (interiorBoundaries != null ? interiorBoundaries.hashCode() : 0);
+        int result = exteriorBoundary.hashCode();
+        result = 31 * result + interiorBoundaries.hashCode();
         return result;
     }
 

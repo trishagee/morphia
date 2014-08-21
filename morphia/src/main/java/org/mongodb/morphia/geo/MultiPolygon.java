@@ -1,27 +1,23 @@
 package org.mongodb.morphia.geo;
 
-import org.mongodb.morphia.annotations.Embedded;
-import org.mongodb.morphia.annotations.Entity;
-
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 /**
  * This class represents a set of polygons, which will saved into MongoDB as per the 
- * <a href="http://geojson.org/geojson-spec.html#id7">GeoJSON specification</a>. Therefore this entity will never have its own ID or store 
- * the its Class name.
+ * <a href="http://geojson.org/geojson-spec.html#id7">GeoJSON specification</a>. 
  * <p/>
  * The factory for creating a MultiPolygon is the {@code GeoJson.multiPolygon} method.
  * 
  * @see org.mongodb.morphia.geo.GeoJson#multiPolygon(Polygon...) 
  */
-@Embedded
-@Entity(noClassnameStored = true)
 public class MultiPolygon implements Geometry {
-    private List<Polygon> coordinates;
+    private final List<Polygon> coordinates;
 
     @SuppressWarnings("UnusedDeclaration") // used by Morphia
     private MultiPolygon() {
+        coordinates = new ArrayList<Polygon>();
     }
 
     MultiPolygon(final Polygon... polygons) {
@@ -32,9 +28,7 @@ public class MultiPolygon implements Geometry {
         coordinates = polygons;
     }
 
-    public List<Polygon> getPolygons() {
-        return coordinates;
-    }
+    @Override
     public List<Polygon> getCoordinates() {
         return coordinates;
     }

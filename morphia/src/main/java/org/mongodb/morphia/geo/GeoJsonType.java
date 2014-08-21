@@ -14,7 +14,7 @@ public enum GeoJsonType {
     private final String type;
     private final Class<? extends Geometry> typeClass;
 
-    private GeoJsonType(final String type, final Class<? extends Geometry> typeClass) {
+    GeoJsonType(final String type, final Class<? extends Geometry> typeClass) {
         this.type = type;
         this.typeClass = typeClass;
     }
