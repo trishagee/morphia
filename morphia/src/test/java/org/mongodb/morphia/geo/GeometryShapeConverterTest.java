@@ -8,17 +8,16 @@ import static org.junit.Assert.assertThat;
 import static org.mongodb.morphia.geo.GeoJson.lineString;
 import static org.mongodb.morphia.geo.GeoJson.point;
 
-public class GeometryShapeConverterTest extends TestBase{
+public class GeometryShapeConverterTest extends TestBase {
     @Test
     public void shouldEncodeAnEntityWithAMultiPolygonGeoJsonType() {
         // given
         GeometryShapeConverter.MultiPolygonConverter converter = new GeometryShapeConverter.MultiPolygonConverter();
         converter.setMapper(getMorphia().getMapper());
-        Polygon polygonWithHoles = GeoJson.polygonBuilder(point(1.1, 2.0), point(2.3, 3.5), point(3.7, 1.0), point(1.1, 2.0))
-                                          .interiorRing(point(1.5, 2.0), point(1.9, 2.0), point(1.9, 1.8), point(1.5, 2.0))
-                                          .interiorRing(point(2.2, 2.1), point(2.4, 1.9), point(2.4, 1.7), point(2.1, 1.8),
-                                                        point(2.2, 2.1))
-                                          .build();
+        Polygon polygonWithHoles = GeoJson.polygon(lineString(point(1.1, 2.0), point(2.3, 3.5), point(3.7, 1.0), point(1.1, 2.0)),
+                                                   lineString(point(1.5, 2.0), point(1.9, 2.0), point(1.9, 1.8), point(1.5, 2.0)),
+                                                   lineString(point(2.2, 2.1), point(2.4, 1.9), point(2.4, 1.7), point(2.1, 1.8), 
+                                                              point(2.2, 2.1)));
         MultiPolygon multiPolygon = GeoJson.multiPolygon(GeoJson.polygon(point(1.1, 2.0),
                                                                          point(2.3, 3.5),
                                                                          point(3.7, 1.0),
@@ -63,11 +62,9 @@ public class GeometryShapeConverterTest extends TestBase{
         // given
         GeometryShapeConverter.PolygonConverter converter = new GeometryShapeConverter.PolygonConverter();
         converter.setMapper(getMorphia().getMapper());
-        Polygon polygon = GeoJson.polygonBuilder(point(1.1, 2.0), point(2.3, 3.5), point(3.7, 1.0), point(1.1, 2.0))
-                                 .interiorRing(point(1.5, 2.0), point(1.9, 2.0), point(1.9, 1.8), point(1.5, 2.0))
-                                 .interiorRing(point(2.2, 2.1), point(2.4, 1.9), point(2.4, 1.7), point(2.1, 1.8),
-                                               point(2.2, 2.1))
-                                 .build();
+        Polygon polygon = GeoJson.polygon(lineString(point(1.1, 2.0), point(2.3, 3.5), point(3.7, 1.0), point(1.1, 2.0)),
+                                          lineString(point(1.5, 2.0), point(1.9, 2.0), point(1.9, 1.8), point(1.5, 2.0)),
+                                          lineString(point(2.2, 2.1), point(2.4, 1.9), point(2.4, 1.7), point(2.1, 1.8), point(2.2, 2.1)));
 
         // when
         Object encodedPolygon = converter.encode(polygon);

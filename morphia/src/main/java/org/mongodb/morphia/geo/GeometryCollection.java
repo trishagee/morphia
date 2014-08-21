@@ -4,6 +4,7 @@ import org.mongodb.morphia.annotations.Embedded;
 import org.mongodb.morphia.annotations.Entity;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -28,6 +29,10 @@ public class GeometryCollection {
 
     GeometryCollection(final List<Geometry> geometries) {
         this.geometries = geometries;
+    }
+
+    GeometryCollection(final Geometry... geometries) {
+        this.geometries = Arrays.asList(geometries);
     }
 
     @Override

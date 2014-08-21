@@ -18,23 +18,10 @@ public final class GeoJson {
      * @param latitude  the point's latitude coordinate
      * @param longitude the point's longitude coordinate
      * @return a Point instance representing a single location point defined by the given latitude and longitude
-     * @see GeoJson#pointBuilder()
+     * @see org.mongodb.morphia.geo.PointBuilder
      */
     public static Point point(final double latitude, final double longitude) {
-        return pointBuilder().latitude(latitude).longitude(longitude).build();
-    }
-
-    /**
-     * Get a PointBuilder to create Point instances representing a 
-     * <a href="http://docs.mongodb.org/manual/apps/geospatial-indexes/#geojson-objects">GeoJSON</a>
-     * point type. The advantage of using the builder is to reduce confusion of the order of the latitude and longitude double values.
-     * <p/>
-     * Supported by server versions 2.4 and above.
-     *
-     * @return a PointBuilder for creating Point instances
-     */
-    public static PointBuilder pointBuilder() {
-        return new PointBuilder();
+        return new Point(latitude, longitude);
     }
 
     /**
@@ -50,8 +37,8 @@ public final class GeoJson {
 
     /**
      * Create a new Polygon representing a <a href="http://docs.mongodb.org/manual/apps/geospatial-indexes/#geojson-objects">GeoJSON</a>
-     * Polygon type. This helper method uses polygonBuilder to create just the external boundary of a simple polygon.  For more complex
-     * polygons, use {@code polygonBuilder}.
+     * Polygon type. This helper method uses {@code org.mongodb.morphia.geo.GeoJson#polygon(LineString, LineString...)} to create the
+     * Polygon.  If you need to create Polygons with interior rings (holes), use that method.
      * <p/>
      * Supported by server versions 2.4 and above.
      *
@@ -59,26 +46,33 @@ public final class GeoJson {
      *               polygon
      * @return a Polygon as defined by the points.
      * @throws java.lang.IllegalArgumentException if the start and end points are not the same
-     * @see org.mongodb.morphia.geo.GeoJson#polygonBuilder(Point...)
+     * @see org.mongodb.morphia.geo.GeoJson#polygon(LineString, LineString...)
      */
     public static Polygon polygon(final Point... points) {
-        return polygonBuilder(points).build();
+        LineString exteriorBoundary = lineString(points);
+        ensurePolygonIsClosed(exteriorBoundary);
+        return new Polygon(exteriorBoundary);
     }
 
     /**
-     * Create a new PolygonBuilder that will let you create a Polygon representing a 
+     * Lets you create a Polygon representing a 
      * <a href="http://docs.mongodb.org/manual/apps/geospatial-indexes/#geojson-objects">GeoJSON</a>
-     * Polygon type. The builder is especially useful for defining polygons with inner rings.
+     * Polygon type. This method is especially useful for defining polygons with inner rings.
      * <p/>
      * Supported by server versions 2.4 and above.
      *
-     * @param points an ordered series of Points that make up the polygon.  The first and last points should be the same to close the
-     *               polygon
+     * @param exteriorBoundary   a LineString that contains a series of Points that make up the polygon.  The first and last points should
+     *                           be the same to close the polygon
+     * @param interiorBoundaries optional varargs that let you define the boundaries for any holes inside the polygon
      * @return a PolygonBuilder to be used to build up the required Polygon
      * @throws java.lang.IllegalArgumentException if the start and end points are not the same
      */
-    public static PolygonBuilder polygonBuilder(final Point... points) {
-        return new PolygonBuilder(points);
+    public static Polygon polygon(final LineString exteriorBoundary, final LineString... interiorBoundaries) {
+        ensurePolygonIsClosed(exteriorBoundary);
+        for (final LineString boundary : interiorBoundaries) {
+            ensurePolygonIsClosed(boundary);
+        }
+        return new Polygon(exteriorBoundary, interiorBoundaries);
     }
 
     /**
@@ -93,8 +87,8 @@ public final class GeoJson {
     }
 
     /**
-     * Create a new MultiLineString representing a 
-     * <a href="http://docs.mongodb.org/manual/apps/geospatial-indexes/#geojson-objects">GeoJSON</a>
+     * Create a new MultiLineString representing a <a href="http://docs.mongodb
+     * .org/manual/apps/geospatial-indexes/#geojson-objects">GeoJSON</a>
      * MultiLineString type.  Supported by server versions 2.6 and above.
      *
      * @param lines a set of lines that make up the MultiLineString object
@@ -105,8 +99,8 @@ public final class GeoJson {
     }
 
     /**
-     * Create a new MultiPolygon representing a 
-     * <a href="http://docs.mongodb.org/manual/apps/geospatial-indexes/#geojson-objects">GeoJSON</a>
+     * Create a new MultiPolygon representing a <a href="http://docs.mongodb
+     * .org/manual/apps/geospatial-indexes/#geojson-objects">GeoJSON</a>
      * MultiPolygon type.  Supported by server versions 2.6 and above.
      *
      * @param polygons a series of polygons (which may contain inner rings)
@@ -117,13 +111,22 @@ public final class GeoJson {
     }
 
     /**
-     * Return a GeometryCollectionBuilder that will let you create a GeometryCollection 
-     * <a href="http://docs.mongodb.org/manual/apps/geospatial-indexes/#geojson-objects">GeoJSON</a>
+     * Return a GeometryCollection that will let you create a GeometryCollection <a href="http://docs.mongodb
+     * .org/manual/apps/geospatial-indexes/#geojson-objects">GeoJSON</a>
      * GeometryCollection.  Supported by server version 2.6
      *
-     * @return new GeometryCollectionBuilder that will allow you to build up a GeometryCollection
+     * @param geometries a series of Geometry instances that will make up this GeometryCollection
+     * @return a GeometryCollection made up of all the geometries
      */
-    public static GeometryCollectionBuilder geometryCollectionBuilder() {
-        return new GeometryCollectionBuilder();
+    public static GeometryCollection geometryCollection(final Geometry... geometries) {
+        return new GeometryCollection(geometries);
+    }
+
+    private static void ensurePolygonIsClosed(final LineString points) {
+        int size = points.getCoordinates().size();
+        if (size > 0 && !points.getCoordinates().get(0).equals(points.getCoordinates().get(size - 1))) {
+            throw new IllegalArgumentException("A polygon requires the starting point to be the same as the end to ensure a closed "
+                                               + "area");
+        }
     }
 }

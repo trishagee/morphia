@@ -1,8 +1,10 @@
 package org.mongodb.morphia.geo;
 
 /**
- * Creates Point instances.  The major advantage of this builder is that it reduces confusion over which double is latitude and which is
- * longitude.
+ * Creates Point instances representing a <a href="http://docs.mongodb.org/manual/apps/geospatial-indexes/#geojson-objects">GeoJSON</a>
+ * point type. The advantage of using the builder is to reduce confusion of the order of the latitude and longitude double values.
+ * <p/>
+ * Supported by server versions 2.4 and above.
  *
  * @see org.mongodb.morphia.geo.Point
  */

@@ -9,16 +9,16 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.mongodb.morphia.geo.GeoJson.lineString;
+import static org.mongodb.morphia.geo.GeoJson.multiPolygon;
 import static org.mongodb.morphia.geo.GeoJson.point;
+import static org.mongodb.morphia.geo.GeoJson.polygon;
 
 public class GeometryCollectionTest extends TestBase {
     @Test
     public void shouldCorrectlySerialisePointsInGeometryCollection() {
         // given
         Point point = point(3.0, 7.0);
-        GeometryCollection geometryCollection = GeoJson.geometryCollectionBuilder()
-                                                       .add(point)
-                                                       .build();
+        GeometryCollection geometryCollection = GeoJson.geometryCollection(point);
 
         // when
         DBObject dbObject = getMorphia().toDBObject(geometryCollection);
@@ -41,9 +41,7 @@ public class GeometryCollectionTest extends TestBase {
     public void shouldCorrectlySerialiseLineStringsInGeometryCollection() {
         // given
         LineString lineString = lineString(point(1, 2), point(3, 5), point(19, 13));
-        GeometryCollection geometryCollection = GeoJson.geometryCollectionBuilder()
-                                                       .add(lineString)
-                                                       .build();
+        GeometryCollection geometryCollection = GeoJson.geometryCollection(lineString);
         getMorphia().getMapper().addMappedClass(Point.class);
 
         // when
@@ -67,14 +65,11 @@ public class GeometryCollectionTest extends TestBase {
     @Test
     public void shouldCorrectlySerialisePolygonsInGeometryCollection() {
         // given
-        Polygon polygonWithHoles = GeoJson.polygonBuilder(point(1.1, 2.0), point(2.3, 3.5), point(3.7, 1.0), point(1.1, 2.0))
-                                          .interiorRing(point(1.5, 2.0), point(1.9, 2.0), point(1.9, 1.8), point(1.5, 2.0))
-                                          .interiorRing(point(2.2, 2.1), point(2.4, 1.9), point(2.4, 1.7), point(2.1, 1.8),
-                                                        point(2.2, 2.1))
-                                          .build();
-        GeometryCollection geometryCollection = GeoJson.geometryCollectionBuilder()
-                                                       .add(polygonWithHoles)
-                                                       .build();
+        Polygon polygonWithHoles = polygon(lineString(point(1.1, 2.0), point(2.3, 3.5), point(3.7, 1.0), point(1.1, 2.0)),
+                                           lineString(point(1.5, 2.0), point(1.9, 2.0), point(1.9, 1.8), point(1.5, 2.0)),
+                                           lineString(point(2.2, 2.1), point(2.4, 1.9), point(2.4, 1.7), point(2.1, 1.8),
+                                                      point(2.2, 2.1)));
+        GeometryCollection geometryCollection = GeoJson.geometryCollection(polygonWithHoles);
 
         // when
         DBObject dbObject = getMorphia().toDBObject(geometryCollection);
@@ -114,9 +109,7 @@ public class GeometryCollectionTest extends TestBase {
     public void shouldCorrectlySerialiseMultiPointsInGeometryCollection() {
         // given
         MultiPoint multiPoint = GeoJson.multiPoint(point(1, 2), point(3, 5), point(19, 13));
-        GeometryCollection geometryCollection = GeoJson.geometryCollectionBuilder()
-                                                       .add(multiPoint)
-                                                       .build();
+        GeometryCollection geometryCollection = GeoJson.geometryCollection(multiPoint);
 
         // when
         DBObject dbObject = getMorphia().toDBObject(geometryCollection);
@@ -140,21 +133,10 @@ public class GeometryCollectionTest extends TestBase {
     @Test
     public void shouldCorrectlySerialiseMultiPolygonsInGeometryCollection() {
         // given
-        MultiPolygon multiPolygon = GeoJson.multiPolygon(GeoJson.polygonBuilder(point(1.1, 2.0),
-                                                                                point(2.3, 3.5),
-                                                                                point(3.7, 1.0),
-                                                                                point(1.1, 2.0)).build(),
-                                                         GeoJson.polygonBuilder(point(1.2, 3.0),
-                                                                                point(2.5, 4.5),
-                                                                                point(6.7, 1.9),
-                                                                                point(1.2, 3.0))
-                                                                .interiorRing(point(3.5, 2.4),
-                                                                              point(1.7, 2.8),
-                                                                              point(3.5, 2.4))
-                                                                .build());
-        GeometryCollection geometryCollection = GeoJson.geometryCollectionBuilder()
-                                                       .add(multiPolygon)
-                                                       .build();
+        MultiPolygon multiPolygon = multiPolygon(polygon(lineString(point(1.1, 2.0), point(2.3, 3.5), point(3.7, 1.0), point(1.1, 2.0))),
+                                                 polygon(lineString(point(1.2, 3.0), point(2.5, 4.5), point(6.7, 1.9), point(1.2, 3.0)),
+                                                         lineString(point(3.5, 2.4), point(1.7, 2.8), point(3.5, 2.4))));
+        GeometryCollection geometryCollection = GeoJson.geometryCollection(multiPolygon);
 
         // when
         DBObject dbObject = getMorphia().toDBObject(geometryCollection);

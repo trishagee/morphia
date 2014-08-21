@@ -1,6 +1,7 @@
 package org.mongodb.morphia.geo;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -12,7 +13,7 @@ import java.util.List;
  * The factory for creating a Polygon is {@code PolygonBuilder}, which is accessible via the {@code GeoJson.polygonBuilder} method.
  * Alternatively, simple polygons without inner rings can be created via the {@code GeoJson.polygon} factory method.
  *
- * @see org.mongodb.morphia.geo.GeoJson#polygonBuilder(Point...)
+ * @see org.mongodb.morphia.geo.GeoJson#polygon(LineString, LineString...) 
  * @see org.mongodb.morphia.geo.GeoJson#polygon(Point...)
  */
 public class Polygon implements Geometry {
@@ -25,9 +26,9 @@ public class Polygon implements Geometry {
         interiorBoundaries = new ArrayList<LineString>();
     }
 
-    Polygon(final LineString exteriorBoundary, final List<LineString> interiorBoundaries) {
+    Polygon(final LineString exteriorBoundary, final LineString... interiorBoundaries) {
         this.exteriorBoundary = exteriorBoundary;
-        this.interiorBoundaries = interiorBoundaries;
+        this.interiorBoundaries = Arrays.asList(interiorBoundaries);
     }
 
     Polygon(final List<LineString> boundaries) {
