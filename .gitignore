@@ -5,7 +5,6 @@
 .project
 .settings
 *.sw*
-.idea
 release.sh
 **/target/**
 **/build/**
