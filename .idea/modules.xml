@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/buildSrc/buildSrc.iml" filepath="$PROJECT_DIR$/buildSrc/buildSrc.iml" />
+      <module fileurl="file://$PROJECT_DIR$/entityscanner-plug/entityscanner-plug.iml" filepath="$PROJECT_DIR$/entityscanner-plug/entityscanner-plug.iml" />
+      <module fileurl="file://$PROJECT_DIR$/guice-plug/guice-plug.iml" filepath="$PROJECT_DIR$/guice-plug/guice-plug.iml" />
+      <module fileurl="file://$PROJECT_DIR$/logging-slf4j/logging-slf4j.iml" filepath="$PROJECT_DIR$/logging-slf4j/logging-slf4j.iml" />
+      <module fileurl="file://$PROJECT_DIR$/morphia.iml" filepath="$PROJECT_DIR$/morphia.iml" />
+      <module fileurl="file://$PROJECT_DIR$/morphia/morphia-morphia.iml" filepath="$PROJECT_DIR$/morphia/morphia-morphia.iml" />
+      <module fileurl="file://$PROJECT_DIR$/no-proxy-deps-tests/no-proxy-deps-tests.iml" filepath="$PROJECT_DIR$/no-proxy-deps-tests/no-proxy-deps-tests.iml" />
+      <module fileurl="file://$PROJECT_DIR$/util/util.iml" filepath="$PROJECT_DIR$/util/util.iml" />
+      <module fileurl="file://$PROJECT_DIR$/validation/validation.iml" filepath="$PROJECT_DIR$/validation/validation.iml" />
+    </modules>
+  </component>
+</project>

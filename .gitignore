@@ -16,3 +16,4 @@ bin
 out/
 docs/landing/public
 docs/reference/public
+.idea/libraries
