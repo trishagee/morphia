@@ -246,7 +246,7 @@ public class CustomConvertersTest extends TestBase {
             this.value = value;
         }
 
-        static class BConverter extends TypeConverter implements SimpleValueConverter {
+        static class BConverter extends TypeConverter<ValueObject> implements SimpleValueConverter {
 
             public BConverter() {
                 this(ValueObject.class);
@@ -274,7 +274,7 @@ public class CustomConvertersTest extends TestBase {
 
 
             @Override
-            public Long encode(final Object value, final MappedField optionalExtraInfo) {
+            public Long encode(final ValueObject value, final MappedField optionalExtraInfo) {
                 if (value == null) {
                     return null;
                 }
@@ -344,14 +344,14 @@ public class CustomConvertersTest extends TestBase {
     }
 
     @SuppressWarnings("unchecked")
-    private static class ListToMapConvert extends TypeConverter {
+    private static class ListToMapConvert extends TypeConverter<List> {
         @Override
         protected boolean isSupported(final Class c, final MappedField mf) {
             return (mf != null) && mf.isMultipleValues() && !mf.isMap();
         }
 
         @Override
-        public Object decode(final Class<?> targetClass, final Object fromDBObject, final MappedField optionalExtraInfo) {
+        public List decode(final Class<List> targetClass, final Object fromDBObject, final MappedField optionalExtraInfo) {
             if (fromDBObject != null) {
                 Map<String, Object> map = (Map<String, Object>) fromDBObject;
                 List<Object> list = new ArrayList<Object>(map.size());
@@ -365,7 +365,7 @@ public class CustomConvertersTest extends TestBase {
         }
 
         @Override
-        public Object encode(final Object value, final MappedField optionalExtraInfo) {
+        public Object encode(final List value, final MappedField optionalExtraInfo) {
             if (value != null) {
                 Map<String, Object> map = new LinkedHashMap<String, Object>();
                 List<Object> list = (List<Object>) value;

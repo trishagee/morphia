@@ -11,10 +11,10 @@ import java.util.Map;
 /**
  * @author Uwe Schaefer, (us@thomas-daily.de)
  */
-public class MapOfValuesConverter extends TypeConverter {
+public class MapOfValuesConverter extends TypeConverter<Map> {
     @Override
     @SuppressWarnings("unchecked")
-    public Object decode(final Class targetClass, final Object fromDBObject, final MappedField mf) {
+    public Map decode(final Class targetClass, final Object fromDBObject, final MappedField mf) {
         if (fromDBObject == null) {
             return null;
         }
@@ -34,7 +34,7 @@ public class MapOfValuesConverter extends TypeConverter {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Object encode(final Object value, final MappedField mf) {
+    public Object encode(final Map value, final MappedField mf) {
         if (value == null) {
             return null;
         }
