@@ -12,7 +12,7 @@ import org.mongodb.morphia.mapping.MappedField;
  * Only implements the decode method as the concrete classes can encode themselves without needing a converter. It's when they come out of
  * the database that there's not enough information for Morphia to automatically create Geometry instances.
  */
-public class GeometryConverter extends TypeConverter implements SimpleValueConverter {
+public class GeometryConverter extends TypeConverter<Geometry> implements SimpleValueConverter {
     /**
      * Sets up this converter to work with things that implement the Geometry interface
      */
@@ -21,9 +21,13 @@ public class GeometryConverter extends TypeConverter implements SimpleValueConve
     }
 
     @Override
-    public Object decode(final Class<?> targetClass, final Object fromDBObject, final MappedField optionalExtraInfo) {
+    public Geometry decode(final Class<Geometry> targetClass, final Object fromDBObject, final MappedField
+            optionalExtraInfo) {
         DBObject dbObject = (DBObject) fromDBObject;
         String type = (String) dbObject.get("type");
-        return getMapper().getConverters().decode(GeoJsonType.fromString(type).getTypeClass(), fromDBObject, optionalExtraInfo);
+        //TODO: unsafe cast
+        return (Geometry) getMapper().getConverters()
+                                     .decode(GeoJsonType.fromString(type)
+                                                        .getTypeClass(), fromDBObject, optionalExtraInfo);
     }
 }
