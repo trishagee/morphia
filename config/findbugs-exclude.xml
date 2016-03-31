@@ -38,6 +38,10 @@
         <Bug pattern="WMI_WRONG_MAP_ITERATOR"/>
     </Match>
     <Match>
+        <Class name="org.mongodb.morphia.converters.TimestampConverter"/>
+        <Bug code="BC"/>
+    </Match>
+    <Match>
         <Bug code="SQL,XSS,J2EE,SW,STI,DL,JLM,MWN,NN,RS,UL,HRS,PT,MTIA,XFB"/>
     </Match>
     <Match>
