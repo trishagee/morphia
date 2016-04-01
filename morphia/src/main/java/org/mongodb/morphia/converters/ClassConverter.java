@@ -20,15 +20,11 @@ public class ClassConverter extends TypeConverter implements SimpleValueConverte
 
     @Override
     public Object decode(final Class targetClass, final Object fromDBObject, final MappedField optionalExtraInfo) {
-        if (fromDBObject == null) {
-            return null;
-        }
-
-        final String l = fromDBObject.toString();
+        final String className = fromDBObject.toString();
         try {
-            return Class.forName(l);
+            return Class.forName(className);
         } catch (ClassNotFoundException e) {
-            throw new MappingException("Cannot create class from Name '" + l + "'", e);
+            throw new MappingException("Cannot create class from Name '" + className + "'", e);
         }
     }
 

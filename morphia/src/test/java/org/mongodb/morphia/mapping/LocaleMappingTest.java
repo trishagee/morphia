@@ -38,7 +38,21 @@ public class LocaleMappingTest extends TestBase {
         Assert.assertEquals(2, e.l3.length);
         Assert.assertEquals(Locale.TRADITIONAL_CHINESE, e.l3[0]);
         Assert.assertEquals(Locale.FRENCH, e.l3[1]);
+    }
 
+    @Test
+    public void shouldEncodeAndDecodeLocaleValuesWhenNull() throws Exception {
+        getMorphia().map(E.class);
+        final E e = new E();
+        getDs().save(e);
+
+        final E loaded = getDs().get(e);
+
+        Assert.assertNotNull(loaded.id);
+
+        Assert.assertTrue(loaded.l2.isEmpty());
+        Assert.assertNull(loaded.l1);
+        Assert.assertNull(loaded.l3);
     }
 
     public static class E {

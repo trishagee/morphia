@@ -19,10 +19,6 @@ public class CharacterConverter extends TypeConverter implements SimpleValueConv
 
     @Override
     public Object decode(final Class targetClass, final Object fromDBObject, final MappedField optionalExtraInfo) {
-        if (fromDBObject == null) {
-            return null;
-        }
-
         if (fromDBObject instanceof String) {
             final char[] chars = ((String) fromDBObject).toCharArray();
             if (chars.length == 1) {

@@ -20,10 +20,6 @@ public class CharArrayConverter extends TypeConverter implements SimpleValueConv
 
     @Override
     public Object decode(final Class targetClass, final Object val, final MappedField optionalExtraInfo) {
-        if (val == null) {
-            return null;
-        }
-
         final char[] chars = val.toString().toCharArray();
         if (targetClass.isArray() && targetClass.equals(Character[].class)) {
             return convertToWrapperArray(chars);

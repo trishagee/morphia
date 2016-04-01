@@ -44,6 +44,27 @@ public class FloatMappingTest extends TestBase {
         Assert.assertArrayEquals(ent.nestedWrapperArray, loaded.nestedWrapperArray);
     }
 
+    @Test
+    public void shouldEncodeAndDecodeFloatValuesWhenNull() throws Exception {
+        getMorphia().map(Floats.class);
+        final Floats floats = new Floats();
+        getDs().save(floats);
+
+        final Floats loaded = getDs().get(floats);
+
+        Assert.assertNotNull(loaded.id);
+
+        Assert.assertTrue(loaded.listWrapperArray.isEmpty());
+        Assert.assertTrue(loaded.listPrimitiveArray.isEmpty());
+        Assert.assertTrue(loaded.listWrapper.isEmpty());
+        Assert.assertEquals(0, loaded.singlePrimitive, 0);
+        Assert.assertNull(loaded.singleWrapper);
+        Assert.assertNull(loaded.primitiveArray);
+        Assert.assertNull(loaded.wrapperArray);
+        Assert.assertNull(loaded.nestedPrimitiveArray);
+        Assert.assertNull(loaded.nestedWrapperArray);
+    }
+
     private static class Floats {
         private final List<Float[]> listWrapperArray = new ArrayList<Float[]>();
         private final List<float[]> listPrimitiveArray = new ArrayList<float[]>();
