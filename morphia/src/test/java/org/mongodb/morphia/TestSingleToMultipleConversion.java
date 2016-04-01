@@ -20,7 +20,9 @@ public class TestSingleToMultipleConversion extends TestBase {
         getDs().save(new HasSingleString());
         Assert.assertNotNull(getDs().find(HasSingleString.class).get());
         Assert.assertEquals(1, getDs().find(HasSingleString.class).countAll());
+
         final HasManyStringsArray hms = getDs().find(HasManyStringsArray.class).get();
+
         Assert.assertNotNull(hms);
         Assert.assertNotNull(hms.strings);
         Assert.assertEquals(1, hms.strings.length);

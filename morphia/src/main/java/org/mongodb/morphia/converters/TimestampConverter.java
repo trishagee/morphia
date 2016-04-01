@@ -20,13 +20,13 @@ public class TimestampConverter extends DateConverter {
     }
 
     @Override
-    public Date decode(final Class targetClass, final Object val, final MappedField optionalExtraInfo) {
-        final Date d = (Date) super.decode(targetClass, val, optionalExtraInfo);
+    public Date decode(final Class<Date> targetClass, final Object val, final MappedField optionalExtraInfo) {
+        final Date d = super.decode(targetClass, val, optionalExtraInfo);
         return new Timestamp(d.getTime());
     }
 
     @Override
     public Object encode(final Date val, final MappedField optionalExtraInfo) {
-        return val == null ? null : new Date(((Timestamp) val).getTime());
+        return val == null ? null : new Date(val.getTime());
     }
 }

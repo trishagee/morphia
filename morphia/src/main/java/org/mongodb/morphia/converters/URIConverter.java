@@ -9,7 +9,7 @@ import java.net.URI;
 /**
  * @author scotthernandez
  */
-public class URIConverter extends TypeConverter implements SimpleValueConverter {
+public class URIConverter extends TypeConverter<URI> implements SimpleValueConverter {
 
     /**
      * Creates the Converter.
@@ -23,7 +23,7 @@ public class URIConverter extends TypeConverter implements SimpleValueConverter 
     }
 
     @Override
-    public Object decode(final Class targetClass, final Object val, final MappedField optionalExtraInfo) {
+    public URI decode(final Class targetClass, final Object val, final MappedField optionalExtraInfo) {
         if (val == null) {
             return null;
         }
@@ -32,7 +32,7 @@ public class URIConverter extends TypeConverter implements SimpleValueConverter 
     }
 
     @Override
-    public String encode(final Object uri, final MappedField optionalExtraInfo) {
+    public String encode(final URI uri, final MappedField optionalExtraInfo) {
         if (uri == null) {
             return null;
         }
