@@ -22,10 +22,6 @@ public class LongConverter extends TypeConverter implements SimpleValueConverter
 
     @Override
     public Object decode(final Class targetClass, final Object val, final MappedField optionalExtraInfo) {
-        if (val == null) {
-            return null;
-        }
-
         if (val instanceof Long) {
             return val;
         }

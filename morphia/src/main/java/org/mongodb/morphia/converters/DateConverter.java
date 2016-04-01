@@ -32,10 +32,6 @@ public class DateConverter extends TypeConverter<Date> implements SimpleValueCon
 
     @Override
     public Date decode(final Class<Date> targetClass, final Object val, final MappedField optionalExtraInfo) {
-        if (val == null) {
-            return null;
-        }
-
         if (val instanceof Date) {
             return (Date) val;
         }

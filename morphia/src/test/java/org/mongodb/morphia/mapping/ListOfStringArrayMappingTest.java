@@ -31,6 +31,21 @@ public class ListOfStringArrayMappingTest extends TestBase {
         Assert.assertEquals(ent.string, loaded.string);
     }
 
+    @Test
+    public void shouldEncodeAndDecodeStringValuesWhenNull() throws Exception {
+        getMorphia().map(ContainsListStringArray.class);
+        final ContainsListStringArray containsListStringArray = new ContainsListStringArray();
+        getDs().save(containsListStringArray);
+
+        final ContainsListStringArray loaded = getDs().get(containsListStringArray);
+
+        Assert.assertNotNull(loaded.id);
+
+        Assert.assertTrue(loaded.listOfStrings.isEmpty());
+        Assert.assertNull(loaded.arrayOfStrings);
+        Assert.assertNull(loaded.string);
+    }
+
     private static class ContainsListStringArray {
         private final List<String[]> listOfStrings = new ArrayList<String[]>();
         @Id

@@ -47,6 +47,25 @@ public class BooleanMappingTest extends TestBase {
         Assert.assertArrayEquals(ent.nestedWrapperArray, loaded.nestedWrapperArray);
     }
 
+    @Test
+    public void shouldEncodeAndDecodeBooleansWhenNull() throws Exception {
+        getMorphia().map(Booleans.class);
+        final Booleans booleans = new Booleans();
+        getDs().save(booleans);
+
+        final Booleans loaded = getDs().get(booleans);
+
+        Assert.assertNotNull(loaded.id);
+
+        Assert.assertTrue(loaded.booleans.isEmpty());
+        Assert.assertTrue(loaded.list.isEmpty());
+        Assert.assertTrue(loaded.booleanPrimitives.isEmpty());
+        Assert.assertNull(loaded.primitiveArray);
+        Assert.assertNull(loaded.wrapperArray);
+        Assert.assertNull(loaded.nestedPrimitiveArray);
+        Assert.assertNull(loaded.nestedWrapperArray);
+    }
+
     private void compare(final String property, final boolean[] expected, final boolean[] received) {
         Assert.assertEquals(String.format("%s lengths should match", property), expected.length, received.length);
         for (int i = 0; i < expected.length; i++) {

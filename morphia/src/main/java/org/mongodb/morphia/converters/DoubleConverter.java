@@ -22,10 +22,6 @@ public class DoubleConverter extends TypeConverter implements SimpleValueConvert
 
     @Override
     public Object decode(final Class targetClass, final Object val, final MappedField optionalExtraInfo) {
-        if (val == null) {
-            return null;
-        }
-
         if (val instanceof Double) {
             return val;
         }

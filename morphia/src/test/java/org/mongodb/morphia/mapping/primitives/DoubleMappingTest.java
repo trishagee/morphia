@@ -43,6 +43,27 @@ public class DoubleMappingTest extends TestBase {
         Assert.assertArrayEquals(ent.nestedWrapperArray, loaded.nestedWrapperArray);
     }
 
+    @Test
+    public void shouldEncodeAndDoubleIntegerValuesWhenNull() throws Exception {
+        getMorphia().map(Doubles.class);
+        final Doubles doubles = new Doubles();
+        getDs().save(doubles);
+
+        final Doubles loaded = getDs().get(doubles);
+
+        Assert.assertNotNull(loaded.id);
+
+        Assert.assertTrue(loaded.listWrapperArray.isEmpty());
+        Assert.assertTrue(loaded.listPrimitiveArray.isEmpty());
+        Assert.assertTrue(loaded.listWrapper.isEmpty());
+        Assert.assertEquals(0, loaded.singlePrimitive, 0);
+        Assert.assertNull(loaded.singleWrapper);
+        Assert.assertNull(loaded.primitiveArray);
+        Assert.assertNull(loaded.wrapperArray);
+        Assert.assertNull(loaded.nestedPrimitiveArray);
+        Assert.assertNull(loaded.nestedWrapperArray);
+    }
+
     private static class Doubles {
         private final List<Double[]> listWrapperArray = new ArrayList<Double[]>();
         private final List<double[]> listPrimitiveArray = new ArrayList<double[]>();

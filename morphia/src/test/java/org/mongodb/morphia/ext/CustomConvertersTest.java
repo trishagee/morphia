@@ -149,9 +149,6 @@ public class CustomConvertersTest extends TestBase {
 
         @Override
         public Object decode(final Class targetClass, final Object fromDBObject, final MappedField optionalExtraInfo) {
-            if (fromDBObject == null) {
-                return null;
-            }
             final IntegerConverter intConverter = new IntegerConverter();
             final Integer i = (Integer) intConverter.decode(targetClass, fromDBObject, optionalExtraInfo);
             return (char) i.intValue();

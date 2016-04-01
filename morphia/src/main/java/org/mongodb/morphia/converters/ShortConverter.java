@@ -21,10 +21,6 @@ public class ShortConverter extends TypeConverter implements SimpleValueConverte
 
     @Override
     public Object decode(final Class targetClass, final Object val, final MappedField optionalExtraInfo) {
-        if (val == null) {
-            return null;
-        }
-
         if (val instanceof Short) {
             return val;
         }

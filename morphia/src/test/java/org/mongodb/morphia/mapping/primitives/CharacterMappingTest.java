@@ -119,6 +119,27 @@ public class CharacterMappingTest extends TestBase {
         compare("abc", characters.wrapperArray);
     }
 
+    @Test
+    public void shouldEncodeAndDecodeCharacterValuesWhenNull() throws Exception {
+        getMorphia().map(Characters.class);
+        final Characters characters = new Characters();
+        getDs().save(characters);
+
+        final Characters loaded = getDs().get(characters);
+
+        Assert.assertNotNull(loaded.id);
+
+        Assert.assertTrue(loaded.listWrapperArray.isEmpty());
+        Assert.assertTrue(loaded.listPrimitiveArray.isEmpty());
+        Assert.assertTrue(loaded.listWrapper.isEmpty());
+        Assert.assertEquals(0, loaded.singlePrimitive);
+        Assert.assertNull(loaded.singleWrapper);
+        Assert.assertNull(loaded.primitiveArray);
+        Assert.assertNull(loaded.wrapperArray);
+        Assert.assertNull(loaded.nestedPrimitiveArray);
+        Assert.assertNull(loaded.nestedWrapperArray);
+    }
+
     private void compare(final String abc, final Character[] wrapperArray) {
         Assert.assertEquals(abc.length(), wrapperArray.length);
         for (int i = 0; i < wrapperArray.length; i++) {

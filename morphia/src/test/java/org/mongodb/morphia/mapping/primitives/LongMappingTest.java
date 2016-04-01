@@ -43,6 +43,27 @@ public class LongMappingTest extends TestBase {
         Assert.assertArrayEquals(ent.nestedWrapperArray, loaded.nestedWrapperArray);
     }
 
+    @Test
+    public void shouldEncodeAndDecodeIntegerValuesWhenNull() throws Exception {
+        getMorphia().map(Longs.class);
+        final Longs longs = new Longs();
+        getDs().save(longs);
+
+        final Longs loaded = getDs().get(longs);
+
+        Assert.assertNotNull(loaded.id);
+
+        Assert.assertTrue(loaded.listWrapperArray.isEmpty());
+        Assert.assertTrue(loaded.listPrimitiveArray.isEmpty());
+        Assert.assertTrue(loaded.listWrapper.isEmpty());
+        Assert.assertEquals(0, loaded.singlePrimitive);
+        Assert.assertNull(loaded.singleWrapper);
+        Assert.assertNull(loaded.primitiveArray);
+        Assert.assertNull(loaded.wrapperArray);
+        Assert.assertNull(loaded.nestedPrimitiveArray);
+        Assert.assertNull(loaded.nestedWrapperArray);
+    }
+
     private static class Longs {
         private final List<Long[]> listWrapperArray = new ArrayList<Long[]>();
         private final List<long[]> listPrimitiveArray = new ArrayList<long[]>();

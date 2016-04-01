@@ -21,10 +21,6 @@ public class IntegerConverter extends TypeConverter implements SimpleValueConver
 
     @Override
     public Object decode(final Class targetClass, final Object val, final MappedField optionalExtraInfo) {
-        if (val == null) {
-            return null;
-        }
-
         if (val instanceof Integer) {
             return val;
         }

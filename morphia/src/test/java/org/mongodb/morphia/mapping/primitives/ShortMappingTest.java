@@ -43,6 +43,27 @@ public class ShortMappingTest extends TestBase {
         Assert.assertArrayEquals(ent.nestedWrapperArray, loaded.nestedWrapperArray);
     }
 
+    @Test
+    public void shouldEncodeAndDecodeShortValuesWhenNull() throws Exception {
+        getMorphia().map(Shorts.class);
+        final Shorts shorts = new Shorts();
+        getDs().save(shorts);
+
+        final Shorts loaded = getDs().get(shorts);
+
+        Assert.assertNotNull(loaded.id);
+
+        Assert.assertTrue(loaded.listWrapperArray.isEmpty());
+        Assert.assertTrue(loaded.listPrimitiveArray.isEmpty());
+        Assert.assertTrue(loaded.listWrapper.isEmpty());
+        Assert.assertEquals(0, loaded.singlePrimitive);
+        Assert.assertNull(loaded.singleWrapper);
+        Assert.assertNull(loaded.primitiveArray);
+        Assert.assertNull(loaded.wrapperArray);
+        Assert.assertNull(loaded.nestedPrimitiveArray);
+        Assert.assertNull(loaded.nestedWrapperArray);
+    }
+
     private static class Shorts {
         private final List<Short[]> listWrapperArray = new ArrayList<Short[]>();
         private final List<short[]> listPrimitiveArray = new ArrayList<short[]>();
