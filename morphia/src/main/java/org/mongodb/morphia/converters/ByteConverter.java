@@ -10,6 +10,7 @@ import java.lang.reflect.Array;
  * @author Uwe Schaefer, (us@thomas-daily.de)
  * @author scotthernandez
  */
+@SuppressWarnings("unchecked") // because this class magically deals with types and arrays, can't be easily typed
 public class ByteConverter extends TypeConverter implements SimpleValueConverter {
     /**
      * Creates the Converter.

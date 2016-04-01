@@ -18,6 +18,11 @@ public abstract class TypeConverter<T> {
     protected TypeConverter() {
     }
 
+    /**
+     * Provide a list of classes to that this Converter supports for decoding.
+     *
+     * @param types
+     */
     protected TypeConverter(final Class... types) {
         supportedTypes = copy(types);
     }

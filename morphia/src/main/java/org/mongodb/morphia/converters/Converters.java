@@ -77,6 +77,7 @@ public abstract class Converters {
      * @param mf           the MappedField that contains the metadata useful for decoding
      * @return the new instance
      */
+    @SuppressWarnings("unchecked") // ah, generics...
     public Object decode(final Class c, final Object fromDBObject, final MappedField mf) {
         Class toDecode = c;
         if (toDecode == null) {
@@ -91,6 +92,7 @@ public abstract class Converters {
      * @param o The object to encode
      * @return the encoded version of the object
      */
+    @SuppressWarnings("unchecked") // ah, generics...
     public Object encode(final Object o) {
         if (o == null) {
             return null;
@@ -105,6 +107,7 @@ public abstract class Converters {
      * @param o The object to encode
      * @return the encoded version of the object
      */
+    @SuppressWarnings("unchecked") // ah, generics...
     public Object encode(final Class c, final Object o) {
         return getEncoder(c).encode(o);
     }
@@ -117,6 +120,7 @@ public abstract class Converters {
      * @param mf           the MappedField containing the metadata to use when decoding in to a field
      * @param targetEntity then entity to hold the state from the database
      */
+    @SuppressWarnings("unchecked") // ah, generics...
     public void fromDBObject(final DBObject dbObj, final MappedField mf, final Object targetEntity) {
         final Object object = mf.getDbObjectValue(dbObj);
         if (object != null) {
@@ -225,6 +229,7 @@ public abstract class Converters {
      * @param dbObj            the DBObject to populate
      * @param opts             the options to apply
      */
+    @SuppressWarnings("unchecked") // ah, generics...
     public void toDBObject(final Object containingObject, final MappedField mf, final DBObject dbObj, final MapperOptions opts) {
         final Object fieldValue = mf.getFieldValue(containingObject);
         final TypeConverter enc = getEncoder(fieldValue, mf);
@@ -253,8 +258,8 @@ public abstract class Converters {
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     protected TypeConverter getEncoder(final Object val, final MappedField mf) {
-
         List<TypeConverter> tcs = null;
 
         if (val != null) {

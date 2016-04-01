@@ -142,22 +142,20 @@ public class CustomConvertersTest extends TestBase {
         assertEquals(entity, actual);
     }
 
-    static class CharacterToByteConverter extends TypeConverter implements SimpleValueConverter {
+    @SuppressWarnings("unchecked")
+    static class CharacterToByteConverter extends TypeConverter<Character> implements SimpleValueConverter {
         public CharacterToByteConverter() {
             super(Character.class, char.class);
         }
 
         @Override
-        public Object decode(final Class targetClass, final Object fromDBObject, final MappedField optionalExtraInfo) {
-            final IntegerConverter intConverter = new IntegerConverter();
-            final Integer i = (Integer) intConverter.decode(targetClass, fromDBObject, optionalExtraInfo);
-            return (char) i.intValue();
+        public Character decode(final Class targetClass, final Object fromDBObject, final MappedField optionalExtraInfo) {
+            return (char) new IntegerConverter().decode(targetClass, fromDBObject, optionalExtraInfo).intValue();
         }
 
         @Override
-        public Object encode(final Object value, final MappedField optionalExtraInfo) {
-            final Character c = (Character) value;
-            return (int) c.charValue();
+        public Object encode(final Character value, final MappedField optionalExtraInfo) {
+            return (int) value.charValue();
         }
     }
 

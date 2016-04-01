@@ -12,7 +12,7 @@ import java.util.UUID;
  * @author stummb
  * @author scotthernandez
  */
-public class UUIDConverter extends TypeConverter implements SimpleValueConverter {
+public class UUIDConverter extends TypeConverter<UUID> implements SimpleValueConverter {
 
     /**
      * Creates the Converter.
@@ -22,12 +22,12 @@ public class UUIDConverter extends TypeConverter implements SimpleValueConverter
     }
 
     @Override
-    public Object decode(final Class targetClass, final Object fromDBObject, final MappedField optionalExtraInfo) {
-        return fromDBObject == null ? null : UUID.fromString((String) fromDBObject);
+    public UUID decode(final Class targetClass, final Object fromDBObject, final MappedField optionalExtraInfo) {
+        return UUID.fromString((String) fromDBObject);
     }
 
     @Override
-    public Object encode(final Object value, final MappedField optionalExtraInfo) {
+    public Object encode(final UUID value, final MappedField optionalExtraInfo) {
         return value == null ? null : value.toString();
     }
 }

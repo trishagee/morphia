@@ -41,6 +41,7 @@ public class DefaultConverters extends Converters {
         addConverter(new DateConverter());
         addConverter(new URIConverter());
         addConverter(new KeyConverter());
+        addConverter(new ArrayConverter());
         addConverter(new MapOfValuesConverter());
         addConverter(new IterableConverter());
         addConverter(new ClassConverter());
