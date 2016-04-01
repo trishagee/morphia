@@ -4,6 +4,7 @@ package org.mongodb.morphia.converters;
 import org.mongodb.morphia.mapping.MappedField;
 
 import java.lang.reflect.Array;
+import java.util.Optional;
 
 
 /**
@@ -28,15 +29,16 @@ public class CharArrayConverter extends TypeConverter implements SimpleValueConv
     }
 
     @Override
-    public Object encode(final Object value, final MappedField optionalExtraInfo) {
-        if (value == null) {
+    public Object encode(final Optional value, final MappedField optionalExtraInfo) {
+        if (!value.isPresent()) {
             return null;
         } else {
-            if (value instanceof char[]) {
-                return new String((char[]) value);
+            Object val = value.get();
+            if (val instanceof char[]) {
+                return new String((char[]) val);
             } else {
                 final StringBuilder builder = new StringBuilder();
-                final Character[] array = (Character[]) value;
+                final Character[] array = (Character[]) val;
                 for (final Character character : array) {
                     builder.append(character);
                 }

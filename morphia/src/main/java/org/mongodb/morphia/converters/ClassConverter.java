@@ -4,6 +4,8 @@ package org.mongodb.morphia.converters;
 import org.mongodb.morphia.mapping.MappedField;
 import org.mongodb.morphia.mapping.MappingException;
 
+import java.util.Optional;
+
 
 /**
  * @author Uwe Schaefer, (us@thomas-daily.de)
@@ -29,11 +31,11 @@ public class ClassConverter extends TypeConverter implements SimpleValueConverte
     }
 
     @Override
-    public Object encode(final Object value, final MappedField optionalExtraInfo) {
-        if (value == null) {
+    public Object encode(final Optional value, final MappedField optionalExtraInfo) {
+        if (!value.isPresent()) {
             return null;
         } else {
-            return ((Class) value).getName();
+            return ((Class) value.get()).getName();
         }
     }
 }

@@ -6,6 +6,8 @@ import org.mongodb.morphia.converters.SimpleValueConverter;
 import org.mongodb.morphia.converters.TypeConverter;
 import org.mongodb.morphia.mapping.MappedField;
 
+import java.util.Optional;
+
 /**
  * A Morphia TypeConverter that knows how to turn things that are labelled with the Geometry interface into the correct concrete class,
  * based on the GeoJSON type.
@@ -28,8 +30,8 @@ public class NamedCoordinateReferenceSystemConverter extends TypeConverter<Coord
     }
 
     @Override
-    public DBObject encode(final CoordinateReferenceSystem value, final MappedField optionalExtraInfo) {
-        NamedCoordinateReferenceSystem crs = (NamedCoordinateReferenceSystem) value;
+    public DBObject encode(final Optional<CoordinateReferenceSystem> value, final MappedField optionalExtraInfo) {
+        NamedCoordinateReferenceSystem crs = (NamedCoordinateReferenceSystem) value.get();
         final BasicDBObject dbObject = new BasicDBObject("type", crs.getType().getTypeName());
         dbObject.put("properties", new BasicDBObject("name", crs.getName()));
 

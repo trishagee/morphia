@@ -13,6 +13,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static java.lang.String.format;
@@ -109,7 +110,8 @@ public abstract class Converters {
      */
     @SuppressWarnings("unchecked") // ah, generics...
     public Object encode(final Class c, final Object o) {
-        return getEncoder(c).encode(o);
+        Optional o1 = Optional.ofNullable(o);
+        return getEncoder(c).encode(o1);
     }
 
     /**
@@ -234,7 +236,7 @@ public abstract class Converters {
         final Object fieldValue = mf.getFieldValue(containingObject);
         final TypeConverter enc = getEncoder(fieldValue, mf);
 
-        final Object encoded = enc.encode(fieldValue, mf);
+        final Object encoded = enc.encode(Optional.ofNullable(fieldValue), mf);
         if (encoded != null || opts.isStoreNulls()) {
             dbObj.put(mf.getNameToStore(), encoded);
         }

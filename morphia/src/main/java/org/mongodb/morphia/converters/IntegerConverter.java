@@ -18,6 +18,9 @@ public class IntegerConverter extends TypeConverter<Integer> implements SimpleVa
 
     @Override
     public Integer decode(final Class<Integer> targetClass, final Object val, final MappedField optionalExtraInfo) {
+        System.out.println(
+                "targetClass = [" + targetClass + "], val = [" + val + "], optionalExtraInfo = [" + optionalExtraInfo
+                + "]");
         if (val instanceof Integer) {
             return (Integer) val;
         }

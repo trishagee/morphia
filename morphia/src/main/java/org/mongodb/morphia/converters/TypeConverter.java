@@ -4,6 +4,7 @@ import org.mongodb.morphia.mapping.MappedField;
 import org.mongodb.morphia.mapping.Mapper;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 /**
  * Extend this class to provide a customer converter that describes how to decode a DBObject into the type
@@ -56,7 +57,7 @@ public abstract class TypeConverter<T> {
      * @param value The object to encode
      * @return the encoded version of the object
      */
-    public final Object encode(final T value) {
+    public final Object encode(final Optional<T> value) {
         return encode(value, null);
     }
 
@@ -67,8 +68,8 @@ public abstract class TypeConverter<T> {
      * @param optionalExtraInfo the MappedField that contains the metadata useful for decoding
      * @return the encoded version of the object
      */
-    public Object encode(final T value, final MappedField optionalExtraInfo) {
-        return value; // as a default impl
+    public Object encode(final Optional<T> value, final MappedField optionalExtraInfo) {
+        return value.orElse(null); // as a default impl
     }
 
     /**

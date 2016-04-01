@@ -4,6 +4,8 @@ import org.junit.Test;
 import org.mongodb.morphia.TestBase;
 import org.mongodb.morphia.testutil.JSONMatcher;
 
+import java.util.Optional;
+
 import static org.junit.Assert.assertThat;
 import static org.mongodb.morphia.geo.GeoJson.point;
 
@@ -14,10 +16,10 @@ public class GeometryQueryConverterTest extends TestBase {
         GeometryQueryConverter geometryConverter = new GeometryQueryConverter(getMorphia().getMapper());
         geometryConverter.setMapper(getMorphia().getMapper());
 
-        Point point = point(3.0, 7.0);
+        Geometry point = point(3.0, 7.0);
 
         // when
-        Object dbObject = geometryConverter.encode(point);
+        Object dbObject = geometryConverter.encode(Optional.of(point));
 
 
         // then

@@ -151,6 +151,7 @@ public class FieldEndImpl<T extends CriteriaContainerImpl> implements FieldEnd<T
     }
 
     @Override
+    //NotNull
     public T intersects(final Geometry geometry) {
         target.add(new StandardGeoFieldCriteria(query, field, INTERSECTS, geometry, null, validateName, false));
         return target;

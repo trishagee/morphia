@@ -12,6 +12,8 @@ import org.mongodb.morphia.converters.SimpleValueConverter;
 import org.mongodb.morphia.converters.TypeConverter;
 import org.mongodb.morphia.mapping.MappedField;
 
+import java.util.Optional;
+
 
 /**
  * Example converter which stores the enum value instead of string (name)
@@ -49,12 +51,12 @@ public class EnumValueConverterTest extends TestBase {
         }
 
         @Override
-        public Object encode(final Object value, final MappedField optionalExtraInfo) {
-            if (value == null) {
+        public Object encode(final Optional value, final MappedField optionalExtraInfo) {
+            if (!value.isPresent()) {
                 return null;
             }
 
-            return ((Enum) value).ordinal();
+            return ((Enum) value.get()).ordinal();
         }
     }
 

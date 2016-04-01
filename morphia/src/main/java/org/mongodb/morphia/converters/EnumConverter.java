@@ -3,6 +3,8 @@ package org.mongodb.morphia.converters;
 
 import org.mongodb.morphia.mapping.MappedField;
 
+import java.util.Optional;
+
 
 /**
  * @author Uwe Schaefer, (us@thomas-daily.de)
@@ -17,12 +19,12 @@ public class EnumConverter extends TypeConverter implements SimpleValueConverter
     }
 
     @Override
-    public Object encode(final Object value, final MappedField optionalExtraInfo) {
-        if (value == null) {
+    public Object encode(final Optional value, final MappedField optionalExtraInfo) {
+        if (!value.isPresent()) {
             return null;
         }
 
-        return getName((Enum) value);
+        return getName((Enum) value.get());
     }
 
     @Override

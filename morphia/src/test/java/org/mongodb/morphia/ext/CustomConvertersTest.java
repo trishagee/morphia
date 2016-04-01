@@ -45,6 +45,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -154,8 +155,8 @@ public class CustomConvertersTest extends TestBase {
         }
 
         @Override
-        public Object encode(final Character value, final MappedField optionalExtraInfo) {
-            return (int) value.charValue();
+        public Object encode(final Optional<Character> value, final MappedField optionalExtraInfo) {
+            return (int) value.get().charValue();
         }
     }
 
@@ -269,11 +270,11 @@ public class CustomConvertersTest extends TestBase {
 
 
             @Override
-            public Long encode(final ValueObject value, final MappedField optionalExtraInfo) {
-                if (value == null) {
+            public Long encode(final Optional<ValueObject> value, final MappedField optionalExtraInfo) {
+                if (!value.isPresent()) {
                     return null;
                 }
-                final ValueObject source = (ValueObject) value;
+                final ValueObject source = value.get();
                 return source.value;
             }
 
@@ -318,13 +319,13 @@ public class CustomConvertersTest extends TestBase {
         private javax.activation.MimeType mimeType;
     }
 
-    public static class MimeTypeConverter extends TypeConverter {
+    public static class MimeTypeConverter extends TypeConverter<MimeType> {
         public MimeTypeConverter() {
             super(MimeType.class);
         }
 
         @Override
-        public Object decode(final Class targetClass, final Object fromDBObject, final MappedField optionalExtraInfo) {
+        public MimeType decode(final Class targetClass, final Object fromDBObject, final MappedField optionalExtraInfo) {
             try {
                 return new MimeType(((BasicDBObject) fromDBObject).getString("mimeType"));
             } catch (MimeTypeParseException ex) {
@@ -333,8 +334,8 @@ public class CustomConvertersTest extends TestBase {
         }
 
         @Override
-        public Object encode(final Object value, final MappedField optionalExtraInfo) {
-            return ((MimeType) value).getBaseType();
+        public Object encode(final Optional<MimeType> value, final MappedField optionalExtraInfo) {
+            return (value.get()).getBaseType();
         }
     }
 
@@ -360,17 +361,18 @@ public class CustomConvertersTest extends TestBase {
         }
 
         @Override
-        public Object encode(final List value, final MappedField optionalExtraInfo) {
-            if (value != null) {
+        public Object encode(final Optional<List> value, final MappedField optionalExtraInfo) {
+            if (value.isPresent()) {
                 Map<String, Object> map = new LinkedHashMap<String, Object>();
-                List<Object> list = (List<Object>) value;
+                List<Object> list = (List<Object>) value.get();
                 for (int i = 0; i < list.size(); i++) {
                     map.put(i + "", list.get(i));
                 }
                 return map;
+            } else {
+                return null;
             }
 
-            return null;
         }
     }
 }

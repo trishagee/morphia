@@ -7,6 +7,7 @@ import org.mongodb.morphia.utils.ReflectionUtils;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author Uwe Schaefer, (us@thomas-daily.de)
@@ -34,12 +35,12 @@ public class MapOfValuesConverter extends TypeConverter<Map> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Object encode(final Map value, final MappedField mf) {
-        if (value == null) {
+    public Object encode(final Optional<Map> value, final MappedField mf) {
+        if (!value.isPresent()) {
             return null;
         }
 
-        final Map<Object, Object> map = (Map<Object, Object>) value;
+        final Map<Object, Object> map = (Map<Object, Object>) value.get();
         if (!map.isEmpty() || getMapper().getOptions().isStoreEmpties()) {
             final Map mapForDb = new HashMap();
             for (final Map.Entry<Object, Object> entry : map.entrySet()) {

@@ -4,6 +4,8 @@ package org.mongodb.morphia.converters;
 import org.mongodb.morphia.mapping.MappedField;
 import org.mongodb.morphia.mapping.MappingException;
 
+import java.util.Optional;
+
 
 /**
  * @author Uwe Schaefer, (us@thomas-daily.de)
@@ -31,7 +33,15 @@ public class CharacterConverter extends TypeConverter<Character> implements Simp
     }
 
     @Override
-    public Object encode(final Character value, final MappedField optionalExtraInfo) {
-        return value == null || value.equals('\0') ? null : String.valueOf(value);
+    public Object encode(final Optional<Character> value, final MappedField optionalExtraInfo) {
+        if (!value.isPresent()) {
+            return null;
+        }
+        Character character = value.get();
+        if (character.equals('\0')) {
+            return null;
+        } else {
+            return String.valueOf(character);
+        }
     }
 }

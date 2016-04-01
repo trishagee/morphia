@@ -4,6 +4,8 @@ import com.mongodb.DBRef;
 import org.mongodb.morphia.Key;
 import org.mongodb.morphia.mapping.MappedField;
 
+import java.util.Optional;
+
 /**
  * @author Uwe Schaefer, (us@thomas-daily.de)
  * @author scotthernandez
@@ -27,8 +29,12 @@ public class KeyConverter extends TypeConverter<Key> {
     }
 
     @Override
-    public Object encode(final Key val, final MappedField optionalExtraInfo) {
-        return getMapper().keyToDBRef(val);
+    public Object encode(final Optional<Key> val, final MappedField optionalExtraInfo) {
+        if (val.isPresent()) {
+            return getMapper().keyToDBRef(val.get());
+        } else {
+            return null;
+        }
     }
 
 }

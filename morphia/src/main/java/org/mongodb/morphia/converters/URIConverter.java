@@ -4,6 +4,7 @@ package org.mongodb.morphia.converters;
 import org.mongodb.morphia.mapping.MappedField;
 
 import java.net.URI;
+import java.util.Optional;
 
 
 /**
@@ -32,11 +33,11 @@ public class URIConverter extends TypeConverter<URI> implements SimpleValueConve
     }
 
     @Override
-    public String encode(final URI uri, final MappedField optionalExtraInfo) {
-        if (uri == null) {
+    public String encode(final Optional<URI> uri, final MappedField optionalExtraInfo) {
+        if (!uri.isPresent()) {
             return null;
         }
 
-        return uri.toString().replace(".", "%46");
+        return uri.get().toString().replace(".", "%46");
     }
 }
