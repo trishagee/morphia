@@ -11,7 +11,7 @@ import java.util.Optional;
  * @author Uwe Schaefer, (us@thomas-daily.de)
  * @author scotthernandez
  */
-public class EnumSetConverter extends TypeConverter implements SimpleValueConverter {
+public class EnumSetConverter extends TypeConverter<EnumSet> implements SimpleValueConverter {
 
     private final EnumConverter ec = new EnumConverter();
 
@@ -24,7 +24,7 @@ public class EnumSetConverter extends TypeConverter implements SimpleValueConver
 
     @Override
     @SuppressWarnings("unchecked")
-    public Object decode(final Class targetClass, final Object fromDBObject, final MappedField optionalExtraInfo) {
+    public EnumSet decode(final Class targetClass, final Object fromDBObject, final MappedField optionalExtraInfo) {
         final Class enumType = optionalExtraInfo.getSubClass();
 
         final List l = (List) fromDBObject;
@@ -41,19 +41,18 @@ public class EnumSetConverter extends TypeConverter implements SimpleValueConver
 
     @Override
     @SuppressWarnings("unchecked")
-    public Object encode(final Optional value, final MappedField optionalExtraInfo) {
-        if (!value.isPresent()) {
-            return null;
-        }
+    public Object encode(final Optional<EnumSet> value, final MappedField optionalExtraInfo) {
+        return value.map(this::getValues)
+                    .orElse(null);
+    }
 
-        EnumSet enumSet = (EnumSet)value.get();
+    @SuppressWarnings("unchecked")
+    private List getValues(EnumSet enumSet) {
         final List values = new ArrayList();
-
         final Object[] array = enumSet.toArray();
         for (final Object anArray : array) {
-            values.add(ec.encode(Optional.ofNullable(anArray)));
+            values.add(ec.encode(Optional.ofNullable((Enum)anArray)));
         }
-
         return values;
     }
 }

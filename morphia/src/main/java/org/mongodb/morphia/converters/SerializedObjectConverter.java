@@ -40,12 +40,14 @@ public class SerializedObjectConverter extends TypeConverter {
 
     @Override
     public Object encode(final Optional value, final MappedField f) {
-        if (!value.isPresent()) {
-            return null;
-        }
+        return value.map(serializable -> serialize(serializable, f))
+                    .orElse(null);
+    }
+
+    private Object serialize(Object serializable, MappedField f) {
         try {
             final boolean useCompression = !f.getAnnotation(Serialized.class).disableCompression();
-            return Serializer.serialize(value.get(), useCompression);
+            return Serializer.serialize(serializable, useCompression);
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }

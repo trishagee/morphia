@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.function.Function;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -267,17 +268,10 @@ public class CustomConvertersTest extends TestBase {
                 return create((Long) fromDBObject);
             }
 
-
-
             @Override
             public Long encode(final Optional<ValueObject> value, final MappedField optionalExtraInfo) {
-                if (!value.isPresent()) {
-                    return null;
-                }
-                final ValueObject source = value.get();
-                return source.value;
+                return value.map(valueObject -> valueObject.value).orElse(null);
             }
-
         }
 
         @Override

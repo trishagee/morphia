@@ -25,11 +25,8 @@ public class LocaleConverter extends TypeConverter<Locale> implements SimpleValu
 
     @Override
     public Object encode(final Optional<Locale> val, final MappedField optionalExtraInfo) {
-        if (!val.isPresent()) {
-            return null;
-        }
-
-        return val.get().toString();
+        return val.map(Locale::toString)
+                  .orElse(null);
     }
 
     Locale parseLocale(final String localeString) {

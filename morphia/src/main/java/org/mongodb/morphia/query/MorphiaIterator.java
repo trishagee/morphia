@@ -103,7 +103,6 @@ public class MorphiaIterator<T, V> implements Iterable<V>, Iterator<V> {
             return false;
         }
         final long start = System.currentTimeMillis();
-        System.out.println("wrapped = " + wrapped);
         final boolean ret = wrapped.hasNext();
         driverTime += System.currentTimeMillis() - start;
         return ret;

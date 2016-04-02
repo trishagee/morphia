@@ -10,21 +10,18 @@ import java.util.Optional;
  * @author Uwe Schaefer, (us@thomas-daily.de)
  * @author scotthernandez
  */
-public class EnumConverter extends TypeConverter implements SimpleValueConverter {
+public class EnumConverter extends TypeConverter<Enum> implements SimpleValueConverter {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Object decode(final Class targetClass, final Object fromDBObject, final MappedField optionalExtraInfo) {
+    public Enum decode(final Class targetClass, final Object fromDBObject, final MappedField optionalExtraInfo) {
         return Enum.valueOf(targetClass, fromDBObject.toString());
     }
 
     @Override
-    public Object encode(final Optional value, final MappedField optionalExtraInfo) {
-        if (!value.isPresent()) {
-            return null;
-        }
-
-        return getName((Enum) value.get());
+    public Object encode(final Optional<Enum> value, final MappedField optionalExtraInfo) {
+        return value.map(Enum::name)
+                    .orElse(null);
     }
 
     @Override
@@ -32,7 +29,4 @@ public class EnumConverter extends TypeConverter implements SimpleValueConverter
         return c.isEnum();
     }
 
-    private <T extends Enum> String getName(final T value) {
-        return value.name();
-    }
 }

@@ -52,11 +52,8 @@ public class EnumValueConverterTest extends TestBase {
 
         @Override
         public Object encode(final Optional value, final MappedField optionalExtraInfo) {
-            if (!value.isPresent()) {
-                return null;
-            }
-
-            return ((Enum) value.get()).ordinal();
+            return value.map(o -> ((Enum) o).ordinal())
+                        .orElse(null);
         }
     }
 

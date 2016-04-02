@@ -29,10 +29,7 @@ public class UUIDConverter extends TypeConverter<UUID> implements SimpleValueCon
 
     @Override
     public Object encode(final Optional<UUID> value, final MappedField optionalExtraInfo) {
-        if (!value.isPresent()) {
-            return null;
-        } else {
-            return value.get().toString();
-        }
+        return value.map(UUID::toString)
+                    .orElse(null);
     }
 }

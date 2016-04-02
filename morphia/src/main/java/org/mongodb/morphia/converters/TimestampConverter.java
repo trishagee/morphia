@@ -30,12 +30,7 @@ public class TimestampConverter extends DateConverter {
 
     @Override
     public Object encode(final Optional<Date> val, final MappedField optionalExtraInfo) {
-//        return val.orElse(null);
-
-        if (val.isPresent()) {
-            return new Date(val.get().getTime());
-        } else {
-            return null;
-        }
+        return val.map(timestamp -> new Date(timestamp.getTime()))
+                  .orElse(null);
     }
 }

@@ -30,11 +30,8 @@ public class KeyConverter extends TypeConverter<Key> {
 
     @Override
     public Object encode(final Optional<Key> val, final MappedField optionalExtraInfo) {
-        if (val.isPresent()) {
-            return getMapper().keyToDBRef(val.get());
-        } else {
-            return null;
-        }
+        return val.map(key -> getMapper().keyToDBRef(key))
+                  .orElse(null);
     }
 
 }

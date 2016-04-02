@@ -42,13 +42,14 @@ public class GeometryShapeConverter extends TypeConverter<Geometry> implements S
 
     @Override
     public Object encode(final Optional<Geometry> value, final MappedField optionalExtraInfo) {
-        if (value.isPresent()) {
-            Object encodedObjects = encodeObjects((value.get()).getCoordinates());
-            return new BasicDBObject("type", geoJsonType.getType())
-                       .append("coordinates", encodedObjects);
-        } else {
-            return null;
-        }
+        return value.map(this::encodeGeometry)
+                    .orElse(null);
+    }
+
+    private Object encodeGeometry(Geometry geometry) {
+        Object encodedObjects = encodeObjects(geometry.getCoordinates());
+        return new BasicDBObject("type", geoJsonType.getType())
+                   .append("coordinates", encodedObjects);
     }
 
     /*
