@@ -1,6 +1,7 @@
 package org.mongodb.morphia.converters;
 
 
+import org.jetbrains.annotations.NotNull;
 import org.mongodb.morphia.mapping.MappedField;
 
 import java.util.UUID;
@@ -27,7 +28,7 @@ public class UUIDConverter extends TypeConverter<UUID> implements SimpleValueCon
     }
 
     @Override
-    public Object encode(final UUID value, final MappedField optionalExtraInfo) {
-        return value == null ? null : value.toString();
+    public Object encode(@NotNull final UUID value, final MappedField optionalExtraInfo) {
+        return value.toString();
     }
 }

@@ -1,5 +1,6 @@
 package org.mongodb.morphia.converters;
 
+import org.jetbrains.annotations.NotNull;
 import org.mongodb.morphia.mapping.MappedField;
 
 import java.util.Locale;
@@ -23,11 +24,7 @@ public class LocaleConverter extends TypeConverter<Locale> implements SimpleValu
     }
 
     @Override
-    public Object encode(final Locale val, final MappedField optionalExtraInfo) {
-        if (val == null) {
-            return null;
-        }
-
+    public Object encode(@NotNull final Locale val, final MappedField optionalExtraInfo) {
         return val.toString();
     }
 

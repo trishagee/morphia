@@ -2,6 +2,7 @@ package org.mongodb.morphia.converters;
 
 
 import org.bson.types.Binary;
+import org.jetbrains.annotations.NotNull;
 import org.mongodb.morphia.annotations.Serialized;
 import org.mongodb.morphia.mapping.MappedField;
 import org.mongodb.morphia.mapping.MappingException;
@@ -38,10 +39,7 @@ public class SerializedObjectConverter extends TypeConverter {
     }
 
     @Override
-    public Object encode(final Object value, final MappedField f) {
-        if (value == null) {
-            return null;
-        }
+    public Object encode(@NotNull final Object value, final MappedField f) {
         try {
             final boolean useCompression = !f.getAnnotation(Serialized.class).disableCompression();
             return Serializer.serialize(value, useCompression);

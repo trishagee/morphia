@@ -3,6 +3,7 @@ package org.mongodb.morphia.ext;
 
 import com.mongodb.DBObject;
 import org.bson.types.ObjectId;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mongodb.morphia.TestBase;
@@ -49,11 +50,7 @@ public class EnumValueConverterTest extends TestBase {
         }
 
         @Override
-        public Object encode(final Object value, final MappedField optionalExtraInfo) {
-            if (value == null) {
-                return null;
-            }
-
+        public Object encode(@NotNull final Object value, final MappedField optionalExtraInfo) {
             return ((Enum) value).ordinal();
         }
     }

@@ -1,6 +1,8 @@
 package org.mongodb.morphia.converters;
 
 import com.mongodb.DBObject;
+import com.sun.istack.internal.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.mongodb.morphia.logging.Logger;
 import org.mongodb.morphia.logging.MorphiaLoggerFactory;
 import org.mongodb.morphia.mapping.MappedField;
@@ -92,8 +94,7 @@ public abstract class Converters {
      * @param o The object to encode
      * @return the encoded version of the object
      */
-    @SuppressWarnings("unchecked") // ah, generics...
-    public Object encode(final Object o) {
+    public Object encode(@Nullable final Object o) {
         if (o == null) {
             return null;
         }
@@ -108,7 +109,7 @@ public abstract class Converters {
      * @return the encoded version of the object
      */
     @SuppressWarnings("unchecked") // ah, generics...
-    public Object encode(final Class c, final Object o) {
+    public Object encode(final Class c, @NotNull final Object o) {
         return getEncoder(c).encode(o);
     }
 
@@ -234,7 +235,7 @@ public abstract class Converters {
         final Object fieldValue = mf.getFieldValue(containingObject);
         final TypeConverter enc = getEncoder(fieldValue, mf);
 
-        final Object encoded = enc.encode(fieldValue, mf);
+        Object encoded = fieldValue != null ? enc.encode(fieldValue, mf) : null;
         if (encoded != null || opts.isStoreNulls()) {
             dbObj.put(mf.getNameToStore(), encoded);
         }

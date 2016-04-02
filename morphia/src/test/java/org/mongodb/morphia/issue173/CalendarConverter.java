@@ -1,6 +1,7 @@
 package org.mongodb.morphia.issue173;
 
 
+import org.jetbrains.annotations.NotNull;
 import org.mongodb.morphia.converters.SimpleValueConverter;
 import org.mongodb.morphia.converters.TypeConverter;
 import org.mongodb.morphia.mapping.MappedField;
@@ -41,10 +42,7 @@ public class CalendarConverter extends TypeConverter implements SimpleValueConve
     }
 
     @Override
-    public Object encode(final Object val, final MappedField optionalExtraInfo) {
-        if (val == null) {
-            return null;
-        }
+    public Object encode(@NotNull final Object val, final MappedField optionalExtraInfo) {
         final Calendar calendar = (Calendar) val;
         final long millis = calendar.getTimeInMillis();
         // . a date so that we can see it clearly in MongoVue

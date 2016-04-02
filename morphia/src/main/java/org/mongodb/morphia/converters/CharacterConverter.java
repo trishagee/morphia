@@ -1,6 +1,7 @@
 package org.mongodb.morphia.converters;
 
 
+import org.jetbrains.annotations.NotNull;
 import org.mongodb.morphia.mapping.MappedField;
 import org.mongodb.morphia.mapping.MappingException;
 
@@ -31,7 +32,7 @@ public class CharacterConverter extends TypeConverter<Character> implements Simp
     }
 
     @Override
-    public Object encode(final Character value, final MappedField optionalExtraInfo) {
-        return value == null || value.equals('\0') ? null : String.valueOf(value);
+    public Object encode(@NotNull final Character value, final MappedField optionalExtraInfo) {
+        return value.equals('\0') ? null : String.valueOf(value);
     }
 }

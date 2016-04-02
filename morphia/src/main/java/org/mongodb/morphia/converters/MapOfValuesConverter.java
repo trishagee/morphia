@@ -1,5 +1,6 @@
 package org.mongodb.morphia.converters;
 
+import org.jetbrains.annotations.NotNull;
 import org.mongodb.morphia.mapping.MappedField;
 import org.mongodb.morphia.utils.IterHelper;
 import org.mongodb.morphia.utils.IterHelper.MapIterCallback;
@@ -33,12 +34,9 @@ public class MapOfValuesConverter extends TypeConverter<Map> {
     }
 
     @Override
-    public Object encode(final Map value, final MappedField mf) {
-        if (value == null) {
-            return null;
-        }
-
-        final Map<?, ?> map = (Map<?, ?>) value;
+    @SuppressWarnings("unchecked")
+    public Object encode(@NotNull final Map value, final MappedField mf) {
+        final Map<Object, Object> map = (Map<Object, Object>) value;
         if (!map.isEmpty() || getMapper().getOptions().isStoreEmpties()) {
             final Map<Object, Object> mapForDb = new LinkedHashMap<Object, Object>();
             for (final Map.Entry<?, ?> entry : map.entrySet()) {

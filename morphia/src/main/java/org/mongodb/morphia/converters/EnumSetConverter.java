@@ -1,5 +1,6 @@
 package org.mongodb.morphia.converters;
 
+import org.jetbrains.annotations.NotNull;
 import org.mongodb.morphia.mapping.MappedField;
 
 import java.util.ArrayList;
@@ -40,11 +41,7 @@ public class EnumSetConverter extends TypeConverter implements SimpleValueConver
 
     @Override
     @SuppressWarnings("unchecked")
-    public Object encode(final Object value, final MappedField optionalExtraInfo) {
-        if (value == null) {
-            return null;
-        }
-
+    public Object encode(@NotNull final Object value, final MappedField optionalExtraInfo) {
         final List values = new ArrayList();
 
         final EnumSet s = (EnumSet) value;

@@ -4,6 +4,7 @@ package org.mongodb.morphia.converters;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mongodb.morphia.TestBase;
@@ -123,7 +124,7 @@ public class CustomConverterInEmbedTest extends TestBase {
         }
 
         @Override
-        public Object encode(final Object value, final MappedField optionalExtraInfo) {
+        public Object encode(@NotNull final Object value, final MappedField optionalExtraInfo) {
             done = true;
             return value.toString();
         }
@@ -219,7 +220,7 @@ public class CustomConverterInEmbedTest extends TestBase {
         }
 
         @Override
-        public Object encode(final Object value, final MappedField optionalExtraInfo) {
+        public Object encode(@NotNull final Object value, final MappedField optionalExtraInfo) {
             ComplexFoo complex = (ComplexFoo) value;
             BasicDBObject dbObject = new BasicDBObject();
             dbObject.put("first", complex.first());
@@ -245,7 +246,7 @@ public class CustomConverterInEmbedTest extends TestBase {
         }
 
         @Override
-        public Object encode(final Object value, final MappedField optionalExtraInfo) {
+        public Object encode(@NotNull final Object value, final MappedField optionalExtraInfo) {
             ArrayFoo complex = (ArrayFoo) value;
             BasicDBList dbObject = new BasicDBList();
             dbObject.put(1, complex.first());
