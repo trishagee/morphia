@@ -1,5 +1,6 @@
 package org.mongodb.morphia.converters;
 
+import org.jetbrains.annotations.NotNull;
 import org.mongodb.morphia.mapping.MappedField;
 import org.mongodb.morphia.mapping.Mapper;
 
@@ -51,7 +52,7 @@ public abstract class TypeConverter<T> {
      * @param value The object to encode
      * @return the encoded version of the object
      */
-    public final Object encode(final T value) {
+    public final Object encode(@NotNull final T value) {
         return encode(value, null);
     }
 
@@ -62,7 +63,7 @@ public abstract class TypeConverter<T> {
      * @param optionalExtraInfo the MappedField that contains the metadata useful for decoding
      * @return the encoded version of the object
      */
-    public Object encode(final T value, final MappedField optionalExtraInfo) {
+    public Object encode(@NotNull final T value, final MappedField optionalExtraInfo) {
         return value; // as a default impl
     }
 

@@ -2,6 +2,7 @@ package org.mongodb.morphia.converters;
 
 
 import com.mongodb.DBObject;
+import org.jetbrains.annotations.NotNull;
 import org.mongodb.morphia.ObjectFactory;
 import org.mongodb.morphia.mapping.EphemeralMappedField;
 import org.mongodb.morphia.mapping.MappedField;
@@ -72,12 +73,7 @@ public class IterableConverter extends TypeConverter {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Object encode(final Object value, final MappedField mf) {
-
-        if (value == null) {
-            return null;
-        }
-
+    public Object encode(@NotNull final Object value, final MappedField mf) {
         final Iterable<?> iterableValues;
 
         if (value.getClass().isArray()) {

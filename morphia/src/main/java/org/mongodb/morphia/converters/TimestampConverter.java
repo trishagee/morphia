@@ -1,6 +1,7 @@
 package org.mongodb.morphia.converters;
 
 
+import org.jetbrains.annotations.NotNull;
 import org.mongodb.morphia.mapping.MappedField;
 
 import java.sql.Timestamp;
@@ -21,12 +22,12 @@ public class TimestampConverter extends DateConverter {
 
     @Override
     public Date decode(final Class targetClass, final Object val, final MappedField optionalExtraInfo) {
-        final Date d = (Date) super.decode(targetClass, val, optionalExtraInfo);
+        final Date d = super.decode(targetClass, val, optionalExtraInfo);
         return new Timestamp(d.getTime());
     }
 
     @Override
-    public Object encode(final Date val, final MappedField optionalExtraInfo) {
-        return val == null ? null : new Date(((Timestamp) val).getTime());
+    public Object encode(@NotNull final Date val, final MappedField optionalExtraInfo) {
+        return new Date(val.getTime());
     }
 }

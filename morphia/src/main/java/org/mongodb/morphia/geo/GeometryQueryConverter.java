@@ -1,6 +1,7 @@
 package org.mongodb.morphia.geo;
 
 import com.mongodb.BasicDBObject;
+import org.jetbrains.annotations.NotNull;
 import org.mongodb.morphia.converters.SimpleValueConverter;
 import org.mongodb.morphia.converters.TypeConverter;
 import org.mongodb.morphia.mapping.MappedField;
@@ -26,8 +27,8 @@ public class GeometryQueryConverter extends TypeConverter<Geometry> implements S
     }
 
     @Override
-    public Object encode(final Geometry value, final MappedField optionalExtraInfo) {
-        Object encode = getMapper().getConverters().encode(((Geometry) value));
+    public Object encode(@NotNull final Geometry value, final MappedField optionalExtraInfo) {
+        Object encode = getMapper().getConverters().encode(value);
         return new BasicDBObject("$geometry", encode);
     }
 }

@@ -53,6 +53,7 @@ configure(subprojects.findAll { it.name != 'util' }) {
 
     dependencies {
         testCompile 'junit:junit:4.12'
+        compile 'org.jetbrains:annotations:15.0'
     }
 
     project.archivesBaseName = "morphia-${project.name}"

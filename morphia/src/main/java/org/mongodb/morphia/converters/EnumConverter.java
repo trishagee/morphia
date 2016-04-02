@@ -1,6 +1,7 @@
 package org.mongodb.morphia.converters;
 
 
+import org.jetbrains.annotations.NotNull;
 import org.mongodb.morphia.mapping.MappedField;
 
 
@@ -20,12 +21,8 @@ public class EnumConverter extends TypeConverter implements SimpleValueConverter
     }
 
     @Override
-    public Object encode(final Object value, final MappedField optionalExtraInfo) {
-        if (value == null) {
-            return null;
-        }
-
-        return getName((Enum) value);
+    public Object encode(@NotNull final Object value, final MappedField optionalExtraInfo) {
+        return ((Enum) value).name();
     }
 
     @Override
@@ -33,7 +30,4 @@ public class EnumConverter extends TypeConverter implements SimpleValueConverter
         return c.isEnum();
     }
 
-    private <T extends Enum> String getName(final T value) {
-        return value.name();
-    }
 }

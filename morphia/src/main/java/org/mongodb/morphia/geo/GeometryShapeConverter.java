@@ -2,6 +2,7 @@ package org.mongodb.morphia.geo;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+import org.jetbrains.annotations.NotNull;
 import org.mongodb.morphia.converters.SimpleValueConverter;
 import org.mongodb.morphia.converters.TypeConverter;
 import org.mongodb.morphia.mapping.MappedField;
@@ -40,14 +41,10 @@ public class GeometryShapeConverter extends TypeConverter<Geometry> implements S
     }
 
     @Override
-    public Object encode(final Geometry value, final MappedField optionalExtraInfo) {
-        if (value != null) {
-            Object encodedObjects = encodeObjects(((Geometry) value).getCoordinates());
-            return new BasicDBObject("type", geoJsonType.getType())
-                       .append("coordinates", encodedObjects);
-        } else {
-            return null;
-        }
+    public Object encode(@NotNull final Geometry value, final MappedField optionalExtraInfo) {
+        Object encodedObjects = encodeObjects(((Geometry) value).getCoordinates());
+        return new BasicDBObject("type", geoJsonType.getType())
+                   .append("coordinates", encodedObjects);
     }
 
     /*
