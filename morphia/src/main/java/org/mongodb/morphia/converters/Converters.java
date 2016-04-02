@@ -1,6 +1,7 @@
 package org.mongodb.morphia.converters;
 
 import com.mongodb.DBObject;
+import org.jetbrains.annotations.Nullable;
 import org.mongodb.morphia.logging.Logger;
 import org.mongodb.morphia.logging.MorphiaLoggerFactory;
 import org.mongodb.morphia.mapping.MappedField;
@@ -77,6 +78,7 @@ public abstract class Converters {
      * @param mf           the MappedField that contains the metadata useful for decoding
      * @return the new instance
      */
+    @SuppressWarnings("unchecked") // ah, generics...
     public Object decode(final Class c, final Object fromDBObject, final MappedField mf) {
         Class toDecode = c;
         if (toDecode == null) {
@@ -91,7 +93,8 @@ public abstract class Converters {
      * @param o The object to encode
      * @return the encoded version of the object
      */
-    public Object encode(final Object o) {
+    @SuppressWarnings("unchecked") // ah, generics...
+    public Object encode(@Nullable final Object o) {
         if (o == null) {
             return null;
         }
@@ -105,7 +108,11 @@ public abstract class Converters {
      * @param o The object to encode
      * @return the encoded version of the object
      */
-    public Object encode(final Class c, final Object o) {
+    @SuppressWarnings("unchecked") // ah, generics...
+    public Object encode(final Class c, @Nullable final Object o) {
+        if (o == null) {
+            return null;
+        }
         return getEncoder(c).encode(o);
     }
 
@@ -229,7 +236,7 @@ public abstract class Converters {
         final Object fieldValue = mf.getFieldValue(containingObject);
         final TypeConverter enc = getEncoder(fieldValue, mf);
 
-        final Object encoded = enc.encode(fieldValue, mf);
+        Object encoded = fieldValue != null ? enc.encode(fieldValue, mf) : null;
         if (encoded != null || opts.isStoreNulls()) {
             dbObj.put(mf.getNameToStore(), encoded);
         }
@@ -254,7 +261,6 @@ public abstract class Converters {
     }
 
     protected TypeConverter getEncoder(final Object val, final MappedField mf) {
-
         List<TypeConverter> tcs = null;
 
         if (val != null) {

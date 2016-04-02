@@ -1,6 +1,7 @@
 package org.mongodb.morphia.converters;
 
 import com.mongodb.DBRef;
+import org.jetbrains.annotations.NotNull;
 import org.mongodb.morphia.Key;
 import org.mongodb.morphia.mapping.MappedField;
 
@@ -30,10 +31,7 @@ public class KeyConverter extends TypeConverter {
     }
 
     @Override
-    public Object encode(final Object t, final MappedField optionalExtraInfo) {
-        if (t == null) {
-            return null;
-        }
+    public Object encode(@NotNull final Object t, final MappedField optionalExtraInfo) {
         return getMapper().keyToDBRef((Key) t);
     }
 

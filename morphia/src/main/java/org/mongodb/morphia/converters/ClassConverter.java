@@ -1,6 +1,7 @@
 package org.mongodb.morphia.converters;
 
 
+import org.jetbrains.annotations.NotNull;
 import org.mongodb.morphia.mapping.MappedField;
 import org.mongodb.morphia.mapping.MappingException;
 
@@ -33,11 +34,7 @@ public class ClassConverter extends TypeConverter implements SimpleValueConverte
     }
 
     @Override
-    public Object encode(final Object value, final MappedField optionalExtraInfo) {
-        if (value == null) {
-            return null;
-        } else {
-            return ((Class) value).getName();
-        }
+    public Object encode(@NotNull final Object value, final MappedField optionalExtraInfo) {
+        return ((Class) value).getName();
     }
 }

@@ -22,6 +22,7 @@ import com.mongodb.DBObject;
 import com.mongodb.DefaultDBDecoder;
 import com.mongodb.DefaultDBEncoder;
 import org.bson.types.ObjectId;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -158,7 +159,7 @@ public class CustomConvertersTest extends TestBase {
         }
 
         @Override
-        public Object encode(final Object value, final MappedField optionalExtraInfo) {
+        public Object encode(@NotNull final Object value, final MappedField optionalExtraInfo) {
             final Character c = (Character) value;
             return (int) c.charValue();
         }
@@ -274,7 +275,7 @@ public class CustomConvertersTest extends TestBase {
 
 
             @Override
-            public Long encode(final ValueObject value, final MappedField optionalExtraInfo) {
+            public Long encode(@NotNull final ValueObject value, final MappedField optionalExtraInfo) {
                 if (value == null) {
                     return null;
                 }
@@ -338,7 +339,7 @@ public class CustomConvertersTest extends TestBase {
         }
 
         @Override
-        public Object encode(final Object value, final MappedField optionalExtraInfo) {
+        public Object encode(@NotNull final Object value, final MappedField optionalExtraInfo) {
             return ((MimeType) value).getBaseType();
         }
     }
@@ -365,17 +366,13 @@ public class CustomConvertersTest extends TestBase {
         }
 
         @Override
-        public Object encode(final List value, final MappedField optionalExtraInfo) {
-            if (value != null) {
-                Map<String, Object> map = new LinkedHashMap<String, Object>();
-                List<Object> list = (List<Object>) value;
-                for (int i = 0; i < list.size(); i++) {
-                    map.put(i + "", list.get(i));
-                }
-                return map;
+        public Object encode(@NotNull final List value, final MappedField optionalExtraInfo) {
+            Map<String, Object> map = new LinkedHashMap<String, Object>();
+            List<Object> list = (List<Object>) value;
+            for (int i = 0; i < list.size(); i++) {
+                map.put(i + "", list.get(i));
             }
-
-            return null;
+            return map;
         }
     }
 }
