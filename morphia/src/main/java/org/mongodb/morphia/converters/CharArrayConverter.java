@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import org.mongodb.morphia.mapping.MappedField;
 
 import java.lang.reflect.Array;
+import java.util.Optional;
 
 
 /**
@@ -33,16 +34,16 @@ public class CharArrayConverter extends TypeConverter implements SimpleValueConv
     }
 
     @Override
-    public Object encode(@NotNull final Object value, final MappedField optionalExtraInfo) {
+    public Optional<String> encode(@NotNull final Object value, final MappedField optionalExtraInfo) {
         if (value instanceof char[]) {
-            return new String((char[]) value);
+            return Optional.of(new String((char[]) value));
         } else {
             final StringBuilder builder = new StringBuilder();
             final Character[] array = (Character[]) value;
             for (final Character character : array) {
                 builder.append(character);
             }
-            return builder.toString();
+            return Optional.of(builder.toString());
         }
     }
 

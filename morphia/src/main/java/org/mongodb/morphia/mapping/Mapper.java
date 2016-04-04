@@ -474,6 +474,7 @@ public class Mapper {
      * @param key the Key to convert
      * @return the DBRef
      */
+    //TODO Optional
     public DBRef keyToDBRef(final Key key) {
         if (key == null) {
             return null;

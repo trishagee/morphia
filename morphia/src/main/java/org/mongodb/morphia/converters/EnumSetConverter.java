@@ -6,6 +6,8 @@ import org.mongodb.morphia.mapping.MappedField;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
 
 /**
  * @author Uwe Schaefer, (us@thomas-daily.de)
@@ -45,15 +47,15 @@ public class EnumSetConverter extends TypeConverter implements SimpleValueConver
 
     @Override
     @SuppressWarnings("unchecked")
-    public Object encode(@NotNull final Object value, final MappedField optionalExtraInfo) {
+    public Optional<List> encode(@NotNull final Object value, final MappedField optionalExtraInfo) {
         final List values = new ArrayList();
 
         final EnumSet s = (EnumSet) value;
         final Object[] array = s.toArray();
         for (final Object anArray : array) {
-            values.add(ec.encode(anArray));
+            values.add(ec.encode(anArray).map(Function.identity()).orElse(null));
         }
 
-        return values;
+        return Optional.of(values);
     }
 }

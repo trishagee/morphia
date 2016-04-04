@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -124,9 +125,9 @@ public class CustomConverterInEmbedTest extends TestBase {
         }
 
         @Override
-        public Object encode(@NotNull final Object value, final MappedField optionalExtraInfo) {
+        public Optional encode(@NotNull final Object value, final MappedField optionalExtraInfo) {
             done = true;
-            return value.toString();
+            return Optional.of(value.toString());
         }
 
     }
@@ -220,12 +221,12 @@ public class CustomConverterInEmbedTest extends TestBase {
         }
 
         @Override
-        public Object encode(@NotNull final Object value, final MappedField optionalExtraInfo) {
+        public Optional encode(@NotNull final Object value, final MappedField optionalExtraInfo) {
             ComplexFoo complex = (ComplexFoo) value;
             BasicDBObject dbObject = new BasicDBObject();
             dbObject.put("first", complex.first());
             dbObject.put("second", complex.second());
-            return dbObject;
+            return Optional.of(dbObject);
         }
     }
 
@@ -246,12 +247,12 @@ public class CustomConverterInEmbedTest extends TestBase {
         }
 
         @Override
-        public Object encode(@NotNull final Object value, final MappedField optionalExtraInfo) {
+        public Optional encode(@NotNull final Object value, final MappedField optionalExtraInfo) {
             ArrayFoo complex = (ArrayFoo) value;
             BasicDBList dbObject = new BasicDBList();
             dbObject.put(1, complex.first());
             dbObject.put(2, complex.second());
-            return dbObject;
+            return Optional.of(dbObject);
         }
     }
 

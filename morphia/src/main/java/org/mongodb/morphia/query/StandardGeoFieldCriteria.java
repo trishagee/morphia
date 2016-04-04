@@ -30,7 +30,7 @@ class StandardGeoFieldCriteria extends FieldCriteria {
         super(query, field, operator, value, validateNames, validateTypes);
         this.maxDistanceMeters = maxDistanceMeters;
         GeometryQueryConverter geometryQueryConverter = new GeometryQueryConverter(query.getDatastore().getMapper());
-        geometryAsDBObject = (DBObject) geometryQueryConverter.encode(value, null);
+        geometryAsDBObject = geometryQueryConverter.encode(value, null).get();
     }
 
     @Override
@@ -49,7 +49,8 @@ class StandardGeoFieldCriteria extends FieldCriteria {
             case INTERSECTS:
                 query = BasicDBObjectBuilder.start(operator.val(), geometryAsDBObject);
                 if (crs != null) {
-                    ((DBObject) geometryAsDBObject.get("$geometry")).put("crs", new NamedCoordinateReferenceSystemConverter().encode(crs));
+                    ((DBObject) geometryAsDBObject.get("$geometry")).put("crs", new
+                            NamedCoordinateReferenceSystemConverter().encode(crs).get());
                 }
                 break;
             default:

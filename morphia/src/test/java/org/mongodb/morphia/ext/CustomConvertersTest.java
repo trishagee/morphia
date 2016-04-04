@@ -46,6 +46,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -159,9 +160,9 @@ public class CustomConvertersTest extends TestBase {
         }
 
         @Override
-        public Object encode(@NotNull final Object value, final MappedField optionalExtraInfo) {
+        public Optional<Integer> encode(@NotNull final Object value, final MappedField optionalExtraInfo) {
             final Character c = (Character) value;
-            return (int) c.charValue();
+            return Optional.of((int) c.charValue());
         }
     }
 
@@ -259,7 +260,9 @@ public class CustomConvertersTest extends TestBase {
 
             protected ValueObject create(final Long source) {
                 return new ValueObject(source);
-            }            @Override
+            }
+
+            @Override
             protected boolean isSupported(final Class<?> c, final MappedField optionalExtraInfo) {
                 return c.isAssignableFrom(ValueObject.class);
             }
@@ -272,15 +275,9 @@ public class CustomConvertersTest extends TestBase {
                 return create((Long) fromDBObject);
             }
 
-
-
             @Override
-            public Long encode(@NotNull final ValueObject value, final MappedField optionalExtraInfo) {
-                if (value == null) {
-                    return null;
-                }
-                final ValueObject source = (ValueObject) value;
-                return source.value;
+            public Optional encode(@NotNull final ValueObject value, final MappedField optionalExtraInfo) {
+                return Optional.of(value.value);
             }
 
         }
@@ -339,8 +336,8 @@ public class CustomConvertersTest extends TestBase {
         }
 
         @Override
-        public Object encode(@NotNull final Object value, final MappedField optionalExtraInfo) {
-            return ((MimeType) value).getBaseType();
+        public Optional encode(@NotNull final Object value, final MappedField optionalExtraInfo) {
+            return Optional.of(((MimeType) value).getBaseType());
         }
     }
 
@@ -366,13 +363,13 @@ public class CustomConvertersTest extends TestBase {
         }
 
         @Override
-        public Object encode(@NotNull final List value, final MappedField optionalExtraInfo) {
+        public Optional<Map<String, Object>> encode(@NotNull final List value, final MappedField optionalExtraInfo) {
             Map<String, Object> map = new LinkedHashMap<String, Object>();
             List<Object> list = (List<Object>) value;
             for (int i = 0; i < list.size(); i++) {
                 map.put(i + "", list.get(i));
             }
-            return map;
+            return Optional.of(map);
         }
     }
 }

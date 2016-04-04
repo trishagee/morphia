@@ -17,7 +17,7 @@ public class GeometryQueryConverterTest extends TestBase {
         Point point = point(3.0, 7.0);
 
         // when
-        Object dbObject = geometryConverter.encode(point);
+        Object dbObject = geometryConverter.encode(point).get();
 
 
         // then

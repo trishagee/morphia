@@ -5,6 +5,8 @@ import org.jetbrains.annotations.NotNull;
 import org.mongodb.morphia.mapping.MappedField;
 import org.mongodb.morphia.mapping.MappingException;
 
+import java.util.Optional;
+
 
 /**
  * @author Uwe Schaefer, (us@thomas-daily.de)
@@ -34,7 +36,7 @@ public class ClassConverter extends TypeConverter implements SimpleValueConverte
     }
 
     @Override
-    public Object encode(@NotNull final Object value, final MappedField optionalExtraInfo) {
-        return ((Class) value).getName();
+    public Optional<String> encode(@NotNull final Object value, final MappedField optionalExtraInfo) {
+        return Optional.of(((Class) value).getName());
     }
 }

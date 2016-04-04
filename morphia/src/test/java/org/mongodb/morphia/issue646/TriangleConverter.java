@@ -5,6 +5,8 @@ import org.mongodb.morphia.converters.SimpleValueConverter;
 import org.mongodb.morphia.converters.TypeConverter;
 import org.mongodb.morphia.mapping.MappedField;
 
+import java.util.Optional;
+
 public class TriangleConverter extends TypeConverter implements SimpleValueConverter {
 
     public TriangleConverter() {
@@ -26,11 +28,11 @@ public class TriangleConverter extends TypeConverter implements SimpleValueConve
     }
 
     @Override
-    public Object encode(@NotNull final Object value, final MappedField optionalExtraInfo) {
+    public Optional encode(@NotNull final Object value, final MappedField optionalExtraInfo) {
         if (!(value instanceof Triangle)) {
             throw new RuntimeException("Did not expect " + value.getClass().getName());
         }
 
-        return "Triangle";
+        return Optional.of("Triangle");
     }
 }

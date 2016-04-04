@@ -1,11 +1,14 @@
 package org.mongodb.morphia.geo;
 
 import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
 import org.jetbrains.annotations.NotNull;
 import org.mongodb.morphia.converters.SimpleValueConverter;
 import org.mongodb.morphia.converters.TypeConverter;
 import org.mongodb.morphia.mapping.MappedField;
 import org.mongodb.morphia.mapping.Mapper;
+
+import java.util.Optional;
 
 /**
  * Converts Point objects into DBObjects for querying only.  When saving entities with Points in, this converter should not be used.
@@ -27,8 +30,8 @@ public class GeometryQueryConverter extends TypeConverter<Geometry> implements S
     }
 
     @Override
-    public Object encode(@NotNull final Geometry value, final MappedField optionalExtraInfo) {
+    public Optional<DBObject> encode(@NotNull final Geometry value, final MappedField optionalExtraInfo) {
         Object encode = getMapper().getConverters().encode(value);
-        return new BasicDBObject("$geometry", encode);
+        return Optional.of(new BasicDBObject("$geometry", encode));
     }
 }

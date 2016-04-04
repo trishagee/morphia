@@ -14,9 +14,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 
 import static java.lang.String.format;
+import static java.util.function.Function.identity;
 
 /**
  * Defines a bundle of converters
@@ -113,7 +116,8 @@ public abstract class Converters {
         if (o == null) {
             return null;
         }
-        return getEncoder(c).encode(o);
+        final Optional encoded = getEncoder(c).encode(o);
+        return encoded.map(identity()).orElse(null);
     }
 
     /**
@@ -236,9 +240,11 @@ public abstract class Converters {
         final Object fieldValue = mf.getFieldValue(containingObject);
         final TypeConverter enc = getEncoder(fieldValue, mf);
 
-        Object encoded = fieldValue != null ? enc.encode(fieldValue, mf) : null;
-        if (encoded != null || opts.isStoreNulls()) {
-            dbObj.put(mf.getNameToStore(), encoded);
+        Optional encoded = fieldValue != null ? enc.encode(fieldValue, mf) : Optional.empty();
+        if (encoded.isPresent()) {
+            dbObj.put(mf.getNameToStore(), encoded.get());
+        } else if (opts.isStoreNulls()) {
+            dbObj.put(mf.getNameToStore(), null);
         }
     }
 

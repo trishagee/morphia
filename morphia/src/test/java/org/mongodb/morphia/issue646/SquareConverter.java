@@ -5,6 +5,8 @@ import org.mongodb.morphia.converters.SimpleValueConverter;
 import org.mongodb.morphia.converters.TypeConverter;
 import org.mongodb.morphia.mapping.MappedField;
 
+import java.util.Optional;
+
 public class SquareConverter extends TypeConverter implements SimpleValueConverter {
 
     public SquareConverter() {
@@ -26,11 +28,11 @@ public class SquareConverter extends TypeConverter implements SimpleValueConvert
     }
 
     @Override
-    public Object encode(@NotNull final Object value, final MappedField optionalExtraInfo) {
+    public Optional encode(@NotNull final Object value, final MappedField optionalExtraInfo) {
         if (!(value instanceof Square)) {
             throw new RuntimeException("Did not expect " + value.getClass().getName());
         }
 
-        return "Square";
+        return Optional.of("Square");
     }
 }

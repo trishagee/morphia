@@ -17,7 +17,7 @@ public class LocaleConverterTest extends TestBase {
         Locale expectedLocale = Locale.CANADA_FRENCH;
 
         // when
-        Locale decodedLocale = (Locale) converter.decode(Locale.class, converter.encode(expectedLocale));
+        Locale decodedLocale = converter.decode(Locale.class, converter.encode(expectedLocale).get());
 
         // then
         assertThat(decodedLocale, is(expectedLocale));
@@ -30,7 +30,7 @@ public class LocaleConverterTest extends TestBase {
         Locale expectedLocale = new Locale("", "FI");
 
         // when
-        Locale decodedLocale = (Locale) converter.decode(Locale.class, converter.encode(expectedLocale));
+        Locale decodedLocale = converter.decode(Locale.class, converter.encode(expectedLocale).get());
 
         // then
         assertThat(decodedLocale, is(expectedLocale));
@@ -43,7 +43,7 @@ public class LocaleConverterTest extends TestBase {
         Locale expectedLocale = new Locale("de", "DE", "bavarian");
 
         // when
-        Locale decodedLocale = (Locale) converter.decode(Locale.class, converter.encode(expectedLocale));
+        Locale decodedLocale = converter.decode(Locale.class, converter.encode(expectedLocale).get());
 
         // then
         assertThat(decodedLocale, is(expectedLocale));
@@ -59,7 +59,7 @@ public class LocaleConverterTest extends TestBase {
         Locale expectedLocale = new Locale("fi", "", "VAR");
 
         // when
-        Locale decodedLocale = (Locale) converter.decode(Locale.class, converter.encode(expectedLocale));
+        Locale decodedLocale = converter.decode(Locale.class, converter.encode(expectedLocale).get());
 
         // then
         assertThat(decodedLocale, is(expectedLocale));
@@ -72,7 +72,7 @@ public class LocaleConverterTest extends TestBase {
         Locale expectedLocale = new Locale("", "FI", "VAR");
 
         // when
-        Locale decodedLocale = (Locale) converter.decode(Locale.class, converter.encode(expectedLocale));
+        Locale decodedLocale = converter.decode(Locale.class, converter.encode(expectedLocale).get());
 
         // then
         assertThat(decodedLocale, is(expectedLocale));
@@ -85,7 +85,7 @@ public class LocaleConverterTest extends TestBase {
         Locale expectedLocale = new Locale("fi", "FI", "VAR_SPECIAL");
 
         // when
-        Locale decodedLocale = (Locale) converter.decode(Locale.class, converter.encode(expectedLocale));
+        Locale decodedLocale = converter.decode(Locale.class, converter.encode(expectedLocale).get());
 
         // then
         assertThat(decodedLocale, is(expectedLocale));
