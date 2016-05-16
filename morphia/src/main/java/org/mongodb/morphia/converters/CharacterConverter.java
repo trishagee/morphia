@@ -5,7 +5,6 @@ import org.mongodb.morphia.mapping.MappedField;
 import org.mongodb.morphia.mapping.MappingException;
 
 import java.util.Optional;
-import java.util.function.Predicate;
 
 /**
  * @author Uwe Schaefer, (us@thomas-daily.de)
