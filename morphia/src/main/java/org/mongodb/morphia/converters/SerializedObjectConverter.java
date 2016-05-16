@@ -32,15 +32,13 @@ public class SerializedObjectConverter extends TypeConverter {
         try {
             final boolean useCompression = !f.getAnnotation(Serialized.class).disableCompression();
             return Serializer.deserialize(fromDBObject, useCompression);
-        } catch (IOException e) {
-            throw new MappingException("While deserializing to " + f.getFullName(), e);
-        } catch (ClassNotFoundException e) {
+        } catch (IOException | ClassNotFoundException e) {
             throw new MappingException("While deserializing to " + f.getFullName(), e);
         }
     }
 
     @Override
-    public Optional encode(@NotNull final Object value, final MappedField f) {
+    public Optional encode(@NotNull final Object value, @NotNull final MappedField f) {
         try {
             final boolean useCompression = !f.getAnnotation(Serialized.class).disableCompression();
             return Optional.of(Serializer.serialize(value, useCompression));

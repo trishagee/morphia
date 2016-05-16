@@ -1,7 +1,6 @@
 package org.mongodb.morphia.converters;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.mongodb.morphia.mapping.MappedField;
 import org.mongodb.morphia.mapping.Mapper;
 
@@ -66,7 +65,7 @@ public abstract class TypeConverter<T> {
      * @return the encoded version of the object
      */
     public Optional encode(@NotNull final T value,
-                           @Nullable final MappedField optionalExtraInfo) {
+                           @NotNull final MappedField optionalExtraInfo) {
         return Optional.of(value); // as a default impl
     }
 

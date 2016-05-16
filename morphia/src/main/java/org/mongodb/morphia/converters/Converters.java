@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
 
 import static java.lang.String.format;
 import static java.util.function.Function.identity;
@@ -28,9 +27,9 @@ public abstract class Converters {
     private static final Logger LOG = MorphiaLoggerFactory.get(Converters.class);
 
     private final Mapper mapper;
-    private final List<TypeConverter> untypedTypeEncoders = new LinkedList<TypeConverter>();
-    private final Map<Class, List<TypeConverter>> tcMap = new ConcurrentHashMap<Class, List<TypeConverter>>();
-    private final List<Class<? extends TypeConverter>> registeredConverterClasses = new ArrayList<Class<? extends TypeConverter>>();
+    private final List<TypeConverter> untypedTypeEncoders = new LinkedList<>();
+    private final Map<Class, List<TypeConverter>> tcMap = new ConcurrentHashMap<>();
+    private final List<Class<? extends TypeConverter>> registeredConverterClasses = new ArrayList<>();
 
     /**
      * Creates a bundle with a particular Mapper.
@@ -132,6 +131,7 @@ public abstract class Converters {
         final Object object = mf.getDbObjectValue(dbObj);
         if (object != null) {
             final TypeConverter enc = getEncoder(mf);
+            @SuppressWarnings("unchecked")
             final Object decodedValue = enc.decode(mf.getType(), object, mf);
             try {
                 mf.setFieldValue(targetEntity, decodedValue);
@@ -240,6 +240,7 @@ public abstract class Converters {
         final Object fieldValue = mf.getFieldValue(containingObject);
         final TypeConverter enc = getEncoder(fieldValue, mf);
 
+        @SuppressWarnings("unchecked")
         Optional encoded = fieldValue != null ? enc.encode(fieldValue, mf) : Optional.empty();
         if (encoded.isPresent()) {
             dbObj.put(mf.getNameToStore(), encoded.get());
@@ -285,6 +286,7 @@ public abstract class Converters {
         }
 
         for (final TypeConverter tc : untypedTypeEncoders) {
+            //noinspection unchecked
             if (tc.canHandle(mf) || (val != null && tc.isSupported(val.getClass(), mf))) {
                 return tc;
             }
@@ -298,7 +300,7 @@ public abstract class Converters {
             tcMap.get(type).add(0, tc);
             LOG.warning("Added duplicate converter for " + type + " ; " + tcMap.get(type));
         } else {
-            final List<TypeConverter> values = new ArrayList<TypeConverter>();
+            final List<TypeConverter> values = new ArrayList<>();
             values.add(tc);
             tcMap.put(type, values);
         }
