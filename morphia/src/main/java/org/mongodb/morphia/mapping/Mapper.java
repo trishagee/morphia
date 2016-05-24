@@ -598,11 +598,9 @@ public class Mapper {
                 final BasicDBList list = (BasicDBList) mappedValue;
                 if (list.size() != 0) {
                     if (!EmbeddedMapper.shouldSaveClassName(extractFirstElement(value), list.get(0), mf)) {
-                        for (Object o : list) {
-                            if (o instanceof DBObject) {
-                                ((DBObject) o).removeField(CLASS_NAME_FIELDNAME);
-                            }
-                        }
+                        list.stream()
+                            .filter(o -> o instanceof DBObject)
+                            .forEach(o -> ((DBObject) o).removeField(CLASS_NAME_FIELDNAME));
                     }
                 }
             } else if (mappedValue instanceof DBObject && !EmbeddedMapper.shouldSaveClassName(value, mappedValue, mf)) {

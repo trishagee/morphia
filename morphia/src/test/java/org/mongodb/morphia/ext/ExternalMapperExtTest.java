@@ -84,13 +84,12 @@ public class ExternalMapperExtTest extends TestBase {
             final MappedClass destMC = mapper.getMappedClass(destClass);
             final MappedClass sourceMC = mapper.getMappedClass(sourceClass);
             //copy the class level annotations
-            for (final Entry<Class<? extends Annotation>, List<Annotation>> e : sourceMC.getRelevantAnnotations().entrySet()) {
-                if (e.getValue() != null && !e.getValue().isEmpty()) {
-                    for (final Annotation ann : e.getValue()) {
-                        destMC.addAnnotation(e.getKey(), ann);
-                    }
+            sourceMC.getRelevantAnnotations().entrySet().stream()
+                    .filter(e -> e.getValue() != null && !e.getValue().isEmpty()).forEach(e -> {
+                for (final Annotation ann : e.getValue()) {
+                    destMC.addAnnotation(e.getKey(), ann);
                 }
-            }
+            });
             //copy the fields.
             for (final MappedField mf : sourceMC.getPersistenceFields()) {
                 final Map<Class<? extends Annotation>, Annotation> annMap = mf.getAnnotations();

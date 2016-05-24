@@ -49,7 +49,7 @@ public class EntityScanner {
         final ConfigurationBuilder conf = new ConfigurationBuilder();
         conf.setScanners(new TypeElementsScanner(), new TypeAnnotationsScanner());
 
-        final Set<URL> s = new HashSet<URL>();
+        final Set<URL> s = new HashSet<>();
         s.addAll(ClasspathHelper.forClassLoader());
         s.addAll(ClasspathHelper.forJavaClassPath());
         final Iterator<URL> iterator = s.iterator();
@@ -59,16 +59,11 @@ public class EntityScanner {
                 iterator.remove();
             }
         }
-        conf.setUrls(new ArrayList<URL>(s));
+        conf.setUrls(new ArrayList<>(s));
 
         conf.filterInputsBy(localPredicate);
         conf.addScanners(new SubTypesScanner());
 
-        final Reflections r = new Reflections(conf);
-
-        final Set<Class<?>> entities = r.getTypesAnnotatedWith(Entity.class);
-        for (final Class<?> c : entities) {
-            m.map(c);
-        }
+        new Reflections(conf).getTypesAnnotatedWith(Entity.class).forEach(m::map);
     }
 }

@@ -455,9 +455,7 @@ public class MappedField {
      * Discovers interesting (that we care about) things about the field.
      */
     protected void discover(final Mapper mapper) {
-        for (final Class<? extends Annotation> clazz : INTERESTING) {
-            addAnnotation(clazz);
-        }
+        INTERESTING.forEach(this::addAnnotation);
 
         //type must be discovered before the constructor.
         discoverType(mapper);

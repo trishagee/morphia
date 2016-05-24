@@ -8,7 +8,10 @@ import org.mongodb.morphia.testmappackage.testmapsubpackage.SimpleEntityInSubPac
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -39,10 +42,9 @@ public class MorphiaTest extends TestBase {
         Collection<MappedClass> mappedClasses = morphia.getMapper().getMappedClasses();
         Iterator<MappedClass> iterator = mappedClasses.iterator();
         assertThat(mappedClasses.size(), is(2));
-        Collection<Class<?>> classes = new ArrayList<Class<?>>();
-        for (MappedClass mappedClass : mappedClasses) {
-            classes.add(mappedClass.getClazz());
-        }
+        Collection<Class<?>> classes = mappedClasses.stream()
+                                                    .map(MappedClass::getClazz)
+                                                    .collect(toList());
         assertTrue(classes.contains(SimpleEntity.class));
         assertTrue(classes.contains(SimpleEntityInSubPackage.class));
     }

@@ -45,9 +45,7 @@ public class TestAsListPerf extends TestBase {
             mongoThreads.add(new MongoQueryThread(mongoQueryThreadsResult, nbOfAddresses));
         }
         final ExecutorService mongoPool = Executors.newFixedThreadPool(threadPool);
-        for (final MongoQueryThread mongoQueryThread : mongoThreads) {
-            mongoPool.execute(mongoQueryThread);
-        }
+        mongoThreads.forEach(mongoPool::execute);
 
         mongoPool.shutdown();
         mongoPool.awaitTermination(30, TimeUnit.SECONDS);
@@ -58,9 +56,7 @@ public class TestAsListPerf extends TestBase {
             morphiaThreads.add(new MorphiaQueryThread(morphiaQueryThreadsResult, nbOfAddresses));
         }
         final ExecutorService morphiaPool = Executors.newFixedThreadPool(threadPool);
-        for (final MorphiaQueryThread thread : morphiaThreads) {
-            morphiaPool.execute(thread);
-        }
+        morphiaThreads.forEach(morphiaPool::execute);
         morphiaPool.shutdown();
         morphiaPool.awaitTermination(30, TimeUnit.SECONDS);
         LOG.debug(format("compareDriverAndMorphiaQueryingMultithreaded (%d queries each) - driver: %4.2f ms/pojo (avg), "
@@ -85,9 +81,7 @@ public class TestAsListPerf extends TestBase {
             morphiaThreads.add(new MorphiaQueryThread(morphiaQueryThreadsResult, nbOfAddresses));
         }
         final ExecutorService morphiaPool = Executors.newFixedThreadPool(threadPool);
-        for (final MorphiaQueryThread thread : morphiaThreads) {
-            morphiaPool.execute(thread);
-        }
+        morphiaThreads.forEach(morphiaPool::execute);
 
         morphiaPool.shutdown();
         morphiaPool.awaitTermination(30, TimeUnit.SECONDS);
@@ -98,9 +92,7 @@ public class TestAsListPerf extends TestBase {
             mongoThreads.add(new MongoQueryThread(mongoQueryThreadsResult, nbOfAddresses));
         }
         final ExecutorService mongoPool = Executors.newFixedThreadPool(threadPool);
-        for (final MongoQueryThread mongoQueryThread : mongoThreads) {
-            mongoPool.execute(mongoQueryThread);
-        }
+        mongoThreads.forEach(mongoPool::execute);
 
         mongoPool.shutdown();
         mongoPool.awaitTermination(30, TimeUnit.SECONDS);
@@ -135,9 +127,7 @@ public class TestAsListPerf extends TestBase {
             mongoThreads.add(new MongoQueryThread(mongoQueryThreadsResult, nbOfAddresses));
         }
         final ExecutorService mongoPool = Executors.newFixedThreadPool(threadPool);
-        for (final MongoQueryThread mongoQueryThread : mongoThreads) {
-            mongoPool.execute(mongoQueryThread);
-        }
+        mongoThreads.forEach(mongoPool::execute);
 
         mongoPool.shutdown();
         mongoPool.awaitTermination(30, TimeUnit.SECONDS);
@@ -165,9 +155,7 @@ public class TestAsListPerf extends TestBase {
             morphiaThreads.add(new MorphiaQueryThread(morphiaQueryThreadsResult, nbOfAddresses));
         }
         final ExecutorService morphiaPool = Executors.newFixedThreadPool(threadPool);
-        for (final MorphiaQueryThread thread : morphiaThreads) {
-            morphiaPool.execute(thread);
-        }
+        morphiaThreads.forEach(morphiaPool::execute);
         morphiaPool.shutdown();
         morphiaPool.awaitTermination(30, TimeUnit.SECONDS);
 

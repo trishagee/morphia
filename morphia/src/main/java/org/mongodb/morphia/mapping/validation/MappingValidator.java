@@ -32,6 +32,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static java.util.Collections.singletonList;
@@ -95,16 +96,11 @@ public class MappingValidator {
                 throw new ConstraintViolationException(ve);
             }
 
-            // sort by class to make it more readable
-            final List<LogLine> l = new ArrayList<LogLine>();
-            for (final ConstraintViolation v : ve) {
-                l.add(new LogLine(v));
-            }
-            sort(l);
-
-            for (final LogLine line : l) {
-                line.log(LOG);
-            }
+            // sort and output
+            ve.stream()
+              .map(LogLine::new)
+              .sorted()
+              .forEach(line -> line.log(LOG));
         }
     }
 

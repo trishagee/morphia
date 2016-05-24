@@ -62,9 +62,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
 import static org.mongodb.morphia.query.QueryImpl.parseFieldsString;
 
 /**
@@ -221,33 +223,35 @@ public class DatastoreImpl implements AdvancedDatastore {
 
     @Override
     public void ensureCaps() {
-        for (final MappedClass mc : mapper.getMappedClasses()) {
-            if (mc.getEntityAnnotation() != null && mc.getEntityAnnotation().cap().value() > 0) {
-                final CappedAt cap = mc.getEntityAnnotation().cap();
-                final String collName = mapper.getCollectionName(mc.getClazz());
-                final BasicDBObjectBuilder dbCapOpts = BasicDBObjectBuilder.start("capped", true);
-                if (cap.value() > 0) {
-                    dbCapOpts.add("size", cap.value());
-                }
-                if (cap.count() > 0) {
-                    dbCapOpts.add("max", cap.count());
-                }
-                final DB database = getDB();
-                if (database.getCollectionNames().contains(collName)) {
-                    final DBObject dbResult = database.command(BasicDBObjectBuilder.start("collstats", collName).get());
-                    if (dbResult.containsField("capped")) {
-                        // TODO: check the cap options.
-                        LOG.debug("DBCollection already exists and is capped already; doing nothing. " + dbResult);
-                    } else {
-                        LOG.warning("DBCollection already exists with same name(" + collName
-                                        + ") and is not capped; not creating capped version!");
-                    }
-                } else {
-                    getDB().createCollection(collName, dbCapOpts.get());
-                    LOG.debug("Created capped DBCollection (" + collName + ") with opts " + dbCapOpts);
-                }
-            }
-        }
+        // TODO: check the cap options.
+        mapper.getMappedClasses().stream()
+              .filter(mc -> mc.getEntityAnnotation() != null && mc.getEntityAnnotation().cap().value() > 0)
+              .forEach(mc -> {
+                      final CappedAt cap = mc.getEntityAnnotation().cap();
+                      final String collName = mapper.getCollectionName(mc.getClazz());
+                      final BasicDBObjectBuilder dbCapOpts = BasicDBObjectBuilder.start("capped", true);
+                      if (cap.value() > 0) {
+                          dbCapOpts.add("size", cap.value());
+                      }
+                      if (cap.count() > 0) {
+                          dbCapOpts.add("max", cap.count());
+                      }
+                      final DB database = getDB();
+                      if (database.getCollectionNames().contains(collName)) {
+                          final DBObject dbResult = database
+                                  .command(BasicDBObjectBuilder.start("collstats", collName).get());
+                          if (dbResult.containsField("capped")) {
+                              // TODO: check the cap options.
+                              LOG.debug("DBCollection already exists and is capped already; doing nothing. " + dbResult);
+                          } else {
+                              LOG.warning("DBCollection already exists with same name(" + collName
+                                          + ") and is not capped; not creating capped version!");
+                          }
+                      } else {
+                          getDB().createCollection(collName, dbCapOpts.get());
+                          LOG.debug("Created capped DBCollection (" + collName + ") with opts " + dbCapOpts);
+                      }
+                  });
     }
 
     @Override
@@ -431,10 +435,9 @@ public class DatastoreImpl implements AdvancedDatastore {
         for (final Map.Entry<String, List<Key>> entry : kindMap.entrySet()) {
             final List<Key> kindKeys = entry.getValue();
 
-            final List<Object> objIds = new ArrayList<Object>();
-            for (final Key key : kindKeys) {
-                objIds.add(key.getId());
-            }
+            final List<Object> objIds = kindKeys.stream()
+                                                .map(Key::getId)
+                                                .collect(toList());
             final List kindResults = find(entry.getKey(), null).disableValidation().filter("_id in", objIds).asList();
             entities.addAll(kindResults);
         }
@@ -1463,22 +1466,25 @@ public class DatastoreImpl implements AdvancedDatastore {
         // Ensure indexes from class annotation
         final List<Indexes> indexes = mc.getAnnotations(Indexes.class);
         if (indexes != null) {
-            for (final Indexes idx : indexes) {
-                if (idx.value().length > 0) {
-                    for (final Index index : idx.value()) {
-                        if (index.fields().length != 0) {
-                            ensureIndex(mc, dbColl, index.fields(), index.options(), background, parentMCs, parentMFs);
-                        } else {
-                            LOG.warning(format("This index on '%s' is using deprecated configuration options.  Please update to use the "
-                                                   + "fields value on @Index: %s", mc.getClazz().getName(), index.toString()));
-                            final BasicDBObject fields = parseFieldsString(index.value(), mc.getClazz(), mapper,
-                                                                           !index.disableValidation(), parentMCs, parentMFs);
-                            ensureIndex(dbColl, index.name(), fields, index.unique(), index.dropDups(),
-                                        index.background() ? index.background() : background, index.sparse(), index.expireAfterSeconds());
-                        }
-                    }
-                }
-            }
+            indexes.stream()
+                   .filter(idx -> idx.value().length > 0)
+                   .forEach(idx -> {
+                       for (final Index index : idx.value()) {
+                           if (index.fields().length != 0) {
+                               ensureIndex(mc, dbColl, index.fields(), index
+                                       .options(), background, parentMCs, parentMFs);
+                           } else {
+                               LOG.warning(format( "This index on '%s' is using deprecated configuration options.  "
+                                                   + "Please update to use the fields value on @Index: %s",
+                                                   mc.getClazz().getName(), index.toString()));
+                               final BasicDBObject fields = parseFieldsString(index.value(), mc.getClazz(), mapper,
+                                                                              !index.disableValidation(), parentMCs, parentMFs);
+                               ensureIndex(dbColl, index.name(), fields, index.unique(), index.dropDups(),
+                                           index.background() ? index.background() : background, index.sparse(), index
+                                                   .expireAfterSeconds());
+                           }
+                       }
+                   });
         }
     }
 

@@ -10,7 +10,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toList;
 import static org.mongodb.morphia.query.QueryValidator.validateQuery;
 
 
@@ -240,11 +242,8 @@ public class UpdateOpsImpl<T> implements UpdateOperations<T> {
     }
 
     protected List<Object> toDBObjList(final MappedField mf, final List<?> values) {
-        final List<Object> list = new ArrayList<Object>(values.size());
-        for (final Object obj : values) {
-            list.add(mapper.toMongoObject(mf, null, obj));
-        }
-
-        return list;
+        return values.stream()
+                     .map(obj -> mapper.toMongoObject(mf, null, obj))
+                     .collect(toList());
     }
 }
