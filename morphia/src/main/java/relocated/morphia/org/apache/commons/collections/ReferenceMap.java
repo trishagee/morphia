@@ -504,13 +504,7 @@ public class ReferenceMap extends AbstractMap {
             @Override
             @SuppressWarnings("unchecked")
             public Object[] toArray(final Object[] arr) {
-                final List list = new ArrayList();
-                final Iterator iterator = iterator();
-                while (iterator.hasNext()) {
-                    final Entry e = (Entry) iterator.next();
-                    list.add(new DefaultMapEntry(e.getKey(), e.getValue()));
-                }
-                return list.toArray(arr);
+                return this.stream().toArray();
             }
         };
         return entrySet;
