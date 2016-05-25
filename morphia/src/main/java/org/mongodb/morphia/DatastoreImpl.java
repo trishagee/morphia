@@ -62,6 +62,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Supplier;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
@@ -320,9 +321,8 @@ public class DatastoreImpl implements AdvancedDatastore {
             dbColl = getCollection(query.getEntityClass());
         }
 
-        if (LOG.isTraceEnabled()) {
-            LOG.trace("Executing findAndModify(" + dbColl.getName() + ") with delete ...");
-        }
+        final String databaseName = dbColl.getName();
+        LOG.trace(() -> "Executing findAndModify(" + databaseName + ") with delete ...");
 
         final DBObject result = dbColl.findAndModify(query.getQueryObject(), query.getFieldsObject(), query.getSortObject(), true,
                                                      null, false, false);
@@ -593,9 +593,7 @@ public class DatastoreImpl implements AdvancedDatastore {
             cmd.setSort(query.getSortObject());
         }
 
-        if (LOG.isTraceEnabled()) {
-            LOG.info("Executing " + cmd.toString());
-        }
+        LOG.trace(() -> "Executing " + cmd.toString());
 
         final EntityCache cache = createCache();
         MapreduceResults<T> results = new MapreduceResults<T>(dbColl.mapReduce(baseCommand));

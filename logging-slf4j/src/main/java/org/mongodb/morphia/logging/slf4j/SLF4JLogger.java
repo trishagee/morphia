@@ -4,6 +4,8 @@ package org.mongodb.morphia.logging.slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.function.Supplier;
+
 /**
  * This class hands off log messages to the underlying slf4j logging system.
  */
@@ -30,6 +32,13 @@ public class SLF4JLogger implements org.mongodb.morphia.logging.Logger {
     }
 
     @Override
+    public void trace(Supplier<String> messageSupplier) {
+        if (isTraceEnabled()) {
+            trace(messageSupplier.get());
+        }
+    }
+
+    @Override
     public void trace(final String format, final Object... argArray) {
         this.logger.trace(format, argArray);
     }
@@ -47,6 +56,13 @@ public class SLF4JLogger implements org.mongodb.morphia.logging.Logger {
     @Override
     public void debug(final String msg) {
         this.logger.debug(msg);
+    }
+
+    @Override
+    public void debug(Supplier<String> messageSupplier) {
+        if (isDebugEnabled()) {
+            debug(messageSupplier.get());
+        }
     }
 
     @Override

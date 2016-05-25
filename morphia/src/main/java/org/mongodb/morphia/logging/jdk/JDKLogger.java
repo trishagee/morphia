@@ -1,6 +1,7 @@
 package org.mongodb.morphia.logging.jdk;
 
 
+import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -22,6 +23,11 @@ public class JDKLogger implements org.mongodb.morphia.logging.Logger {
     @Override
     public void debug(final String msg) {
         log(Level.FINE, msg);
+    }
+
+    @Override
+    public void debug(Supplier<String> messageSupplier) {
+        log(Level.FINE, messageSupplier);
     }
 
     @Override
@@ -98,6 +104,11 @@ public class JDKLogger implements org.mongodb.morphia.logging.Logger {
     }
 
     @Override
+    public void trace(Supplier<String> messageSupplier) {
+        log(Level.FINER, messageSupplier);
+    }
+
+    @Override
     public void trace(final String format, final Object... arg) {
         log(Level.FINER, format, arg);
     }
@@ -164,6 +175,11 @@ public class JDKLogger implements org.mongodb.morphia.logging.Logger {
             final String[] callerInfo = getCaller();
             logger.logp(l, callerInfo[0], callerInfo[1], f, a);
         }
+    }
+
+    private void log(Level level, Supplier<String> messageSupplier) {
+        final String[] callerInfo = getCaller();
+        logger.logp(level, callerInfo[0], callerInfo[1], messageSupplier);
     }
 
     protected void log(final Level l, final String m, final Throwable t) {

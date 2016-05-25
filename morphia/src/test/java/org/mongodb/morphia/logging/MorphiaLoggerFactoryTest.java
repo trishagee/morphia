@@ -3,6 +3,8 @@ package org.mongodb.morphia.logging;
 import org.junit.Test;
 import org.mongodb.morphia.TestBase;
 
+import java.util.function.Supplier;
+
 import static org.hamcrest.CoreMatchers.isA;
 import static org.junit.Assert.assertThat;
 
@@ -41,6 +43,10 @@ public class MorphiaLoggerFactoryTest extends TestBase {
 
         @Override
         public void debug(final String msg) {
+        }
+
+        @Override
+        public void debug(Supplier<String> messageSupplier) {
         }
 
         @Override
@@ -102,6 +108,10 @@ public class MorphiaLoggerFactoryTest extends TestBase {
 
         @Override
         public void trace(final String msg) {
+        }
+
+        @Override
+        public void trace(Supplier<String> messageSupplier) {
         }
 
         @Override

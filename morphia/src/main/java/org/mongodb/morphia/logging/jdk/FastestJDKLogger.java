@@ -1,5 +1,6 @@
 package org.mongodb.morphia.logging.jdk;
 
+import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -14,6 +15,11 @@ public class FastestJDKLogger implements org.mongodb.morphia.logging.Logger {
 
     public void debug(final String msg) {
         log(Level.FINE, msg);
+    }
+
+    @Override
+    public void debug(Supplier<String> messageSupplier) {
+        log(Level.FINE, messageSupplier);
     }
 
     public void debug(final String format, final Object... arg) {
@@ -75,6 +81,11 @@ public class FastestJDKLogger implements org.mongodb.morphia.logging.Logger {
         log(Level.FINER, msg);
     }
 
+    @Override
+    public void trace(Supplier<String> messageSupplier) {
+        log(Level.FINER, messageSupplier);
+    }
+
     public void trace(final String format, final Object... arg) {
         log(Level.FINER, format, arg);
     }
@@ -113,6 +124,10 @@ public class FastestJDKLogger implements org.mongodb.morphia.logging.Logger {
         if (logger.isLoggable(l)) {
             logger.logp(l, className, null, f, a);
         }
+    }
+
+    private void log(Level level, Supplier<String> messageSupplier) {
+        logger.logp(level, className, null, messageSupplier);
     }
 
 }

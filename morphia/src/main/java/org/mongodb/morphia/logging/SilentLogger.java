@@ -1,12 +1,18 @@
 package org.mongodb.morphia.logging;
 
 
+import java.util.function.Supplier;
+
 /**
  * Silent logger; it doesn't do anything!
  */
 public class SilentLogger implements Logger {
     @Override
     public void debug(final String msg) {
+    }
+
+    @Override
+    public void debug(Supplier<String> messageSupplier) {
     }
 
     @Override
@@ -68,6 +74,10 @@ public class SilentLogger implements Logger {
 
     @Override
     public void trace(final String msg) {
+    }
+
+    @Override
+    public void trace(Supplier<String> messageSupplier) {
     }
 
     @Override
