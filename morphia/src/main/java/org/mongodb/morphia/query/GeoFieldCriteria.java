@@ -29,13 +29,7 @@ class GeoFieldCriteria extends FieldCriteria {
             case NEAR_SPHERE:
                 query = BasicDBObjectBuilder.start(FilterOperator.NEAR_SPHERE.val(), getValue());
                 break;
-            case WITHIN_BOX:
-                query = BasicDBObjectBuilder.start().push(FilterOperator.GEO_WITHIN.val()).add(getOperator().val(), getValue());
-                break;
-            case WITHIN_CIRCLE:
-                query = BasicDBObjectBuilder.start().push(FilterOperator.GEO_WITHIN.val()).add(getOperator().val(), getValue());
-                break;
-            case WITHIN_CIRCLE_SPHERE:
+            case WITHIN_BOX: case WITHIN_CIRCLE: case WITHIN_CIRCLE_SPHERE:
                 query = BasicDBObjectBuilder.start().push(FilterOperator.GEO_WITHIN.val()).add(getOperator().val(), getValue());
                 break;
             default:

@@ -164,32 +164,6 @@ public class TestGeoQueries extends TestBase {
     }
 
     @Test
-    public void testWithinBox() throws Exception {
-        checkMinServerVersion(2.4);
-        getDs().ensureIndexes();
-        final Place place1 = new Place("place1", new double[]{1, 1});
-        getDs().save(place1);
-        final Place found = getDs().find(Place.class)
-                                   .field("loc")
-                                   .within(Shape.box(new Point(0, 0), new Point(2, 2)))
-                                   .get();
-        Assert.assertNotNull(found);
-    }
-
-    @Test
-    public void testWithinOutsideBox() throws Exception {
-        checkMinServerVersion(2.4);
-        getDs().ensureIndexes();
-        final Place place1 = new Place("place1", new double[]{1, 1});
-        getDs().save(place1);
-        final Place found = getDs().find(Place.class)
-                                   .field("loc")
-                                   .within(Shape.box(new Point(0, 0), new Point(.4, .5)))
-                                   .get();
-        Assert.assertNull(found);
-    }
-
-    @Test
     public void testWithinOutsideRadius() throws Exception {
         checkMinServerVersion(2.4);
         getDs().ensureIndexes();
@@ -200,45 +174,6 @@ public class TestGeoQueries extends TestBase {
                                    .within(Shape.center(new Point(2, 2), .4))
                                    .get();
         Assert.assertNull(found);
-    }
-
-    @Test
-    public void testWithinRadius() throws Exception {
-        checkMinServerVersion(2.4);
-        getDs().ensureIndexes();
-        final Place place1 = new Place("place1", new double[]{1, 1});
-        getDs().save(place1);
-        final Place found = getDs().find(Place.class)
-                                   .field("loc")
-                                   .within(Shape.center(new Point(0, 1), 1.1))
-                                   .get();
-        Assert.assertNotNull(found);
-    }
-
-    @Test
-    public void testWithinRadius2() throws Exception {
-        checkMinServerVersion(2.4);
-        getDs().ensureIndexes();
-        final Place place1 = new Place("place1", new double[]{1, 1});
-        getDs().save(place1);
-        final Place found = getDs().find(Place.class)
-                                   .field("loc")
-                                   .within(Shape.center(new Point(0.5, 0.5), 0.77))
-                                   .get();
-        Assert.assertNotNull(found);
-    }
-
-    @Test
-    public void testWithinRadiusSphere() throws Exception {
-        checkMinServerVersion(2.4);
-        getDs().ensureIndexes();
-        final Place place1 = new Place("place1", new double[]{1, 1});
-        getDs().save(place1);
-        final Place found = getDs().find(Place.class)
-                                   .field("loc")
-                                   .within(Shape.centerSphere(new Point(0, 1), 1))
-                                   .get();
-        Assert.assertNotNull(found);
     }
 
     @Entity

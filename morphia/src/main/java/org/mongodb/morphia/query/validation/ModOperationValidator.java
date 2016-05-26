@@ -41,9 +41,10 @@ public final class ModOperationValidator extends OperationValidator {
         if (value == null) {
             validationFailures.add(new ValidationFailure("For a $mod operation, value cannot be null."));
         } else if (value.getClass().isArray()) {
-            if (Array.getLength(value) != 2) {
+            final int arrayLength = Array.getLength(value);
+            if (arrayLength != 2) {
                 validationFailures.add(new ValidationFailure(format("For a $mod operation, value '%s' should be an array with two integer"
-                                                                    + " elements.  Instead it had %s", value, Array.getLength(value))));
+                                                                    + " elements.  Instead it had %s", value, arrayLength)));
 
             }
             if (!(ReflectionUtils.isIntegerType(value.getClass().getComponentType()))) {

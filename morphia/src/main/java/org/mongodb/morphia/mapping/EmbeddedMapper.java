@@ -45,33 +45,37 @@ class EmbeddedMapper implements CustomMapper {
                 readCollection(datastore, mapper, entity, cache, mf, dbObject);
             } else {
                 // single element
-                final Object dbVal = mf.getDbObjectValue(dbObject);
-                if (dbVal != null) {
-                    final boolean isDBObject = dbVal instanceof DBObject;
-
-                    //run converters
-                    if (isDBObject && !mapper.isMapped(mf.getConcreteType()) && (mapper.getConverters().hasDbObjectConverter(mf)
-                                                                                 || mapper.getConverters()
-                                                                                          .hasDbObjectConverter(mf.getType()))) {
-                        mapper.getConverters().fromDBObject(dbObject, mf, entity);
-                    } else {
-                        Object refObj;
-                        if (mapper.getConverters().hasSimpleValueConverter(mf) || mapper.getConverters()
-                                                                                        .hasSimpleValueConverter(mf.getType())) {
-                            refObj = mapper.getConverters().decode(mf.getType(), dbVal, mf);
-                        } else {
-                            DBObject value = (DBObject) dbVal;
-                            refObj = mapper.getOptions().getObjectFactory().createInstance(mapper, mf, value);
-                            refObj = mapper.fromDb(datastore, value, refObj, cache);
-                        }
-                        if (refObj != null) {
-                            mf.setFieldValue(entity, refObj);
-                        }
-                    }
-                }
+                readIndividualElement(datastore, dbObject, mf, entity, cache, mapper);
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private void readIndividualElement(Datastore datastore, DBObject dbObject, MappedField mf, Object entity, EntityCache cache, Mapper mapper) {
+        final Object dbVal = mf.getDbObjectValue(dbObject);
+        if (dbVal != null) {
+            final boolean isDBObject = dbVal instanceof DBObject;
+
+            //run converters
+            if (isDBObject && !mapper.isMapped(mf.getConcreteType()) && (mapper.getConverters().hasDbObjectConverter(mf)
+                                                                         || mapper.getConverters()
+                                                                                  .hasDbObjectConverter(mf.getType()))) {
+                mapper.getConverters().fromDBObject(dbObject, mf, entity);
+            } else {
+                Object refObj;
+                if (mapper.getConverters().hasSimpleValueConverter(mf) || mapper.getConverters()
+                                                                                .hasSimpleValueConverter(mf.getType())) {
+                    refObj = mapper.getConverters().decode(mf.getType(), dbVal, mf);
+                } else {
+                    DBObject value = (DBObject) dbVal;
+                    refObj = mapper.getOptions().getObjectFactory().createInstance(mapper, mf, value);
+                    refObj = mapper.fromDb(datastore, value, refObj, cache);
+                }
+                if (refObj != null) {
+                    mf.setFieldValue(entity, refObj);
+                }
+            }
         }
     }
 

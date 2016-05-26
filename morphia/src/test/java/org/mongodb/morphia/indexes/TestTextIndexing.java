@@ -43,13 +43,7 @@ public class TestTextIndexing extends TestBase {
 
         List<DBObject> indexInfo = getDs().getCollection(TextIndexAll.class).getIndexInfo();
         Assert.assertEquals(2, indexInfo.size());
-        for (DBObject dbObject : indexInfo) {
-            if (!dbObject.get("name").equals("_id_")) {
-                Assert.assertEquals(1, ((DBObject) dbObject.get("weights")).get("$**"));
-                Assert.assertEquals("english", dbObject.get("default_language"));
-                Assert.assertEquals("language", dbObject.get("language_override"));
-            }
-        }
+        assertIndexes(indexInfo);
     }
 
     @Test
@@ -104,6 +98,10 @@ public class TestTextIndexing extends TestBase {
 
         List<DBObject> indexInfo = getDb().getCollection("randomCollection").getIndexInfo();
         Assert.assertEquals(2, indexInfo.size());
+        assertIndexes(indexInfo);
+    }
+
+    private void assertIndexes(List<DBObject> indexInfo) {
         for (DBObject dbObject : indexInfo) {
             if (!dbObject.get("name").equals("_id_")) {
                 Assert.assertEquals(1, ((DBObject) dbObject.get("weights")).get("$**"));
@@ -156,4 +154,5 @@ public class TestTextIndexing extends TestBase {
         private String name;
         private String nickName;
     }
+
 }

@@ -237,28 +237,7 @@ public final class ReflectionUtils {
                     return null;
                 }
                 final Type paramType = type.getActualTypeArguments()[index];
-                if (paramType instanceof GenericArrayType) {
-                    return paramType; //((GenericArrayType) paramType).getGenericComponentType();
-                } else {
-                    if (paramType instanceof ParameterizedType) {
-                        return paramType;
-                    } else {
-                        if (paramType instanceof TypeVariable) {
-                            // TODO: Figure out what to do... Walk back up the to
-                            // the parent class and try to get the variable type
-                            // from the T/V/X
-                            // throw new MappingException("Generic Typed Class not supported:  <" + ((TypeVariable)
-                            // paramType).getName() + "> = " + ((TypeVariable) paramType).getBounds()[0]);
-                            return paramType;
-                        } else if (paramType instanceof WildcardType) {
-                            return paramType;
-                        } else if (paramType instanceof Class) {
-                            return paramType;
-                        } else {
-                            throw new MappingException("Unknown type... pretty bad... call for help, wave your hands... yeah!");
-                        }
-                    }
-                }
+                return paramType; //((GenericArrayType) paramType).getGenericComponentType();
             }
 
             // Not defined on field, but may be on class or super class...

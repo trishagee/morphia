@@ -219,6 +219,7 @@ public class AggregationPipelineImpl implements AggregationPipeline {
             target = projection.getTarget();
         }
 
+        // should be on projection
         if (projection.getProjections() != null) {
             List<Projection> list = projection.getProjections();
             DBObject projections = new BasicDBObject();
@@ -248,6 +249,7 @@ public class AggregationPipelineImpl implements AggregationPipeline {
     private BasicDBList toExpressionArgs(final List<Object> args) {
         BasicDBList result = new BasicDBList();
         for (Object arg : args) {
+            // should be on projection
             if (arg instanceof Projection) {
                 Projection projection = (Projection) arg;
                 if (projection.getArguments() != null || projection.getProjections() != null || projection.getSource() != null) {
@@ -255,9 +257,7 @@ public class AggregationPipelineImpl implements AggregationPipeline {
                 } else {
                     result.add("$" + projection.getTarget());
                 }
-            } else if (arg instanceof Number) {
-                result.add(arg);
-            } else if (arg instanceof String) {
+            } else if (arg instanceof Number || arg instanceof String) {
                 result.add(arg);
             }
         }
