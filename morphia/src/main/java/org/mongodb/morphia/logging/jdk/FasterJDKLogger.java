@@ -1,6 +1,5 @@
 package org.mongodb.morphia.logging.jdk;
 
-import java.util.function.Supplier;
 import java.util.logging.Level;
 
 /**

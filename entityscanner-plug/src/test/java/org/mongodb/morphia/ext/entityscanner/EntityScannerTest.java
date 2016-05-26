@@ -1,6 +1,5 @@
 package org.mongodb.morphia.ext.entityscanner;
 
-import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import org.bson.types.ObjectId;
 import org.junit.Test;
