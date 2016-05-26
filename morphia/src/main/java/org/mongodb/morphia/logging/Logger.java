@@ -156,4 +156,9 @@ public interface Logger {
      */
     void warning(String msg, Throwable t);
 
+    default void warning(Supplier<String> messageSupplier) {
+        if (isWarningEnabled()) {
+            warning(messageSupplier.get());
+        }
+    }
 }

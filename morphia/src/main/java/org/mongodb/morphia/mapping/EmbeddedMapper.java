@@ -165,29 +165,25 @@ class EmbeddedMapper implements CustomMapper {
         final EphemeralMappedField ephemeralMappedField = isMapOrCollection(mf)
                                                           ? new EphemeralMappedField((ParameterizedType) mf.getSubType(), mf, mapper)
                                                           : null;
-        new IterHelper<Object, Object>().loopMap(dbObj, new MapIterCallback<Object, Object>() {
-            @Override
-            public void eval(final Object k, final Object val) {
-                Object newEntity = null;
+        new IterHelper<>().loopMap(dbObj, (k, val) -> {
+            Object newEntity = null;
 
-                //run converters
-                if (val != null) {
-                    if (mapper.getConverters().hasSimpleValueConverter(mf) || mapper.getConverters()
-                                                                                    .hasSimpleValueConverter(mf.getSubClass())) {
-                        newEntity = mapper.getConverters().decode(mf.getSubClass(), val, mf);
+            //run converters
+            if (val != null) {
+                if (mapper.getConverters().hasSimpleValueConverter(mf) || mapper.getConverters()
+                                                                                .hasSimpleValueConverter(mf.getSubClass())) {
+                    newEntity = mapper.getConverters().decode(mf.getSubClass(), val, mf);
+                } else {
+                    if (val instanceof DBObject) {
+                        newEntity = readMapOrCollectionOrEntity(datastore, mapper, cache, mf, ephemeralMappedField, (DBObject) val);
                     } else {
-                        if (val instanceof DBObject) {
-                            newEntity = readMapOrCollectionOrEntity(datastore, mapper, cache, mf, ephemeralMappedField, (DBObject) val);
-                        } else {
-                            throw new MappingException("Embedded element isn't a DBObject! How can it be that is a " + val.getClass());
-                        }
-
+                        throw new MappingException("Embedded element isn't a DBObject! How can it be that is a " + val.getClass());
                     }
                 }
-
-                final Object objKey = mapper.getConverters().decode(mf.getMapKeyClass(), k, mf);
-                map.put(objKey, newEntity);
             }
+
+            final Object objKey = mapper.getConverters().decode(mf.getMapKeyClass(), k, mf);
+            map.put(objKey, newEntity);
         });
 
         if (!map.isEmpty() || mapper.getOptions().isStoreEmpties()) {

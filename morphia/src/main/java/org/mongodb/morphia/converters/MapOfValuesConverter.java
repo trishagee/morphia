@@ -2,7 +2,6 @@ package org.mongodb.morphia.converters;
 
 import org.mongodb.morphia.mapping.MappedField;
 import org.mongodb.morphia.utils.IterHelper;
-import org.mongodb.morphia.utils.IterHelper.MapIterCallback;
 import org.mongodb.morphia.utils.ReflectionUtils;
 
 import java.util.LinkedHashMap;
@@ -19,14 +18,10 @@ public class MapOfValuesConverter extends TypeConverter {
             return null;
         }
 
-
         final Map values = getMapper().getOptions().getObjectFactory().createMap(mf);
-        new IterHelper<Object, Object>().loopMap(fromDBObject, new MapIterCallback<Object, Object>() {
-            @Override
-            public void eval(final Object k, final Object val) {
-                final Object objKey = getMapper().getConverters().decode(mf.getMapKeyClass(), k, mf);
-                values.put(objKey, val != null ? getMapper().getConverters().decode(mf.getSubClass(), val, mf) : null);
-            }
+        new IterHelper<>().loopMap(fromDBObject, (k, val) -> {
+            final Object objKey = getMapper().getConverters().decode(mf.getMapKeyClass(), k, mf);
+            values.put(objKey, val != null ? getMapper().getConverters().decode(mf.getSubClass(), val, mf) : null);
         });
 
         return values;
@@ -40,7 +35,7 @@ public class MapOfValuesConverter extends TypeConverter {
 
         final Map<?, ?> map = (Map<?, ?>) value;
         if (!map.isEmpty() || getMapper().getOptions().isStoreEmpties()) {
-            final Map<Object, Object> mapForDb = new LinkedHashMap<Object, Object>();
+            final Map<Object, Object> mapForDb = new LinkedHashMap<>();
             for (final Map.Entry<?, ?> entry : map.entrySet()) {
                 final String strKey = getMapper().getConverters().encode(entry.getKey()).toString();
                 mapForDb.put(strKey, getMapper().getConverters().encode(entry.getValue()));
