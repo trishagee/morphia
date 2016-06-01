@@ -6,7 +6,6 @@ import com.mongodb.DBObject;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.mapping.cache.EntityCache;
 import org.mongodb.morphia.utils.IterHelper;
-import org.mongodb.morphia.utils.IterHelper.MapIterCallback;
 import org.mongodb.morphia.utils.ReflectionUtils;
 
 import java.lang.reflect.Modifier;
