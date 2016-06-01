@@ -32,7 +32,7 @@ public class SLF4JLogger implements org.mongodb.morphia.logging.Logger {
     }
 
     @Override
-    public void trace(Supplier<String> messageSupplier) {
+    public void trace(final Supplier<String> messageSupplier) {
         if (isTraceEnabled()) {
             trace(messageSupplier.get());
         }
@@ -59,7 +59,7 @@ public class SLF4JLogger implements org.mongodb.morphia.logging.Logger {
     }
 
     @Override
-    public void debug(Supplier<String> messageSupplier) {
+    public void debug(final Supplier<String> messageSupplier) {
         if (isDebugEnabled()) {
             debug(messageSupplier.get());
         }
