@@ -168,7 +168,7 @@ class EmbeddedMapper implements CustomMapper {
         final EphemeralMappedField ephemeralMappedField = isMapOrCollection(mf)
                                                           ? new EphemeralMappedField((ParameterizedType) mf.getSubType(), mf, mapper)
                                                           : null;
-        new IterHelper<>().loopMap(dbObj, (k, val) -> {
+        new IterHelper<>().loopMap((Map<Object, Object>)dbObj, (k, val) -> {
             Object newEntity = null;
 
             //run converters

@@ -20,44 +20,17 @@ public final class IterHelper<K, V> {
     /**
      * Process a Map
      *
-     * @param x        the object to process
+     * @param map        the object to process
      * @param callback the callback
      */
     @SuppressWarnings("unchecked")
-    public void loopMap(final Object x, final MapIterCallback<K, V> callback) {
-        if (x == null) {
+    public void loopMap(final Map<K, V> map, final MapIterCallback<K, V> callback) {
+        if (map == null) {
             return;
         }
-
-        if (x instanceof Collection) {
-            throw new IllegalArgumentException("call loop instead");
+        for (final Entry<K, V> entry : map.entrySet()) {
+            callback.eval(entry.getKey(), entry.getValue());
         }
-
-        if (x instanceof HashMap<?, ?>) {
-            if (((HashMap) x).isEmpty()) {
-                return;
-            }
-
-            final HashMap<?, ?> hm = (HashMap<?, ?>) x;
-            for (final Entry<?, ?> e : hm.entrySet()) {
-                callback.eval((K) e.getKey(), (V) e.getValue());
-            }
-            return;
-        }
-        if (x instanceof Map) {
-            final Map<K, V> m = (Map<K, V>) x;
-            for (final Entry<K, V> entry : m.entrySet()) {
-                callback.eval(entry.getKey(), entry.getValue());
-            }
-            return;
-        }
-        if (x instanceof BSONObject) {
-            final BSONObject m = (BSONObject) x;
-            for (final String k : m.keySet()) {
-                callback.eval((K) k, (V) m.get(k));
-            }
-        }
-
     }
 
     /**

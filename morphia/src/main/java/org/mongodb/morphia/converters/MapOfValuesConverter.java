@@ -19,7 +19,7 @@ public class MapOfValuesConverter extends TypeConverter {
         }
 
         final Map values = getMapper().getOptions().getObjectFactory().createMap(mf);
-        new IterHelper<>().loopMap(fromDBObject, (k, val) -> {
+        new IterHelper<>().loopMap((Map<Object, Object>)fromDBObject, (k, val) -> {
             final Object objKey = getMapper().getConverters().decode(mf.getMapKeyClass(), k, mf);
             values.put(objKey, val != null ? getMapper().getConverters().decode(mf.getSubClass(), val, mf) : null);
         });

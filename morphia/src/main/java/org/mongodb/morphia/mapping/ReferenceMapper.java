@@ -169,7 +169,7 @@ class ReferenceMapper implements CustomMapper {
             }
 
             final Map map = m;
-            new IterHelper<>().loopMap(dbVal, (k, val) -> {
+            new IterHelper<>().loopMap((Map<Object, Object>)dbVal, (k, val) -> {
                 final Object objKey = mapper.getConverters().decode(mf.getMapKeyClass(), k, mf);
 
                 if (refAnn.lazy() && LazyFeatureDependencies.assertDependencyFullFilled()) {
