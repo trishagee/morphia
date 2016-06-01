@@ -63,7 +63,7 @@ public class TestAsListPerf extends TestBase {
         }
         morphiaPool.shutdown();
         morphiaPool.awaitTermination(30, TimeUnit.SECONDS);
-        LOG.debug(format("compareDriverAndMorphiaQueryingMultithreaded (%d queries each) - driver: %4.2f ms/pojo (avg), "
+        LOG.debug(() -> format("compareDriverAndMorphiaQueryingMultithreaded (%d queries each) - driver: %4.2f ms/pojo (avg), "
                          + "morphia %4.2f ms/pojo (avg)", mongoQueryThreadsResult.results.size(), mongoQueryThreadsResult.getAverageTime(),
                          morphiaQueryThreadsResult.getAverageTime()));
     }
@@ -72,7 +72,7 @@ public class TestAsListPerf extends TestBase {
     public void compareDriverAndMorphiaQueryingOnce() throws Exception {
         final double driverAvg = driverQueryAndMorphiaConverter(nbOfAddresses);
         final double morphiaAvg = morphiaQueryAndMorphiaConverter(nbOfAddresses);
-        LOG.debug(format("compareDriverAndMorphiaQueryingOnce - driver: %4.2f ms/pojo , morphia: %4.2f ms/pojo ", driverAvg,
+        LOG.debug(() -> format("compareDriverAndMorphiaQueryingOnce - driver: %4.2f ms/pojo , morphia: %4.2f ms/pojo ", driverAvg,
                          morphiaAvg));
         Assert.assertNotNull(driverAvg);
     }
@@ -105,7 +105,7 @@ public class TestAsListPerf extends TestBase {
         mongoPool.shutdown();
         mongoPool.awaitTermination(30, TimeUnit.SECONDS);
 
-        LOG.debug(format("compareMorphiaAndDriverQueryingMultithreaded (%d queries each) - driver: %4.2f ms/pojo (avg), "
+        LOG.debug(() -> format("compareMorphiaAndDriverQueryingMultithreaded (%d queries each) - driver: %4.2f ms/pojo (avg), "
                          + "morphia: %4.2f ms/pojo (avg)", mongoQueryThreadsResult.results.size(), mongoQueryThreadsResult.getAverageTime(),
                          morphiaQueryThreadsResult.getAverageTime()));
     }
@@ -142,7 +142,7 @@ public class TestAsListPerf extends TestBase {
         mongoPool.shutdown();
         mongoPool.awaitTermination(30, TimeUnit.SECONDS);
 
-        LOG.debug(format("driverQueryingMultithreaded - (%d queries) driver: %4.2f ms/pojo",
+        LOG.debug(() -> format("driverQueryingMultithreaded - (%d queries) driver: %4.2f ms/pojo",
                          mongoQueryThreadsResult.results.size(), mongoQueryThreadsResult.getAverageTime()));
 
     }
@@ -171,7 +171,7 @@ public class TestAsListPerf extends TestBase {
         morphiaPool.shutdown();
         morphiaPool.awaitTermination(30, TimeUnit.SECONDS);
 
-        LOG.debug(format("morphiaQueryingMultithreaded - (%d queries) morphia: %4.2f ms/pojo",
+        LOG.debug(() -> format("morphiaQueryingMultithreaded - (%d queries) morphia: %4.2f ms/pojo",
                          morphiaQueryThreadsResult.results.size(), morphiaQueryThreadsResult.getAverageTime()));
     }
 

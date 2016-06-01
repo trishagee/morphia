@@ -186,10 +186,10 @@ public class MappingValidator {
                     logger.warning(v.render());
                     break;
                 case INFO:
-                    logger.info(v.render());
+                    logger.info(v::render);
                     break;
                 case MINOR:
-                    logger.debug(v.render());
+                    logger.debug(v::render);
                     break;
                 default:
                     throw new IllegalStateException(format("Cannot log %s of Level %s", ConstraintViolation.class.getSimpleName(),

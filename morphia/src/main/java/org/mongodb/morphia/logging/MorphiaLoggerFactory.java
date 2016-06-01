@@ -41,7 +41,7 @@ public final class MorphiaLoggerFactory {
         for (final String f : FACTORIES) {
             loggerFactory = newInstance(f);
             if (loggerFactory != null) {
-                loggerFactory.get(MorphiaLoggerFactory.class).info("LoggerImplFactory set to " + loggerFactory.getClass().getName());
+                loggerFactory.get(MorphiaLoggerFactory.class).info(() -> "LoggerImplFactory set to " + loggerFactory.getClass().getName());
                 return;
             }
         }

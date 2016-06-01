@@ -116,16 +116,12 @@ public class MappedClass {
         this.clazz = clazz;
         mapperOptions = mapper.getOptions();
 
-        if (LOG.isTraceEnabled()) {
-            LOG.trace("Creating MappedClass for " + clazz);
-        }
+            LOG.trace(() -> "Creating MappedClass for " + clazz);
 
         basicValidate();
         discover(mapper);
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("MappedClass done: " + toString());
-        }
+            LOG.debug(() -> "MappedClass done: " + toString());
     }
 
 
@@ -225,7 +221,7 @@ public class MappedClass {
                     method.setAccessible(true);
 
                     if (LOG.isDebugEnabled()) {
-                        LOG.debug(format("Calling lifecycle method(@%s %s) on %s", event.getSimpleName(), method, inst));
+                        LOG.debug(() -> format("Calling lifecycle method(@%s %s) on %s", event.getSimpleName(), method, inst));
                     }
 
                     if (inst == null) {
@@ -574,9 +570,7 @@ public class MappedClass {
     private void callGlobalInterceptors(final Class<? extends Annotation> event, final Object entity, final DBObject dbObj,
                                         final Mapper mapper) {
         for (final EntityInterceptor ei : mapper.getInterceptors()) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Calling interceptor method " + event.getSimpleName() + " on " + ei);
-            }
+                LOG.debug(() -> "Calling interceptor method " + event.getSimpleName() + " on " + ei);
 
             if (event.equals(PreLoad.class)) {
                 ei.preLoad(entity, dbObj, mapper);

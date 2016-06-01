@@ -237,14 +237,15 @@ public class DatastoreImpl implements AdvancedDatastore {
                     final DBObject dbResult = database.command(BasicDBObjectBuilder.start("collstats", collName).get());
                     if (dbResult.containsField("capped")) {
                         // TODO: check the cap options.
-                        LOG.debug("DBCollection already exists and is capped already; doing nothing. " + dbResult);
+                        LOG.debug(() -> "DBCollection already exists and is capped already; doing nothing. " +
+                                        dbResult);
                     } else {
                         LOG.warning("DBCollection already exists with same name(" + collName
                                         + ") and is not capped; not creating capped version!");
                     }
                 } else {
                     getDB().createCollection(collName, dbCapOpts.get());
-                    LOG.debug("Created capped DBCollection (" + collName + ") with opts " + dbCapOpts);
+                    LOG.debug(() -> "Created capped DBCollection (" + collName + ") with opts " + dbCapOpts);
                 }
             }
         }
@@ -320,9 +321,8 @@ public class DatastoreImpl implements AdvancedDatastore {
             dbColl = getCollection(query.getEntityClass());
         }
 
-        if (LOG.isTraceEnabled()) {
-            LOG.trace("Executing findAndModify(" + dbColl.getName() + ") with delete ...");
-        }
+        final String collectionName = dbColl.getName();
+            LOG.trace(() -> "Executing findAndModify(" + collectionName + ") with delete ...");
 
         final DBObject result = dbColl.findAndModify(query.getQueryObject(), query.getFieldsObject(), query.getSortObject(), true,
                                                      null, false, false);
@@ -354,9 +354,8 @@ public class DatastoreImpl implements AdvancedDatastore {
             dbColl = getCollection(query.getEntityClass());
         }
 
-        if (LOG.isTraceEnabled()) {
-            LOG.info("Executing findAndModify(" + dbColl.getName() + ") with update ");
-        }
+        final String collectionName = dbColl.getName();
+        LOG.info(() -> "Executing findAndModify(" + collectionName + ") with update ");
         DBObject res = null;
         try {
             res = dbColl.findAndModify(query.getQueryObject(), query.getFieldsObject(), query.getSortObject(), false,
@@ -593,9 +592,7 @@ public class DatastoreImpl implements AdvancedDatastore {
             cmd.setSort(query.getSortObject());
         }
 
-        if (LOG.isTraceEnabled()) {
-            LOG.info("Executing " + cmd.toString());
-        }
+            LOG.info(() -> "Executing " + cmd.toString());
 
         final EntityCache cache = createCache();
         MapreduceResults<T> results = new MapreduceResults<T>(dbColl.mapReduce(baseCommand));
@@ -1096,7 +1093,7 @@ public class DatastoreImpl implements AdvancedDatastore {
             opts.append("expireAfterSeconds", expireAfterSeconds);
         }
 
-        LOG.debug(format("Creating index for %s with keys:%s and opts:%s", dbColl.getName(), fields, opts));
+        LOG.debug(() -> format("Creating index for %s with keys:%s and opts:%s", dbColl.getName(), fields, opts));
         dbColl.createIndex(fields, opts);
     }
 
@@ -1143,12 +1140,12 @@ public class DatastoreImpl implements AdvancedDatastore {
             }
         }
 
-        LOG.debug(format("Creating index for %s with keys:%s and opts:%s", dbColl.getName(), keys, opts));
+        LOG.debug(() -> format("Creating index for %s with keys:%s and opts:%s", dbColl.getName(), keys, opts));
         dbColl.createIndex(keys, opts);
     }
 
     protected void ensureIndex(final DBCollection dbColl, final DBObject keys, final DBObject options) {
-        LOG.debug(format("Creating index for %s with keys:%s and opts:%s", dbColl.getName(), keys, options));
+        LOG.debug(() -> format("Creating index for %s with keys:%s and opts:%s", dbColl.getName(), keys, options));
         dbColl.createIndex(keys, options);
     }
 
@@ -1314,7 +1311,7 @@ public class DatastoreImpl implements AdvancedDatastore {
             opts.put("weights", weights);
             weights.put(field, index.value());
         }
-        LOG.debug(format("Creating index for %s with keys:%s and opts:%s", dbColl.getName(), keys, opts));
+        LOG.debug(() -> format("Creating index for %s with keys:%s and opts:%s", dbColl.getName(), keys, opts));
         dbColl.createIndex(keys, opts);
     }
 
@@ -1612,10 +1609,7 @@ public class DatastoreImpl implements AdvancedDatastore {
             throw new QueryException("a query limit is not allowed for updates.");
         }
 
-        DBObject q = query.getQueryObject();
-        if (q == null) {
-            q = new BasicDBObject();
-        }
+        final DBObject q = query.getQueryObject();
 
         final MappedClass mc = getMapper().getMappedClass(query.getEntityClass());
         final List<MappedField> fields = mc.getFieldsAnnotatedWith(Version.class);
@@ -1630,10 +1624,9 @@ public class DatastoreImpl implements AdvancedDatastore {
             }
         }
 
-        if (LOG.isTraceEnabled()) {
-            LOG.trace("Executing update(" + dbColl.getName() + ") for query: " + q + ", ops: " + u + ", multi: " + multi + ", upsert: "
-                          + createIfMissing);
-        }
+        final String collectionName = dbColl.getName();
+            LOG.trace(() -> "Executing update(" + collectionName + ") for query: " + q + ", ops: " + u + ", multi: " + multi
+                        + ", upsert: " + createIfMissing);
 
         final WriteResult wr;
         if (wc == null) {

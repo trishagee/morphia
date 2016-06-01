@@ -172,7 +172,7 @@ public class ZipCodeDataSetTest extends TestBase {
                     found = true;
                     Assert.assertEquals(new Long(value), population.getPopulation());
                 }
-                LOG.debug("population = " + population);
+                LOG.debug(() -> "population = " + population);
             }
             Assert.assertTrue("Should have found " + state, found);
         } finally {

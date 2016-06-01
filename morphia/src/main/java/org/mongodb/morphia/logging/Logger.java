@@ -16,6 +16,8 @@
 
 package org.mongodb.morphia.logging;
 
+import java.util.function.Supplier;
+
 /**
  * A generic logger interface used internally by Morphia.  At runtime the actual implementation used is chosen to match which logging
  * framework (e.g., java.util.logging vs slf4j) is used in the application.
@@ -149,4 +151,22 @@ public interface Logger {
      * @param t   the Throwable to log
      */
     void warning(String msg, Throwable t);
+
+    default void debug(Supplier<String> messageSupplier) {
+        if (isDebugEnabled()) {
+            debug(messageSupplier.get());
+        }
+    }
+
+    default void trace(Supplier<String> messageSupplier) {
+        if (isTraceEnabled()) {
+            trace(messageSupplier.get());
+        }
+    }
+
+    default void info(Supplier<String> messageSupplier) {
+        if (isInfoEnabled()) {
+            info(messageSupplier.get());
+        }
+    }
 }
