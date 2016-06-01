@@ -74,8 +74,10 @@ public class LambdaPerformance {
         long endTime = System.currentTimeMillis();
 
         //results
-        long timeTaken = endTime - startTime;
-        System.out.println(timeTaken);
+        long duration = endTime - startTime;
+        System.out.println(duration);
+        long throughput = NUMBER_OF_ITERATIONS/duration;
+        System.out.println("throughput:"+ throughput+"ops/ms");
 //        System.out.printf("Output: %d%n", listOfResults[54]);
 //        System.out.printf("Mean time taken: " + timeTaken / NUMBER_OF_ITERATIONS);
     }
