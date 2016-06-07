@@ -1,7 +1,6 @@
 package org.mongodb.morphia.converters;
 
 import org.mongodb.morphia.mapping.MappedField;
-import org.mongodb.morphia.utils.IterHelper;
 import org.mongodb.morphia.utils.ReflectionUtils;
 
 import java.util.LinkedHashMap;
@@ -18,9 +17,8 @@ public class MapOfValuesConverter extends TypeConverter {
             return null;
         }
 
-
         final Map values = getMapper().getOptions().getObjectFactory().createMap(mf);
-        new IterHelper<>().loopMap(fromDBObject, (k, val) -> {
+        ((Map) fromDBObject).forEach((k, val) -> {
                 final Object objKey = getMapper().getConverters().decode(mf.getMapKeyClass(), k, mf);
                 values.put(objKey, val != null ? getMapper().getConverters().decode(mf.getSubClass(), val, mf) : null);
             });
