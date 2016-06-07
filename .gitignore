@@ -1,11 +1,7 @@
-*.iml
-*.iws
-*.ipr
 .classpath
 .project
 .settings
 *.sw*
-.idea
 release.sh
 **/target/**
 **/build/**

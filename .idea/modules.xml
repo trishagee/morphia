@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/buildSrc.iml" filepath="$PROJECT_DIR$/.idea/modules/buildSrc.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/buildSrc_main.iml" filepath="$PROJECT_DIR$/.idea/modules/buildSrc_main.iml" group="buildSrc" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/buildSrc_test.iml" filepath="$PROJECT_DIR$/.idea/modules/buildSrc_test.iml" group="buildSrc" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/entityscanner-plug/entityscanner-plug.iml" filepath="$PROJECT_DIR$/.idea/modules/entityscanner-plug/entityscanner-plug.iml" group="entityscanner-plug" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/entityscanner-plug/entityscanner-plug_main.iml" filepath="$PROJECT_DIR$/.idea/modules/entityscanner-plug/entityscanner-plug_main.iml" group="entityscanner-plug" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/entityscanner-plug/entityscanner-plug_test.iml" filepath="$PROJECT_DIR$/.idea/modules/entityscanner-plug/entityscanner-plug_test.iml" group="entityscanner-plug" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/guice-plug/guice-plug.iml" filepath="$PROJECT_DIR$/.idea/modules/guice-plug/guice-plug.iml" group="guice-plug" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/guice-plug/guice-plug_main.iml" filepath="$PROJECT_DIR$/.idea/modules/guice-plug/guice-plug_main.iml" group="guice-plug" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/guice-plug/guice-plug_test.iml" filepath="$PROJECT_DIR$/.idea/modules/guice-plug/guice-plug_test.iml" group="guice-plug" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/logging-slf4j/logging-slf4j.iml" filepath="$PROJECT_DIR$/.idea/modules/logging-slf4j/logging-slf4j.iml" group="logging-slf4j" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/logging-slf4j/logging-slf4j_main.iml" filepath="$PROJECT_DIR$/.idea/modules/logging-slf4j/logging-slf4j_main.iml" group="logging-slf4j" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/logging-slf4j/logging-slf4j_test.iml" filepath="$PROJECT_DIR$/.idea/modules/logging-slf4j/logging-slf4j_test.iml" group="logging-slf4j" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/morphia.iml" filepath="$PROJECT_DIR$/.idea/modules/morphia.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/morphia/morphia-morphia.iml" filepath="$PROJECT_DIR$/.idea/modules/morphia/morphia-morphia.iml" group="morphia" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/morphia/morphia-morphia_main.iml" filepath="$PROJECT_DIR$/.idea/modules/morphia/morphia-morphia_main.iml" group="morphia" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/morphia/morphia-morphia_test.iml" filepath="$PROJECT_DIR$/.idea/modules/morphia/morphia-morphia_test.iml" group="morphia" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/no-proxy-deps-tests/no-proxy-deps-tests.iml" filepath="$PROJECT_DIR$/.idea/modules/no-proxy-deps-tests/no-proxy-deps-tests.iml" group="no-proxy-deps-tests" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/no-proxy-deps-tests/no-proxy-deps-tests_main.iml" filepath="$PROJECT_DIR$/.idea/modules/no-proxy-deps-tests/no-proxy-deps-tests_main.iml" group="no-proxy-deps-tests" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/no-proxy-deps-tests/no-proxy-deps-tests_test.iml" filepath="$PROJECT_DIR$/.idea/modules/no-proxy-deps-tests/no-proxy-deps-tests_test.iml" group="no-proxy-deps-tests" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/util/util.iml" filepath="$PROJECT_DIR$/.idea/modules/util/util.iml" group="util" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/util/util_main.iml" filepath="$PROJECT_DIR$/.idea/modules/util/util_main.iml" group="util" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/util/util_test.iml" filepath="$PROJECT_DIR$/.idea/modules/util/util_test.iml" group="util" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/validation/validation.iml" filepath="$PROJECT_DIR$/.idea/modules/validation/validation.iml" group="validation" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/validation/validation_main.iml" filepath="$PROJECT_DIR$/.idea/modules/validation/validation_main.iml" group="validation" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/validation/validation_test.iml" filepath="$PROJECT_DIR$/.idea/modules/validation/validation_test.iml" group="validation" />
+    </modules>
+  </component>
+</project>

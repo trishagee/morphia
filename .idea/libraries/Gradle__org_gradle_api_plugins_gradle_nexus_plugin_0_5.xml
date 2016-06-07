@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: org.gradle.api.plugins:gradle-nexus-plugin:0.5">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.gradle.api.plugins/gradle-nexus-plugin/0.5/fe133d53130a6f946c43ffa44d6e0bee2dd114b3/gradle-nexus-plugin-0.5.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.gradle.api.plugins/gradle-nexus-plugin/0.5/bd42f19379471140b085980a5b6d173434152aef/gradle-nexus-plugin-0.5-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

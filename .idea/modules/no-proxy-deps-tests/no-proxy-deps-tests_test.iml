@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module external.linked.project.id=":no-proxy-deps-tests:test" external.linked.project.path="$MODULE_DIR$/../../../no-proxy-deps-tests" external.root.project.path="$MODULE_DIR$/../../.." external.system.id="GRADLE" external.system.module.group="org.mongodb.morphia" external.system.module.type="sourceSet" external.system.module.version="1.2.0-SNAPSHOT" type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8" inherit-compiler-output="false">
+    <output-test url="file://$MODULE_DIR$/../../../no-proxy-deps-tests/build/classes/test" />
+    <exclude-output />
+    <content url="file://$MODULE_DIR$/../../../no-proxy-deps-tests/src/test">
+      <sourceFolder url="file://$MODULE_DIR$/../../../no-proxy-deps-tests/src/test/java" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../no-proxy-deps-tests/src/test/resources" type="java-test-resource" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="no-proxy-deps-tests_main" />
+    <orderEntry type="library" name="Gradle: org.jetbrains:annotations:15.0" level="project" />
+    <orderEntry type="module" module-name="morphia-morphia_main" />
+    <orderEntry type="library" name="Gradle: junit:junit:4.12" level="project" />
+    <orderEntry type="library" name="Gradle: org.mongodb:mongo-java-driver:3.0.2" level="project" />
+    <orderEntry type="library" name="Gradle: com.thoughtworks.proxytoys:proxytoys:1.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.hamcrest:hamcrest-core:1.3" level="project" />
+  </component>
+  <component name="TestModuleProperties" production-module="no-proxy-deps-tests_main" />
+</module>

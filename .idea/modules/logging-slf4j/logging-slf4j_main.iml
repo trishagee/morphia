@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module external.linked.project.id=":logging-slf4j:main" external.linked.project.path="$MODULE_DIR$/../../../logging-slf4j" external.root.project.path="$MODULE_DIR$/../../.." external.system.id="GRADLE" external.system.module.group="org.mongodb.morphia" external.system.module.type="sourceSet" external.system.module.version="1.2.0-SNAPSHOT" type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8" inherit-compiler-output="false">
+    <output url="file://$MODULE_DIR$/../../../logging-slf4j/build/classes/main" />
+    <exclude-output />
+    <content url="file://$MODULE_DIR$/../../../logging-slf4j/src/main">
+      <sourceFolder url="file://$MODULE_DIR$/../../../logging-slf4j/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../logging-slf4j/src/main/resources" type="java-resource" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="Gradle: org.jetbrains:annotations:15.0" level="project" />
+    <orderEntry type="module" module-name="morphia-morphia_main" />
+    <orderEntry type="library" name="Gradle: org.slf4j:slf4j-api:1.7.5" level="project" />
+    <orderEntry type="library" name="Gradle: org.mongodb:mongo-java-driver:3.0.2" level="project" />
+    <orderEntry type="library" name="Gradle: com.thoughtworks.proxytoys:proxytoys:1.0" level="project" />
+    <orderEntry type="library" name="Gradle: cglib:cglib-nodep:2.2.2" level="project" />
+  </component>
+</module>
