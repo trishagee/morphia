@@ -90,7 +90,7 @@ public class MapperOptions {
      * @deprecated unused
      */
     public void setDatastoreProvider(final DatastoreProvider datastoreProvider) {
-        LOG.warning("DatastoreProviders are no longer needed or used.");
+        LOG.warning(() -> "DatastoreProviders are no longer needed or used.");
         this.datastoreProvider = datastoreProvider;
     }
 

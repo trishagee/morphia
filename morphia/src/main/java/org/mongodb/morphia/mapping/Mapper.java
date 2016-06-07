@@ -256,9 +256,7 @@ public class Mapper {
             throw new MappingException(format("The collection '%s' is not mapped to a java class.", collection));
         }
         if (mcs.size() > 1) {
-            if (LOG.isInfoEnabled()) {
-                LOG.info(format("Found more than one class mapped to collection '%s'%s", collection, mcs));
-            }
+            LOG.info(() -> format("Found more than one class mapped to collection '%s'%s", collection, mcs));
         }
         return mcs.iterator().next().getClazz();
     }
@@ -792,9 +790,7 @@ public class Mapper {
         } else if (Embedded.class.equals(annType)) {
             opts.getEmbeddedMapper().toDBObject(entity, mf, dbObject, involvedObjects, this);
         } else {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("No annotation was found, using default mapper " + opts.getDefaultMapper() + " for " + mf);
-            }
+            LOG.debug(() -> "No annotation was found, using default mapper " + opts.getDefaultMapper() + " for " + mf);
             opts.getDefaultMapper().toDBObject(entity, mf, dbObject, involvedObjects, this);
         }
 
@@ -824,7 +820,7 @@ public class Mapper {
 
         final Object newObj = getConverters().encode(origClass, javaObj);
         if (newObj == null) {
-            LOG.warning("converted " + javaObj + " to null");
+            LOG.warning(() -> "converted " + javaObj + " to null");
             return null;
         }
         final Class type = newObj.getClass();

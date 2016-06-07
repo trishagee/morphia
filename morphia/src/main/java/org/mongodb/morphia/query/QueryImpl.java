@@ -154,11 +154,8 @@ public class QueryImpl<T> extends CriteriaContainerImpl implements Query<T> {
             iter.close();
         }
 
-        if (LOG.isTraceEnabled()) {
-            LOG.trace(format("asList: %s \t %d entities, iterator time: driver %d ms, mapper %d ms %n\t cache: %s %n\t for %s",
-                             dbColl.getName(), results.size(), iter.getDriverTime(), iter.getMapperTime(), cache.stats(),
-                             getQueryObject()));
-        }
+        LOG.trace(() -> format("asList: %s \t %d entities, iterator time: driver %d ms, mapper %d ms %n\t cache: %s %n\t for %s",
+                dbColl.getName(), results.size(), iter.getDriverTime(), iter.getMapperTime(), cache.stats(), getQueryObject()));
 
         return results;
     }
@@ -166,18 +163,14 @@ public class QueryImpl<T> extends CriteriaContainerImpl implements Query<T> {
     @Override
     public long countAll() {
         final DBObject query = getQueryObject();
-        if (LOG.isTraceEnabled()) {
-            LOG.trace("Executing count(" + dbColl.getName() + ") for query: " + query);
-        }
+        LOG.trace(() -> "Executing count(" + dbColl.getName() + ") for query: " + query);
         return dbColl.getCount(query);
     }
 
     @Override
     public MorphiaIterator<T, T> fetch() {
         final DBCursor cursor = prepareCursor();
-        if (LOG.isTraceEnabled()) {
-            LOG.trace("Getting cursor(" + dbColl.getName() + ")  for query:" + cursor.getQuery());
-        }
+        LOG.trace(() -> "Getting cursor(" + dbColl.getName() + ")  for query:" + cursor.getQuery());
 
         return new MorphiaIterator<T, T>(ds, cursor, ds.getMapper(), clazz, dbColl.getName(), cache);
     }
@@ -202,9 +195,7 @@ public class QueryImpl<T> extends CriteriaContainerImpl implements Query<T> {
         includeFields = true;
         final DBCursor cursor = prepareCursor();
 
-        if (LOG.isTraceEnabled()) {
-            LOG.trace("Getting cursor(" + dbColl.getName() + ") for query:" + cursor.getQuery());
-        }
+        LOG.trace(() -> "Getting cursor(" + dbColl.getName() + ") for query:" + cursor.getQuery());
 
         fields = oldFields;
         includeFields = oldInclude;
@@ -609,9 +600,8 @@ public class QueryImpl<T> extends CriteriaContainerImpl implements Query<T> {
         final DBObject query = getQueryObject();
         final DBObject fields = getFieldsObject();
 
-        if (LOG.isTraceEnabled()) {
-            LOG.trace("Running query(" + dbColl.getName() + ") : " + query + ", fields:" + fields + ",off:" + offset + ",limit:" + limit);
-        }
+        LOG.trace(() -> "Running query(" + dbColl.getName() + ") : " + query + ", fields:" + fields + ",off:" + offset + ",limit:"
+                + limit);
 
         final DBCursor cursor = dbColl.find(query, fields);
         cursor.setDecoderFactory(ds.getDecoderFact());
@@ -652,12 +642,12 @@ public class QueryImpl<T> extends CriteriaContainerImpl implements Query<T> {
 
         //Check for bad options.
         if (snapshotted && (sort != null || indexHint != null)) {
-            LOG.warning("Snapshotted query should not have hint/sort.");
+            LOG.warning(() -> "Snapshotted query should not have hint/sort.");
         }
 
         if (tail && (sort != null)) {
             // i don´t think that just warning is enough here, i´d favor a RTE, agree?
-            LOG.warning("Sorting on tail is not allowed.");
+            LOG.warning(() -> "Sorting on tail is not allowed.");
         }
 
         if (maxScan != null) {

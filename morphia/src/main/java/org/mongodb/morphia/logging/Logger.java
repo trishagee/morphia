@@ -16,6 +16,8 @@
 
 package org.mongodb.morphia.logging;
 
+import java.util.function.Supplier;
+
 /**
  * A generic logger interface used internally by Morphia.  At runtime the actual implementation used is chosen to match which logging
  * framework (e.g., java.util.logging vs slf4j) is used in the application.
@@ -149,4 +151,67 @@ public interface Logger {
      * @param t   the Throwable to log
      */
     void warning(String msg, Throwable t);
+
+    /**
+     * Log a message which is only to be constructed if the logging level is such that the message will actually be logged.
+     *
+     * @param messageSupplier A function, which when called, produces the desired log message
+     */
+    default void debug(Supplier<String> messageSupplier) {
+        if (isDebugEnabled()) {
+            debug(messageSupplier.get());
+        }
+    }
+
+    /**
+     * Log a message which is only to be constructed if the logging
+     * level is such that the message will actually be logged.
+     *
+     * @param   messageSupplier   A function, which when called, produces the
+     *                        desired log message
+     */
+    default void warning(Supplier<String> messageSupplier) {
+        if (isWarningEnabled()) {
+            warning(messageSupplier.get());
+        }
+    }
+
+    /**
+     * Log a message which is only to be constructed if the logging
+     * level is such that the message will actually be logged.
+     *
+     * @param   messageSupplier   A function, which when called, produces the
+     *                        desired log message
+     */
+    default void trace(Supplier<String> messageSupplier) {
+        if (isTraceEnabled()) {
+            trace(messageSupplier.get());
+        }
+    }
+
+    /**
+     * Log a message which is only to be constructed if the logging
+     * level is such that the message will actually be logged.
+     *
+     * @param   messageSupplier   A function, which when called, produces the
+     *                        desired log message
+     */
+    default void error(Supplier<String> messageSupplier) {
+        if (isErrorEnabled()) {
+            error(messageSupplier.get());
+        }
+    }
+
+    /**
+     * Log a message which is only to be constructed if the logging
+     * level is such that the message will actually be logged.
+     *
+     * @param   messageSupplier   A function, which when called, produces the
+     *                        desired log message
+     */
+    default void info(Supplier<String> messageSupplier) {
+        if (isInfoEnabled()) {
+            info(messageSupplier.get());
+        }
+    }
 }

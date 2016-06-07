@@ -120,7 +120,7 @@ class FieldEndImpl<T extends CriteriaContainerImpl> implements FieldEnd<T> {
         Assert.parametersNotNull("values", values);
         if (LOG.isWarningEnabled()) {
             if (!values.iterator().hasNext()) {
-                LOG.warning("Specified an empty list/collection with the '" + field + "' criteria");
+                LOG.warning(() -> "Specified an empty list/collection with the '" + field + "' criteria");
             }
         }
         return addCriteria(FilterOperator.IN, values);

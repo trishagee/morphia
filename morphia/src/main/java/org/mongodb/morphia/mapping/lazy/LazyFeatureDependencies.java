@@ -24,7 +24,7 @@ public final class LazyFeatureDependencies {
     public static boolean assertDependencyFullFilled() {
         final boolean fulfilled = testDependencyFullFilled();
         if (!fulfilled) {
-            LOG.warning("Lazy loading impossible due to missing dependencies.");
+            LOG.warning(() -> "Lazy loading impossible due to missing dependencies.");
         }
         return fulfilled;
     }

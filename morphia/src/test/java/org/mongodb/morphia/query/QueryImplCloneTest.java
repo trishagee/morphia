@@ -52,7 +52,7 @@ public class QueryImplCloneTest extends TestBase {
             final Object v1 = f.get(q1);
             final Object v2 = f.get(q2);
 
-            LOG.debug("checking field " + f.getName() + " v1=" + v1 + " v2=" + v2);
+            LOG.debug(() -> "checking field " + f.getName() + " v1=" + v1 + " v2=" + v2);
 
             if (v1 == null && v2 == null) {
                 continue;

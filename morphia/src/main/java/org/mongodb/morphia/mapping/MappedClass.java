@@ -116,16 +116,12 @@ public class MappedClass {
         this.clazz = clazz;
         mapperOptions = mapper.getOptions();
 
-        if (LOG.isTraceEnabled()) {
-            LOG.trace("Creating MappedClass for " + clazz);
-        }
+        LOG.trace(() -> "Creating MappedClass for " + clazz);
 
         basicValidate();
         discover(mapper);
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("MappedClass done: " + toString());
-        }
+        LOG.debug(() -> "MappedClass done: " + toString());
     }
 
 
@@ -224,9 +220,7 @@ public class MappedClass {
                     final Object inst = toCall.get(cm.clazz);
                     method.setAccessible(true);
 
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug(format("Calling lifecycle method(@%s %s) on %s", event.getSimpleName(), method, inst));
-                    }
+                    LOG.debug(() -> format("Calling lifecycle method(@%s %s) on %s", event.getSimpleName(), method, inst));
 
                     if (inst == null) {
                         if (method.getParameterTypes().length == 0) {
@@ -541,9 +535,9 @@ public class MappedClass {
                 } else {
                     if (mapper.getOptions().getDefaultMapper() != null) {
                         persistenceFields.add(new MappedField(field, clazz, mapper));
-                    } else if (LOG.isWarningEnabled()) {
-                        LOG.warning(format("Ignoring (will not persist) field: %s.%s [type:%s]", clazz.getName(), field.getName(),
-                                           field.getType().getName()));
+                    } else {
+                        LOG.warning(() -> format("Ignoring (will not persist) field: %s.%s [type:%s]", clazz.getName(), field.getName(),
+                                field.getType().getName()));
                     }
                 }
             }
@@ -574,9 +568,7 @@ public class MappedClass {
     private void callGlobalInterceptors(final Class<? extends Annotation> event, final Object entity, final DBObject dbObj,
                                         final Mapper mapper) {
         for (final EntityInterceptor ei : mapper.getInterceptors()) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Calling interceptor method " + event.getSimpleName() + " on " + ei);
-            }
+            LOG.debug(() -> "Calling interceptor method " + event.getSimpleName() + " on " + ei);
 
             if (event.equals(PreLoad.class)) {
                 ei.preLoad(entity, dbObj, mapper);
@@ -600,9 +592,7 @@ public class MappedClass {
         final Object o = mapper.getOptions().getObjectFactory().createInstance(clazz);
         final Object nullO = mapper.getInstanceCache().put(clazz, o);
         if (nullO != null) {
-            if (LOG.isErrorEnabled()) {
-                LOG.error("Race-condition, created duplicate class: " + clazz);
-            }
+            LOG.error(() -> "Race-condition, created duplicate class: " + clazz);
         }
 
         return o;

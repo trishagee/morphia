@@ -239,7 +239,7 @@ public abstract class Converters {
         final List<TypeConverter> tcs = tcMap.get(c);
         if (tcs != null) {
             if (tcs.size() > 1) {
-                LOG.warning("Duplicate converter for " + c + ", returning first one from " + tcs);
+                LOG.warning(() -> "Duplicate converter for " + c + ", returning first one from " + tcs);
             }
             return tcs.get(0);
         }
@@ -267,7 +267,8 @@ public abstract class Converters {
 
         if (tcs != null) {
             if (tcs.size() > 1) {
-                LOG.warning("Duplicate converter for " + mf.getType() + ", returning first one from " + tcs);
+                List<TypeConverter> typeConverters = tcs;
+                LOG.warning(() -> "Duplicate converter for " + mf.getType() + ", returning first one from " + typeConverters);
             }
             return tcs.get(0);
         }
@@ -284,7 +285,7 @@ public abstract class Converters {
     private void addTypedConverter(final Class type, final TypeConverter tc) {
         if (tcMap.containsKey(type)) {
             tcMap.get(type).add(0, tc);
-            LOG.warning("Added duplicate converter for " + type + " ; " + tcMap.get(type));
+            LOG.warning(() -> "Added duplicate converter for " + type + " ; " + tcMap.get(type));
         } else {
             final List<TypeConverter> values = new ArrayList<TypeConverter>();
             values.add(tc);

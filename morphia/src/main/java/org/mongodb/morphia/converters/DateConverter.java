@@ -48,7 +48,7 @@ public class DateConverter extends TypeConverter implements SimpleValueConverter
             try {
                 return new SimpleDateFormat("EEE MMM dd kk:mm:ss z yyyy", Locale.US).parse((String) val);
             } catch (ParseException e) {
-                LOG.error("Can't parse Date from: " + val);
+                LOG.error(() -> "Can't parse Date from: " + val);
             }
 
         }

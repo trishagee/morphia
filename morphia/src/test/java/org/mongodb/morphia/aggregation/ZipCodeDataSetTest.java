@@ -147,7 +147,7 @@ public class ZipCodeDataSetTest extends TestBase {
     }
 
     private void download(final URL url, final File file) throws IOException {
-        LOG.info("Downloading zip data set to " + file);
+        LOG.info(() -> "Downloading zip data set to " + file);
         InputStream inputStream = url.openStream();
         FileOutputStream outputStream = new FileOutputStream(file);
         try {
@@ -172,7 +172,7 @@ public class ZipCodeDataSetTest extends TestBase {
                     found = true;
                     Assert.assertEquals(new Long(value), population.getPopulation());
                 }
-                LOG.debug("population = " + population);
+                LOG.debug(() -> "population = " + population);
             }
             Assert.assertTrue("Should have found " + state, found);
         } finally {

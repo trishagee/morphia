@@ -474,9 +474,9 @@ public class MappedField {
         }
 
         if (!isMongoType && !isSingleValue && (subType == null || subType == Object.class)) {
-            if (LOG.isWarningEnabled() && !mapper.getConverters().hasDbObjectConverter(this)) {
-                LOG.warning(format("The multi-valued field '%s' is a possible heterogeneous collection. It cannot be verified. "
-                                   + "Please declare a valid type to get rid of this warning. %s", getFullName(), subType));
+            if (!mapper.getConverters().hasDbObjectConverter(this)) {
+                LOG.warning(() -> format("The multi-valued field '%s' is a possible heterogeneous collection. It cannot be verified. "
+                        + "Please declare a valid type to get rid of this warning. %s", getFullName(), subType));
             }
             isMongoType = true;
         }
@@ -534,10 +534,8 @@ public class MappedField {
         }
 
         if (Object.class.equals(realType) || Object[].class.equals(realType)) {
-            if (LOG.isWarningEnabled()) {
-                LOG.warning(format("Parameterized types are treated as untyped Objects. See field '%s' on %s", field.getName(),
-                                   field.getDeclaringClass()));
-            }
+            LOG.warning(() -> format("Parameterized types are treated as untyped Objects. See field '%s' on %s", field.getName(),
+                    field.getDeclaringClass()));
         }
 
         if (realType == null) {

@@ -122,14 +122,13 @@ final class QueryValidator {
                 if ((mf.isSingleValue() && !compatibleForType)
                     || mf.isMultipleValues() && !(compatibleForSubclass || compatibleForType)) {
 
-                    if (LOG.isWarningEnabled()) {
-                        LOG.warning(format("The type(s) for the query/update may be inconsistent; using an instance of type '%s' "
-                                           + "for the field '%s.%s' which is declared as '%s'", val.getClass().getName(),
-                                           mf.getDeclaringClass().getName(), mf.getJavaFieldName(), mf.getType().getName()
-                                          ));
-                        typeValidationFailures.addAll(subclassValidationFailures);
-                        LOG.warning("Validation warnings: \n" + typeValidationFailures);
-                    }
+                    MappedField mappedField = mf;
+                    LOG.warning(() -> format("The type(s) for the query/update may be inconsistent; using an instance of type '%s' "
+                                    + "for the field '%s.%s' which is declared as '%s'", val.getClass().getName(),
+                            mappedField.getDeclaringClass().getName(), mappedField.getJavaFieldName(), mappedField.getType().getName()
+                    ));
+                    typeValidationFailures.addAll(subclassValidationFailures);
+                    LOG.warning(() -> "Validation warnings: \n" + typeValidationFailures);
                 }
             }
         }

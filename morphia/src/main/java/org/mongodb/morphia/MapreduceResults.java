@@ -75,7 +75,7 @@ public class MapreduceResults<T> implements Iterable<T> {
      */
     @Deprecated
     public String getError() {
-        LOG.warning("MapreduceResults.getError() will always return null.");
+        LOG.warning(() -> "MapreduceResults.getError() will always return null.");
         return null;
     }
 
@@ -107,7 +107,7 @@ public class MapreduceResults<T> implements Iterable<T> {
      */
     @Deprecated
     public boolean isOk() {
-        LOG.warning("MapreduceResults.isOk() will always return true.");
+        LOG.warning(() -> "MapreduceResults.isOk() will always return true.");
         return true;
     }
 
