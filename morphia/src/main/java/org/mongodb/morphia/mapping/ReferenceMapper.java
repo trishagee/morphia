@@ -15,8 +15,6 @@ import org.mongodb.morphia.mapping.lazy.proxy.ProxiedEntityReferenceList;
 import org.mongodb.morphia.mapping.lazy.proxy.ProxiedEntityReferenceMap;
 import org.mongodb.morphia.mapping.lazy.proxy.ProxyHelper;
 import org.mongodb.morphia.utils.IterHelper;
-import org.mongodb.morphia.utils.IterHelper.IterCallback;
-import org.mongodb.morphia.utils.IterHelper.MapIterCallback;
 import org.mongodb.morphia.utils.ReflectionUtils;
 
 import java.util.ArrayList;
@@ -141,17 +139,14 @@ class ReferenceMapper implements CustomMapper {
         } else {
             final Object dbVal = mf.getDbObjectValue(dbObject);
             final Collection refs = references;
-            new IterHelper<String, Object>().loopOrSingle(dbVal, new IterCallback<Object>() {
-                @Override
-                public void eval(final Object val) {
+            new IterHelper<>().loopOrSingle(dbVal, val -> {
                     final Object ent = resolveObject(datastore, mapper, cache, mf, refAnn.idOnly(), val);
                     if (ent == null) {
                         LOG.warning("Null reference found when retrieving value for " + mf.getFullName());
                     } else {
                         refs.add(ent);
                     }
-                }
-            });
+                });
         }
 
         if (mf.getType().isArray()) {
@@ -174,10 +169,7 @@ class ReferenceMapper implements CustomMapper {
             }
 
             final Map map = m;
-            new IterHelper<Object, Object>().loopMap(dbVal, new MapIterCallback<Object, Object>() {
-                @Override
-                public void eval(final Object k, final Object val) {
-
+            new IterHelper<>().loopMap(dbVal, (k, val) -> {
                     final Object objKey = mapper.getConverters().decode(mf.getMapKeyClass(), k, mf);
 
                     if (refAnn.lazy() && LazyFeatureDependencies.assertDependencyFullFilled()) {
@@ -188,8 +180,7 @@ class ReferenceMapper implements CustomMapper {
                     } else {
                         map.put(objKey, resolveObject(datastore, mapper, cache, mf, refAnn.idOnly(), val));
                     }
-                }
-            });
+                });
         }
         mf.setFieldValue(entity, m);
     }
