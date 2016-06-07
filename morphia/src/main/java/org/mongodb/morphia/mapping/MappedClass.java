@@ -36,6 +36,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
@@ -209,11 +211,9 @@ public class MappedClass {
                 for (final ClassMethodPair cm : methodPairs) {
                     toCall.put(cm.clazz, null);
                 }
-                for (final Class<?> c : toCall.keySet()) {
-                    if (c != null) {
-                        toCall.put(c, getOrCreateInstance(c, mapper));
-                    }
-                }
+                toCall.keySet().stream()
+                      .filter(Objects::nonNull)
+                      .forEach(c -> toCall.put(c, getOrCreateInstance(c, mapper)));
 
                 for (final ClassMethodPair cm : methodPairs) {
                     final Method method = cm.method;
@@ -323,13 +323,9 @@ public class MappedClass {
      * @return the list of fields
      */
     public List<MappedField> getFieldsAnnotatedWith(final Class<? extends Annotation> clazz) {
-        final List<MappedField> results = new ArrayList<MappedField>();
-        for (final MappedField mf : persistenceFields) {
-            if (mf.getAnnotations().containsKey(clazz)) {
-                results.add(mf);
-            }
-        }
-        return results;
+        return persistenceFields.stream()
+                                .filter(mf -> mf.getAnnotations().containsKey(clazz))
+                                .collect(Collectors.toList());
     }
 
     /**

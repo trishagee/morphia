@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static java.lang.String.format;
+import static java.util.stream.Collectors.toList;
 import static org.mongodb.morphia.query.QueryValidator.validateQuery;
 
 
@@ -482,12 +483,12 @@ public class QueryImpl<T> extends CriteriaContainerImpl implements Query<T> {
 
     @Override
     public Query<T> retrieveKnownFields() {
-        final MappedClass mc = ds.getMapper().getMappedClass(clazz);
-        final List<String> fields = new ArrayList<String>(mc.getPersistenceFields().size() + 1);
-        for (final MappedField mf : mc.getPersistenceFields()) {
-            fields.add(mf.getNameToStore());
-        }
-        retrievedFields(true, fields.toArray(new String[fields.size()]));
+        String[] fieldNames = ds.getMapper().getMappedClass(clazz).getPersistenceFields()
+                                .stream()
+                                .map(MappedField::getNameToStore)
+                                .collect(toList())
+                                .toArray(new String[0]);
+        retrievedFields(true, fieldNames);
         return this;
     }
 

@@ -14,9 +14,10 @@ import org.mongodb.morphia.query.UpdateOperations;
 import org.mongodb.morphia.query.UpdateResults;
 
 import java.lang.reflect.ParameterizedType;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * @param <T> the type of the entity
@@ -275,11 +276,7 @@ public class BasicDAO<T, K> implements DAO<T, K> {
      * Converts from a List<Key> to their id values
      */
     protected List<?> keysToIds(final List<Key<T>> keys) {
-        final List<Object> ids = new ArrayList<Object>(keys.size() * 2);
-        for (final Key<T> key : keys) {
-            ids.add(key.getId());
-        }
-        return ids;
+        return keys.stream().map(Key::getId).collect(toList());
     }
 
 }
