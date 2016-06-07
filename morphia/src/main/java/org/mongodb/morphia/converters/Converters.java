@@ -1,7 +1,7 @@
 package org.mongodb.morphia.converters;
 
 import com.mongodb.DBObject;
-import com.sun.istack.internal.NotNull;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.mongodb.morphia.logging.Logger;
 import org.mongodb.morphia.logging.MorphiaLoggerFactory;

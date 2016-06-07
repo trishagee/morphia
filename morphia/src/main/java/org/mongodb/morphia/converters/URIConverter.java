@@ -33,7 +33,7 @@ public class URIConverter extends TypeConverter<URI> implements SimpleValueConve
     }
 
     @Override
-    public String encode(@NotNull final Object uri, final MappedField optionalExtraInfo) {
+    public String encode(@NotNull final URI uri, final MappedField optionalExtraInfo) {
         return uri.toString().replace(".", "%46");
     }
 }
