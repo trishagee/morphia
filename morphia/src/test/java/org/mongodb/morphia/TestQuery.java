@@ -52,13 +52,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
+import static java.lang.System.currentTimeMillis;
 import static java.util.Arrays.asList;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -981,25 +982,18 @@ public class TestQuery extends TestBase {
 
         assertEquals(0, query.countAll());
 
-        executorService.scheduleAtFixedRate(new Runnable() {
-            @Override
-            public void run() {
-                getDs().save(new CappedPic(System.currentTimeMillis() + ""));
-            }
-        }, 0, 500, TimeUnit.MILLISECONDS);
+        executorService.scheduleAtFixedRate(() -> getDs().save(new CappedPic(currentTimeMillis() + "")), 0, 500, MILLISECONDS);
 
+        //CHECKSTYLE:OFF
         final Iterator<CappedPic> tail = query.tail();
-        Awaitility
-            .await()
-            .pollDelay(1, TimeUnit.SECONDS)
-            .atMost(30, TimeUnit.SECONDS)
-            .until(new Callable<Boolean>() {
-                @Override
-                public Boolean call() throws Exception {
-                    found.add(tail.next());
-                    return found.size() >= 10;
-                }
-            });
+        Awaitility.await()
+                  .pollDelay(1, SECONDS)
+                  .atMost(30, SECONDS)
+                  .until(() -> {
+                      found.add(tail.next());
+                      return found.size() >= 10;
+                  });
+        //CHECKSTYLE:ON
         executorService.shutdownNow();
         Assert.assertTrue(query.countAll() >= 10);
     }

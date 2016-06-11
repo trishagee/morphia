@@ -354,9 +354,8 @@ public class DatastoreImpl implements AdvancedDatastore {
             dbColl = getCollection(query.getEntityClass());
         }
 
-        if (LOG.isTraceEnabled()) {
-            LOG.info("Executing findAndModify(" + dbColl.getName() + ") with update ");
-        }
+        String collectionName = dbColl.getName();
+        LOG.info(() -> "Executing findAndModify(" + collectionName + ") with update ");
         DBObject res = null;
         try {
             res = dbColl.findAndModify(query.getQueryObject(), query.getFieldsObject(), query.getSortObject(), false,

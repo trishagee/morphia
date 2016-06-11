@@ -1,4 +1,4 @@
-apply plugin: 'org.kordamp.gradle.clirr'
+//apply plugin: 'org.kordamp.gradle.clirr'
 
 archivesBaseName = 'morphia'
 
@@ -22,8 +22,8 @@ dependencies {
     testCompile 'org.skyscreamer:jsonassert:1.2.3'
 }
 
-clirr {
-    excludeFilter = new File("$configDir/clirr-exclude.yml")
-    baseline = ['org.mongodb.morphia:morphia:1.1.0'].join(':')
-    failOnErrors = false
-}
+//clirr {
+//    excludeFilter = new File("$configDir/clirr-exclude.yml")
+//    baseline = ['org.mongodb.morphia:morphia:1.1.0'].join(':')
+//    failOnErrors = false
+//}

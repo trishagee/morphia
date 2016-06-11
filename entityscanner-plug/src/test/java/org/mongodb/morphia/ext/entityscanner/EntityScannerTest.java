@@ -1,6 +1,5 @@
 package org.mongodb.morphia.ext.entityscanner;
 
-import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import org.bson.types.ObjectId;
 import org.junit.Test;
@@ -22,13 +21,7 @@ public class EntityScannerTest {
         new EntityScanner(m, Predicates.equalTo(E.class.getName() + ".class"));
         assertTrue(m.isMapped(E.class));
         assertFalse(m.isMapped(F.class));
-        new EntityScanner(m, new Predicate<String>() {
-
-            @Override
-            public boolean apply(final String input) {
-                return input.startsWith(EntityScannerTest.class.getPackage().getName());
-            }
-        });
+        new EntityScanner(m, input -> input.startsWith(EntityScannerTest.class.getPackage().getName()));
         assertTrue(m.isMapped(F.class));
 
     }
