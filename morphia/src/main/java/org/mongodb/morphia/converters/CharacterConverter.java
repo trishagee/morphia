@@ -4,12 +4,13 @@ package org.mongodb.morphia.converters;
 import org.mongodb.morphia.mapping.MappedField;
 import org.mongodb.morphia.mapping.MappingException;
 
+import java.util.Optional;
 
 /**
  * @author Uwe Schaefer, (us@thomas-daily.de)
  * @author scotthernandez
  */
-public class CharacterConverter extends TypeConverter implements SimpleValueConverter {
+public class CharacterConverter extends TypeConverter<Character> implements SimpleValueConverter {
     /**
      * Creates the Converter.
      */
@@ -18,11 +19,7 @@ public class CharacterConverter extends TypeConverter implements SimpleValueConv
     }
 
     @Override
-    public Object decode(final Class targetClass, final Object fromDBObject, final MappedField optionalExtraInfo) {
-        if (fromDBObject == null) {
-            return null;
-        }
-
+    public Character decode(final Class targetClass, final Object fromDBObject, final MappedField optionalExtraInfo) {
         if (fromDBObject instanceof String) {
             final char[] chars = ((String) fromDBObject).toCharArray();
             if (chars.length == 1) {
@@ -35,7 +32,9 @@ public class CharacterConverter extends TypeConverter implements SimpleValueConv
     }
 
     @Override
-    public Object encode(final Object value, final MappedField optionalExtraInfo) {
-        return value == null || value.equals('\0') ? null : String.valueOf(value);
+    public Object encode(final Optional<Character> value, final MappedField optionalExtraInfo) {
+        return value.filter(character -> !character.equals('\0'))
+                    .map(String::valueOf)
+                    .orElse(null);
     }
 }

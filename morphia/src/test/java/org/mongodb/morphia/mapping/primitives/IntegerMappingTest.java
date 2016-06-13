@@ -46,6 +46,27 @@ public class IntegerMappingTest extends TestBase {
         Assert.assertArrayEquals(ent.nestedWrapperArray, loaded.nestedWrapperArray);
     }
 
+    @Test
+    public void shouldEncodeAndDecodeIntegerValuesWhenNull() throws Exception {
+        getMorphia().map(Integers.class);
+        final Integers integers = new Integers();
+        getDs().save(integers);
+
+        final Integers loaded = getDs().get(integers);
+
+        Assert.assertNotNull(loaded.id);
+
+        Assert.assertTrue(loaded.listWrapperArray.isEmpty());
+        Assert.assertTrue(loaded.listPrimitiveArray.isEmpty());
+        Assert.assertTrue(loaded.listWrapper.isEmpty());
+        Assert.assertEquals(0, loaded.singlePrimitive);
+        Assert.assertNull(loaded.singleWrapper);
+        Assert.assertNull(loaded.primitiveArray);
+        Assert.assertNull(loaded.wrapperArray);
+        Assert.assertNull(loaded.nestedPrimitiveArray);
+        Assert.assertNull(loaded.nestedWrapperArray);
+    }
+
     private static class Integers {
         private final List<Integer[]> listWrapperArray = new ArrayList<Integer[]>();
         private final List<int[]> listPrimitiveArray = new ArrayList<int[]>();

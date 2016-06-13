@@ -4,6 +4,7 @@ import org.junit.Test;
 import org.mongodb.morphia.TestBase;
 
 import java.util.Locale;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -17,7 +18,7 @@ public class LocaleConverterTest extends TestBase {
         Locale expectedLocale = Locale.CANADA_FRENCH;
 
         // when
-        Locale decodedLocale = (Locale) converter.decode(Locale.class, converter.encode(expectedLocale));
+        Locale decodedLocale = converter.decode(Locale.class, converter.encode(Optional.of(expectedLocale)));
 
         // then
         assertThat(decodedLocale, is(expectedLocale));
@@ -30,7 +31,7 @@ public class LocaleConverterTest extends TestBase {
         Locale expectedLocale = new Locale("", "FI");
 
         // when
-        Locale decodedLocale = (Locale) converter.decode(Locale.class, converter.encode(expectedLocale));
+        Locale decodedLocale = (Locale) converter.decode(Locale.class, converter.encode(Optional.of(expectedLocale)));
 
         // then
         assertThat(decodedLocale, is(expectedLocale));
@@ -43,7 +44,7 @@ public class LocaleConverterTest extends TestBase {
         Locale expectedLocale = new Locale("de", "DE", "bavarian");
 
         // when
-        Locale decodedLocale = (Locale) converter.decode(Locale.class, converter.encode(expectedLocale));
+        Locale decodedLocale = (Locale) converter.decode(Locale.class, converter.encode(Optional.of(expectedLocale)));
 
         // then
         assertThat(decodedLocale, is(expectedLocale));
@@ -59,7 +60,7 @@ public class LocaleConverterTest extends TestBase {
         Locale expectedLocale = new Locale("fi", "", "VAR");
 
         // when
-        Locale decodedLocale = (Locale) converter.decode(Locale.class, converter.encode(expectedLocale));
+        Locale decodedLocale = (Locale) converter.decode(Locale.class, converter.encode(Optional.of(expectedLocale)));
 
         // then
         assertThat(decodedLocale, is(expectedLocale));
@@ -72,7 +73,7 @@ public class LocaleConverterTest extends TestBase {
         Locale expectedLocale = new Locale("", "FI", "VAR");
 
         // when
-        Locale decodedLocale = (Locale) converter.decode(Locale.class, converter.encode(expectedLocale));
+        Locale decodedLocale = (Locale) converter.decode(Locale.class, converter.encode(Optional.of(expectedLocale)));
 
         // then
         assertThat(decodedLocale, is(expectedLocale));
@@ -85,7 +86,7 @@ public class LocaleConverterTest extends TestBase {
         Locale expectedLocale = new Locale("fi", "FI", "VAR_SPECIAL");
 
         // when
-        Locale decodedLocale = (Locale) converter.decode(Locale.class, converter.encode(expectedLocale));
+        Locale decodedLocale = (Locale) converter.decode(Locale.class, converter.encode(Optional.of(expectedLocale)));
 
         // then
         assertThat(decodedLocale, is(expectedLocale));

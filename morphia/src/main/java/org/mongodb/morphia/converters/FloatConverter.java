@@ -9,6 +9,7 @@ import java.util.List;
  * @author Uwe Schaefer, (us@thomas-daily.de)
  * @author scotthernandez
  */
+@SuppressWarnings("unchecked") // because this class magically deals with types and arrays, can't be easily typed
 public class FloatConverter extends TypeConverter implements SimpleValueConverter {
 
     /**
@@ -20,10 +21,6 @@ public class FloatConverter extends TypeConverter implements SimpleValueConverte
 
     @Override
     public Object decode(final Class targetClass, final Object val, final MappedField optionalExtraInfo) {
-        if (val == null) {
-            return null;
-        }
-
         if (val instanceof Float) {
             return val;
         }

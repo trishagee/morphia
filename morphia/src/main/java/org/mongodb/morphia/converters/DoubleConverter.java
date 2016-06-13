@@ -2,41 +2,28 @@ package org.mongodb.morphia.converters;
 
 
 import org.mongodb.morphia.mapping.MappedField;
-import org.mongodb.morphia.utils.ReflectionUtils;
-
-import java.util.List;
 
 
 /**
- * @author Uwe Schaefer, (us@thomas-daily.de)
- * @author scotthernandez
+ * Decodes <code>double</code>s and <code>Double</code>s.
  */
-public class DoubleConverter extends TypeConverter implements SimpleValueConverter {
+public class DoubleConverter extends TypeConverter<Double> implements SimpleValueConverter {
 
     /**
-     * Creates the Converter.
+     * Registers the converter to decode double and its Object wrapper type.
      */
     public DoubleConverter() {
-        super(double.class, Double.class, double[].class, Double[].class);
+        super(double.class, Double.class);
     }
 
     @Override
-    public Object decode(final Class targetClass, final Object val, final MappedField optionalExtraInfo) {
-        if (val == null) {
-            return null;
-        }
-
+    public Double decode(final Class targetClass, final Object val, final MappedField optionalExtraInfo) {
         if (val instanceof Double) {
-            return val;
+            return (Double) val;
         }
 
         if (val instanceof Number) {
             return ((Number) val).doubleValue();
-        }
-
-        if (val instanceof List) {
-            final Class<?> type = targetClass.isArray() ? targetClass.getComponentType() : targetClass;
-            return ReflectionUtils.convertToArray(type, (List<?>) val);
         }
 
         return Double.parseDouble(val.toString());

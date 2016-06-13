@@ -179,6 +179,7 @@ public interface FieldEnd<T> {
      * @mongodb.driver.manual reference/operator/query/geoIntersects/ $geoIntersects
      * @mongodb.server.release 2.4
      */
+    //NotNull
     T intersects(Geometry geometry);
 
     /**

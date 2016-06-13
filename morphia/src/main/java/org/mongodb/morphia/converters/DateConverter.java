@@ -15,7 +15,7 @@ import java.util.Locale;
  * @author Uwe Schaefer, (us@thomas-daily.de)
  * @author scotthernandez
  */
-public class DateConverter extends TypeConverter implements SimpleValueConverter {
+public class DateConverter extends TypeConverter<Date> implements SimpleValueConverter {
     private static final Logger LOG = MorphiaLoggerFactory.get(DateConverter.class);
 
 
@@ -31,13 +31,9 @@ public class DateConverter extends TypeConverter implements SimpleValueConverter
     }
 
     @Override
-    public Object decode(final Class<?> targetClass, final Object val, final MappedField optionalExtraInfo) {
-        if (val == null) {
-            return null;
-        }
-
+    public Date decode(final Class<Date> targetClass, final Object val, final MappedField optionalExtraInfo) {
         if (val instanceof Date) {
-            return val;
+            return (Date) val;
         }
 
         if (val instanceof Number) {

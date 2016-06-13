@@ -9,6 +9,7 @@ import org.mongodb.morphia.mapping.MappedField;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.mongodb.morphia.geo.GeoJsonType.LINE_STRING;
 import static org.mongodb.morphia.geo.GeoJsonType.MULTI_LINE_STRING;
@@ -24,7 +25,7 @@ import static org.mongodb.morphia.geo.GeoJsonType.POLYGON;
  * <p/>
  * Overridden by subclasses to define exact behaviour for specific Geometry concrete classes.
  */
-public class GeometryShapeConverter extends TypeConverter implements SimpleValueConverter {
+public class GeometryShapeConverter extends TypeConverter<Geometry> implements SimpleValueConverter {
     private final GeoJsonType geoJsonType;
     private final List<GeometryFactory> factories;
 
@@ -35,19 +36,20 @@ public class GeometryShapeConverter extends TypeConverter implements SimpleValue
     }
 
     @Override
-    public Geometry decode(final Class<?> targetClass, final Object fromDBObject, final MappedField optionalExtraInfo) {
+    public Geometry decode(final Class<Geometry> targetClass, final Object fromDBObject, final MappedField optionalExtraInfo) {
         return decodeObject((List) ((DBObject) fromDBObject).get("coordinates"), factories);
     }
 
     @Override
-    public Object encode(final Object value, final MappedField optionalExtraInfo) {
-        if (value != null) {
-            Object encodedObjects = encodeObjects(((Geometry) value).getCoordinates());
-            return new BasicDBObject("type", geoJsonType.getType())
-                       .append("coordinates", encodedObjects);
-        } else {
-            return null;
-        }
+    public Object encode(final Optional<Geometry> value, final MappedField optionalExtraInfo) {
+        return value.map(this::encodeGeometry)
+                    .orElse(null);
+    }
+
+    private Object encodeGeometry(Geometry geometry) {
+        Object encodedObjects = encodeObjects(geometry.getCoordinates());
+        return new BasicDBObject("type", geoJsonType.getType())
+                   .append("coordinates", encodedObjects);
     }
 
     /*

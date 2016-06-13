@@ -4,12 +4,14 @@ package org.mongodb.morphia.converters;
 import org.mongodb.morphia.mapping.MappedField;
 import org.mongodb.morphia.mapping.MappingException;
 
+import java.util.Optional;
+
 
 /**
  * @author Uwe Schaefer, (us@thomas-daily.de)
  * @author scotthernandez
  */
-public class ClassConverter extends TypeConverter implements SimpleValueConverter {
+public class ClassConverter extends TypeConverter<Class> implements SimpleValueConverter {
 
     /**
      * Creates the Converter.
@@ -19,25 +21,18 @@ public class ClassConverter extends TypeConverter implements SimpleValueConverte
     }
 
     @Override
-    public Object decode(final Class targetClass, final Object fromDBObject, final MappedField optionalExtraInfo) {
-        if (fromDBObject == null) {
-            return null;
-        }
-
-        final String l = fromDBObject.toString();
+    public Class decode(final Class targetClass, final Object fromDBObject, final MappedField optionalExtraInfo) {
+        final String className = fromDBObject.toString();
         try {
-            return Class.forName(l);
+            return Class.forName(className);
         } catch (ClassNotFoundException e) {
-            throw new MappingException("Cannot create class from Name '" + l + "'", e);
+            throw new MappingException("Cannot create class from Name '" + className + "'", e);
         }
     }
 
     @Override
-    public Object encode(final Object value, final MappedField optionalExtraInfo) {
-        if (value == null) {
-            return null;
-        } else {
-            return ((Class) value).getName();
-        }
+    public Object encode(final Optional<Class> value, final MappedField optionalExtraInfo) {
+        return value.map(aClass -> aClass.getName())
+                    .orElse(null);
     }
 }

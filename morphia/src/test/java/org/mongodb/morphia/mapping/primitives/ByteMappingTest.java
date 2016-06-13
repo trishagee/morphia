@@ -53,12 +53,33 @@ public class ByteMappingTest extends TestBase {
         Assert.assertArrayEquals(ent.nestedWrapperArray, loaded.nestedWrapperArray);
     }
 
+    @Test
+    public void shouldEncodeAndDecodeByteValuesWhenNull() throws Exception {
+        getMorphia().map(Bytes.class);
+        final Bytes bytes = new Bytes();
+        getDs().save(bytes);
+
+        final Bytes loaded = getDs().get(bytes);
+
+        Assert.assertNotNull(loaded.id);
+
+        Assert.assertTrue(loaded.listWrapperArray.isEmpty());
+        Assert.assertTrue(loaded.listPrimitiveArray.isEmpty());
+        Assert.assertTrue(loaded.listWrapper.isEmpty());
+        Assert.assertEquals(0, loaded.singlePrimitive);
+        Assert.assertNull(loaded.singleWrapper);
+        Assert.assertNull(loaded.primitiveArray);
+        Assert.assertNull(loaded.wrapperArray);
+        Assert.assertNull(loaded.nestedPrimitiveArray);
+        Assert.assertNull(loaded.nestedWrapperArray);
+    }
+
     private static class Bytes {
         private final List<Byte[]> listWrapperArray = new ArrayList<Byte[]>();
         private final List<byte[]> listPrimitiveArray = new ArrayList<byte[]>();
+        private List<Byte> listWrapper = new ArrayList<Byte>();
         @Id
         private ObjectId id;
-        private List<Byte> listWrapper = new ArrayList<Byte>();
         private byte singlePrimitive;
         private Byte singleWrapper;
         private byte[] primitiveArray;

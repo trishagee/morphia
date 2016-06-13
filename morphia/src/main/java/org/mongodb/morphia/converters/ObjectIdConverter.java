@@ -10,7 +10,7 @@ import org.mongodb.morphia.mapping.MappedField;
  *
  * @author scotthernandez
  */
-public class ObjectIdConverter extends TypeConverter implements SimpleValueConverter {
+public class ObjectIdConverter extends TypeConverter<ObjectId> implements SimpleValueConverter {
 
     /**
      * Creates the Converter.
@@ -20,13 +20,9 @@ public class ObjectIdConverter extends TypeConverter implements SimpleValueConve
     }
 
     @Override
-    public Object decode(final Class targetClass, final Object val, final MappedField optionalExtraInfo) {
-        if (val == null) {
-            return null;
-        }
-
+    public ObjectId decode(final Class targetClass, final Object val, final MappedField optionalExtraInfo) {
         if (val instanceof ObjectId) {
-            return val;
+            return (ObjectId) val;
         }
 
         return new ObjectId(val.toString());

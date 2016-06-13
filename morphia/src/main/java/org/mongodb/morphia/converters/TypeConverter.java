@@ -4,17 +4,26 @@ import org.mongodb.morphia.mapping.MappedField;
 import org.mongodb.morphia.mapping.Mapper;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 /**
- * @author Uwe Schaefer, (us@thomas-daily.de)
+ * Extend this class to provide a customer converter that describes how to decode a DBObject into the type
+ * <code>T</code> and encode the type <code>T</code> into a DBObject.
+ *
+ * @param <T> the type being converted
  */
-public abstract class TypeConverter {
+public abstract class TypeConverter<T> {
     private Mapper mapper;
     private Class[] supportedTypes;
 
     protected TypeConverter() {
     }
 
+    /**
+     * Provide a list of classes to that this Converter supports for decoding.
+     *
+     * @param types
+     */
     protected TypeConverter(final Class... types) {
         supportedTypes = copy(types);
     }
@@ -26,7 +35,7 @@ public abstract class TypeConverter {
      * @param fromDBObject the DBObject to use when populating the new instance
      * @return the new instance
      */
-    public final Object decode(final Class targetClass, final Object fromDBObject) {
+    public final T decode(final Class<T> targetClass, final Object fromDBObject) {
         return decode(targetClass, fromDBObject, null);
     }
 
@@ -40,7 +49,7 @@ public abstract class TypeConverter {
      * @param optionalExtraInfo the MappedField that contains the metadata useful for decoding
      * @return the new instance
      */
-    public abstract Object decode(Class<?> targetClass, Object fromDBObject, MappedField optionalExtraInfo);
+    public abstract T decode(Class<T> targetClass, Object fromDBObject, MappedField optionalExtraInfo);
 
     /**
      * encode the type safe java object into the corresponding {@link com.mongodb.DBObject}
@@ -48,7 +57,7 @@ public abstract class TypeConverter {
      * @param value The object to encode
      * @return the encoded version of the object
      */
-    public final Object encode(final Object value) {
+    public final Object encode(final Optional<T> value) {
         return encode(value, null);
     }
 
@@ -59,8 +68,8 @@ public abstract class TypeConverter {
      * @param optionalExtraInfo the MappedField that contains the metadata useful for decoding
      * @return the encoded version of the object
      */
-    public Object encode(final Object value, final MappedField optionalExtraInfo) {
-        return value; // as a default impl
+    public Object encode(final Optional<T> value, final MappedField optionalExtraInfo) {
+        return value.orElse(null); // as a default impl
     }
 
     /**

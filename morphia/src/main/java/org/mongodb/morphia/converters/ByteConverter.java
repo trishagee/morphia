@@ -4,12 +4,14 @@ package org.mongodb.morphia.converters;
 import org.mongodb.morphia.mapping.MappedField;
 
 import java.lang.reflect.Array;
+import java.util.Optional;
 
 
 /**
  * @author Uwe Schaefer, (us@thomas-daily.de)
  * @author scotthernandez
  */
+@SuppressWarnings("unchecked") // because this class magically deals with types and arrays, can't be easily typed
 public class ByteConverter extends TypeConverter implements SimpleValueConverter {
     /**
      * Creates the Converter.
@@ -20,10 +22,6 @@ public class ByteConverter extends TypeConverter implements SimpleValueConverter
 
     @Override
     public Object decode(final Class targetClass, final Object val, final MappedField optionalExtraInfo) {
-        if (val == null) {
-            return null;
-        }
-
         if (val.getClass().equals(targetClass)) {
             return val;
         }
@@ -39,9 +37,12 @@ public class ByteConverter extends TypeConverter implements SimpleValueConverter
     }
 
     @Override
-    public Object encode(final Object value, final MappedField optionalExtraInfo) {
-        if (value instanceof Byte[]) {
-            return super.encode(convertToPrimitiveArray((Byte[]) value), optionalExtraInfo);
+    public Object encode(final Optional value, final MappedField optionalExtraInfo) {
+        if (!value.isPresent()) {
+            return null;
+        }
+        if (value.get() instanceof Byte[]) {
+            return super.encode(Optional.of(convertToPrimitiveArray((Byte[]) value.get())), optionalExtraInfo);
         }
         return super.encode(value, optionalExtraInfo);
     }

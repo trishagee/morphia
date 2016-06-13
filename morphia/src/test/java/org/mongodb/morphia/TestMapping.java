@@ -619,13 +619,23 @@ public class TestMapping extends TestBase {
     public void testUUID() throws Exception {
         //       getMorphia().map(ContainsUUID.class);
         final ContainsUUID uuid = new ContainsUUID();
-        final UUID before = uuid.uuid;
+        final UUID before = UUID.randomUUID();
+        uuid.uuid = before;
         getDs().save(uuid);
         final ContainsUUID loaded = getDs().find(ContainsUUID.class).get();
         assertNotNull(loaded);
         assertNotNull(loaded.id);
         assertNotNull(loaded.uuid);
         assertEquals(before, loaded.uuid);
+    }
+
+    @Test
+    public void testUUIDWhenNull() throws Exception {
+        final ContainsUUID uuid = new ContainsUUID();
+        getDs().save(uuid);
+
+        final ContainsUUID loaded = getDs().find(ContainsUUID.class).get();
+        assertNull(loaded.uuid);
     }
 
     @Test
@@ -916,7 +926,7 @@ public class TestMapping extends TestBase {
 
     @Entity(noClassnameStored = true)
     private static class ContainsUUID {
-        private final UUID uuid = UUID.randomUUID();
+        private UUID uuid;
         @Id
         private ObjectId id;
     }

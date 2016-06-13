@@ -4,11 +4,13 @@ import com.mongodb.DBRef;
 import org.mongodb.morphia.Key;
 import org.mongodb.morphia.mapping.MappedField;
 
+import java.util.Optional;
+
 /**
  * @author Uwe Schaefer, (us@thomas-daily.de)
  * @author scotthernandez
  */
-public class KeyConverter extends TypeConverter {
+public class KeyConverter extends TypeConverter<Key> {
 
     /**
      * Creates the Converter.
@@ -18,10 +20,7 @@ public class KeyConverter extends TypeConverter {
     }
 
     @Override
-    public Object decode(final Class targetClass, final Object o, final MappedField optionalExtraInfo) {
-        if (o == null) {
-            return null;
-        }
+    public Key decode(final Class targetClass, final Object o, final MappedField optionalExtraInfo) {
         if (!(o instanceof DBRef)) {
             throw new ConverterException(String.format("cannot convert %s to Key because it isn't a DBRef", o.toString()));
         }
@@ -30,11 +29,9 @@ public class KeyConverter extends TypeConverter {
     }
 
     @Override
-    public Object encode(final Object t, final MappedField optionalExtraInfo) {
-        if (t == null) {
-            return null;
-        }
-        return getMapper().keyToDBRef((Key) t);
+    public Object encode(final Optional<Key> val, final MappedField optionalExtraInfo) {
+        return val.map(key -> getMapper().keyToDBRef(key))
+                  .orElse(null);
     }
 
 }

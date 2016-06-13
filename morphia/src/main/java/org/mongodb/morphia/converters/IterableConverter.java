@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import static java.lang.String.format;
 
@@ -72,12 +73,13 @@ public class IterableConverter extends TypeConverter {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Object encode(final Object value, final MappedField mf) {
+    public Object encode(final Optional optional, final MappedField mf) {
 
-        if (value == null) {
+        if (!optional.isPresent()) {
             return null;
         }
 
+        Object value = optional.get();
         final Iterable<?> iterableValues;
 
         if (value.getClass().isArray()) {

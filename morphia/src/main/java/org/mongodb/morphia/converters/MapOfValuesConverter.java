@@ -7,14 +7,15 @@ import org.mongodb.morphia.utils.ReflectionUtils;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author Uwe Schaefer, (us@thomas-daily.de)
  */
-public class MapOfValuesConverter extends TypeConverter {
+public class MapOfValuesConverter extends TypeConverter<Map> {
     @Override
     @SuppressWarnings("unchecked")
-    public Object decode(final Class targetClass, final Object fromDBObject, final MappedField mf) {
+    public Map decode(final Class targetClass, final Object fromDBObject, final MappedField mf) {
         if (fromDBObject == null) {
             return null;
         }
@@ -33,12 +34,13 @@ public class MapOfValuesConverter extends TypeConverter {
     }
 
     @Override
-    public Object encode(final Object value, final MappedField mf) {
-        if (value == null) {
+    @SuppressWarnings("unchecked")
+    public Object encode(final Optional<Map> value, final MappedField mf) {
+        if (!value.isPresent()) {
             return null;
         }
 
-        final Map<?, ?> map = (Map<?, ?>) value;
+        final Map<Object, Object> map = (Map<Object, Object>) value.get();
         if (!map.isEmpty() || getMapper().getOptions().isStoreEmpties()) {
             final Map<Object, Object> mapForDb = new LinkedHashMap<Object, Object>();
             for (final Map.Entry<?, ?> entry : map.entrySet()) {

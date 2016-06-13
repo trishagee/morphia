@@ -3,11 +3,12 @@ package org.mongodb.morphia.converters;
 import org.mongodb.morphia.mapping.MappedField;
 
 import java.util.Locale;
+import java.util.Optional;
 
 /**
  * Converts a Locale to/from a valid database structure.
  */
-public class LocaleConverter extends TypeConverter implements SimpleValueConverter {
+public class LocaleConverter extends TypeConverter<Locale> implements SimpleValueConverter {
 
     /**
      * Creates the Converter.
@@ -17,17 +18,15 @@ public class LocaleConverter extends TypeConverter implements SimpleValueConvert
     }
 
     @Override
-    public Object decode(final Class targetClass, final Object fromDBObject, final MappedField optionalExtraInfo) {
+    public Locale decode(final Class<Locale> targetClass,
+                         final Object fromDBObject, final MappedField optionalExtraInfo) {
         return parseLocale(fromDBObject.toString());
     }
 
     @Override
-    public Object encode(final Object val, final MappedField optionalExtraInfo) {
-        if (val == null) {
-            return null;
-        }
-
-        return val.toString();
+    public Object encode(final Optional<Locale> val, final MappedField optionalExtraInfo) {
+        return val.map(Locale::toString)
+                  .orElse(null);
     }
 
     Locale parseLocale(final String localeString) {

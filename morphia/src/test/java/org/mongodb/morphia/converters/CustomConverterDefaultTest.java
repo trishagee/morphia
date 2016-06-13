@@ -8,6 +8,8 @@ import org.mongodb.morphia.annotations.Property;
 import org.mongodb.morphia.mapping.MappedField;
 import org.mongodb.morphia.testutil.TestEntity;
 
+import java.util.Optional;
+
 public class CustomConverterDefaultTest extends TestBase {
 
     @Test
@@ -74,9 +76,9 @@ public class CustomConverterDefaultTest extends TestBase {
         }
 
         @Override
-        public Object encode(final Object value, final MappedField optionalExtraInfo) {
+        public Object encode(final Optional value, final MappedField optionalExtraInfo) {
             done = true;
-            return value.toString();
+            return value.get().toString();
         }
 
         public boolean didConversion() {

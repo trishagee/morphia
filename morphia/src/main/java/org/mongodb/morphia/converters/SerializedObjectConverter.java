@@ -8,6 +8,7 @@ import org.mongodb.morphia.mapping.MappingException;
 import org.mongodb.morphia.mapping.Serializer;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import static java.lang.String.format;
 
@@ -38,13 +39,15 @@ public class SerializedObjectConverter extends TypeConverter {
     }
 
     @Override
-    public Object encode(final Object value, final MappedField f) {
-        if (value == null) {
-            return null;
-        }
+    public Object encode(final Optional value, final MappedField f) {
+        return value.map(serializable -> serialize(serializable, f))
+                    .orElse(null);
+    }
+
+    private Object serialize(Object serializable, MappedField f) {
         try {
             final boolean useCompression = !f.getAnnotation(Serialized.class).disableCompression();
-            return Serializer.serialize(value, useCompression);
+            return Serializer.serialize(serializable, useCompression);
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }

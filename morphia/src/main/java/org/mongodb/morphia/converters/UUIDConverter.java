@@ -3,6 +3,7 @@ package org.mongodb.morphia.converters;
 
 import org.mongodb.morphia.mapping.MappedField;
 
+import java.util.Optional;
 import java.util.UUID;
 
 
@@ -12,7 +13,7 @@ import java.util.UUID;
  * @author stummb
  * @author scotthernandez
  */
-public class UUIDConverter extends TypeConverter implements SimpleValueConverter {
+public class UUIDConverter extends TypeConverter<UUID> implements SimpleValueConverter {
 
     /**
      * Creates the Converter.
@@ -22,12 +23,13 @@ public class UUIDConverter extends TypeConverter implements SimpleValueConverter
     }
 
     @Override
-    public Object decode(final Class targetClass, final Object fromDBObject, final MappedField optionalExtraInfo) {
-        return fromDBObject == null ? null : UUID.fromString((String) fromDBObject);
+    public UUID decode(final Class targetClass, final Object fromDBObject, final MappedField optionalExtraInfo) {
+        return UUID.fromString((String) fromDBObject);
     }
 
     @Override
-    public Object encode(final Object value, final MappedField optionalExtraInfo) {
-        return value == null ? null : value.toString();
+    public Object encode(final Optional<UUID> value, final MappedField optionalExtraInfo) {
+        return value.map(UUID::toString)
+                    .orElse(null);
     }
 }

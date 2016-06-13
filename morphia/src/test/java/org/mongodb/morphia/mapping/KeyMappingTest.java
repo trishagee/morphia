@@ -28,6 +28,16 @@ public class KeyMappingTest extends TestBase {
     }
 
     @Test
+    public void shouldMapNullKeys() {
+        getMorphia().map(User.class, Channel.class);
+
+        getDs().save(new User("Roberto", null, null));
+        User actualUser = getDs().find(User.class, "name", "Roberto").get();
+
+        Assert.assertNull(actualUser.favoriteChannels);
+    }
+
+    @Test
     public void testKeyComparisons() throws Exception {
         final User user = new User("Luke Skywalker");
         getDs().save(user);

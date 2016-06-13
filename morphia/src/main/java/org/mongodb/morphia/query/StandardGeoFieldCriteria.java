@@ -7,6 +7,8 @@ import org.mongodb.morphia.geo.Geometry;
 import org.mongodb.morphia.geo.GeometryQueryConverter;
 import org.mongodb.morphia.geo.NamedCoordinateReferenceSystemConverter;
 
+import java.util.Optional;
+
 import static org.mongodb.morphia.query.FilterOperator.NEAR;
 
 /**
@@ -29,7 +31,7 @@ class StandardGeoFieldCriteria extends FieldCriteria {
         super(query, field, operator, value);
         this.maxDistanceMeters = maxDistanceMeters;
         GeometryQueryConverter geometryQueryConverter = new GeometryQueryConverter(query.getDatastore().getMapper());
-        geometryAsDBObject = (DBObject) geometryQueryConverter.encode(value, null);
+        geometryAsDBObject = (DBObject) geometryQueryConverter.encode(Optional.of(value), null);
     }
 
     @Override
@@ -48,7 +50,8 @@ class StandardGeoFieldCriteria extends FieldCriteria {
             case INTERSECTS:
                 query = BasicDBObjectBuilder.start(operator.val(), geometryAsDBObject);
                 if (crs != null) {
-                    ((DBObject) geometryAsDBObject.get("$geometry")).put("crs", new NamedCoordinateReferenceSystemConverter().encode(crs));
+                    ((DBObject) geometryAsDBObject.get("$geometry")).put("crs", new
+                            NamedCoordinateReferenceSystemConverter().encode(Optional.of(crs)));
                 }
                 break;
             default:
