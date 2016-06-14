@@ -32,6 +32,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static java.util.Collections.singletonList;
@@ -73,13 +74,9 @@ public class MappingValidator {
      * @param mapper the Mapper to use for validation
      */
     public void validate(final Mapper mapper, final List<MappedClass> classes) {
-        final Set<ConstraintViolation> ve = new TreeSet<ConstraintViolation>(new Comparator<ConstraintViolation>() {
-
-            @Override
-            public int compare(final ConstraintViolation o1, final ConstraintViolation o2) {
-                return o1.getLevel().ordinal() > o2.getLevel().ordinal() ? -1 : 1;
-            }
-        });
+        final Set<ConstraintViolation> ve
+                = new TreeSet<ConstraintViolation>((o1, o2) -> o1.getLevel().ordinal() > o2.getLevel()
+                                                                                           .ordinal() ? -1 : 1);
 
         final List<ClassConstraint> rules = getConstraints();
         for (final MappedClass c : classes) {
@@ -96,15 +93,10 @@ public class MappingValidator {
             }
 
             // sort by class to make it more readable
-            final List<LogLine> l = new ArrayList<LogLine>();
-            for (final ConstraintViolation v : ve) {
-                l.add(new LogLine(v));
-            }
-            sort(l);
-
-            for (final LogLine line : l) {
-                line.log(LOG);
-            }
+            ve.stream()
+              .map(LogLine::new)
+              .sorted()
+              .forEach(logLine -> logLine.log(LOG));
         }
     }
 

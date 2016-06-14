@@ -4,6 +4,8 @@ import org.mongodb.morphia.converters.SimpleValueConverter;
 import org.mongodb.morphia.converters.TypeConverter;
 import org.mongodb.morphia.mapping.MappedField;
 
+import java.util.Optional;
+
 public class TriangleConverter extends TypeConverter implements SimpleValueConverter {
 
     public TriangleConverter() {
@@ -11,17 +13,16 @@ public class TriangleConverter extends TypeConverter implements SimpleValueConve
     }
 
     @Override
-    public Object decode(final Class targetClass, final Object fromDBObject, final MappedField optionalExtraInfo) {
+    public Optional<Triangle> decode(final Class targetClass, final Object fromDBObject, final MappedField optionalExtraInfo) {
         if (fromDBObject == null) {
-            return null;
+            return Optional.empty();
         }
 
         if (fromDBObject instanceof String) {
-            return new Triangle();
+            return Optional.of(new Triangle());
         }
 
-        throw new RuntimeException(
-                                      "Did not expect " + fromDBObject.getClass().getName());
+        throw new RuntimeException("Did not expect " + fromDBObject.getClass().getName());
     }
 
     @Override

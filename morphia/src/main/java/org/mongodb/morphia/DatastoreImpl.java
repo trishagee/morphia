@@ -62,6 +62,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Supplier;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
@@ -354,9 +355,8 @@ public class DatastoreImpl implements AdvancedDatastore {
             dbColl = getCollection(query.getEntityClass());
         }
 
-        if (LOG.isTraceEnabled()) {
-            LOG.info("Executing findAndModify(" + dbColl.getName() + ") with update ");
-        }
+        final String collectionName = dbColl.getName();
+        LOG.info(() -> "Executing findAndModify(" + collectionName + ") with update ");
         DBObject res = null;
         try {
             res = dbColl.findAndModify(query.getQueryObject(), query.getFieldsObject(), query.getSortObject(), false,
@@ -1314,7 +1314,12 @@ public class DatastoreImpl implements AdvancedDatastore {
             opts.put("weights", weights);
             weights.put(field, index.value());
         }
-        LOG.debug(format("Creating index for %s with keys:%s and opts:%s", dbColl.getName(), keys, opts));
+        LOG.debug(new Supplier<String>() {
+            @Override
+            public String get() {
+                return format("Creating index for %s with keys:%s and opts:%s", dbColl.getName(), keys, opts);
+            }
+        });
         dbColl.createIndex(keys, opts);
     }
 

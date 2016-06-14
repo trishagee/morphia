@@ -21,12 +21,10 @@ public class MapOfValuesConverter extends TypeConverter {
 
 
         final Map values = getMapper().getOptions().getObjectFactory().createMap(mf);
-        new IterHelper<Object, Object>().loopMap(fromDBObject, new MapIterCallback<Object, Object>() {
-            @Override
-            public void eval(final Object k, final Object val) {
-                final Object objKey = getMapper().getConverters().decode(mf.getMapKeyClass(), k, mf);
-                values.put(objKey, val != null ? getMapper().getConverters().decode(mf.getSubClass(), val, mf) : null);
-            }
+        final Map map = (Map)fromDBObject;
+        map.forEach((k, val) -> {
+            final Object objKey = getMapper().getConverters().decode(mf.getMapKeyClass(), k, mf);
+            values.put(objKey, val != null ? getMapper().getConverters().decode(mf.getSubClass(), val, mf) : null);
         });
 
         return values;
