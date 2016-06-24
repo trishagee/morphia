@@ -64,11 +64,6 @@ public class EntityScanner {
         conf.filterInputsBy(localPredicate);
         conf.addScanners(new SubTypesScanner());
 
-        final Reflections r = new Reflections(conf);
-
-        final Set<Class<?>> entities = r.getTypesAnnotatedWith(Entity.class);
-        for (final Class<?> c : entities) {
-            m.map(c);
-        }
+        new Reflections(conf).getTypesAnnotatedWith(Entity.class).forEach(m::map);
     }
 }
