@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CompilerConfiguration">
-    <option name="DEFAULT_COMPILER" value="Javac" />
-    <resourceExtensions />
     <wildcardResourcePatterns>
       <entry name="!?*.java" />
       <entry name="!?*.form" />
@@ -14,25 +12,40 @@
       <entry name="!?*.clj" />
     </wildcardResourcePatterns>
     <annotationProcessing>
-      <profile default="true" name="Default" enabled="false">
-        <processorPath useClasspath="true" />
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="entityscanner-plug" />
+        <module name="guice-plug" />
+        <module name="logging-slf4j" />
+        <module name="morphia-morphia" />
+        <module name="no-proxy-deps-tests" />
+        <module name="validation" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="buildSrc_main" target="1.8" />
       <module name="buildSrc_test" target="1.8" />
+      <module name="entityscanner-plug" target="1.5" />
       <module name="entityscanner-plug_main" target="1.8" />
       <module name="entityscanner-plug_test" target="1.8" />
+      <module name="guice-plug" target="1.5" />
       <module name="guice-plug_main" target="1.8" />
       <module name="guice-plug_test" target="1.8" />
+      <module name="logging-slf4j" target="1.5" />
       <module name="logging-slf4j_main" target="1.8" />
       <module name="logging-slf4j_test" target="1.8" />
+      <module name="morphia" target="1.5" />
+      <module name="morphia-morphia" target="1.5" />
       <module name="morphia-morphia_main" target="1.8" />
       <module name="morphia-morphia_test" target="1.8" />
+      <module name="no-proxy-deps-tests" target="1.5" />
       <module name="no-proxy-deps-tests_main" target="1.8" />
       <module name="no-proxy-deps-tests_test" target="1.8" />
       <module name="util_main" target="1.6" />
       <module name="util_test" target="1.6" />
+      <module name="validation" target="1.5" />
       <module name="validation_main" target="1.8" />
       <module name="validation_test" target="1.8" />
     </bytecodeTargetLevel>

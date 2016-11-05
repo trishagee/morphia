@@ -4,6 +4,8 @@
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.zeroturnaround/zt-exec/1.5/e67863a80c9a728515bafa053f01507434a780e8/zt-exec-1.5.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.zeroturnaround/zt-exec/1.5/1e59ca09f25b37b11105c4174684cada7e3ce76f/zt-exec-1.5-sources.jar!/" />
+    </SOURCES>
   </library>
 </component>

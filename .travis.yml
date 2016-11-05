@@ -16,9 +16,9 @@ notifications:
 services: 
 - mongodb
 
-#branches: 
-#  only: 
-#  - master
+branches:
+  only:
+  - master
 #  - aggfluent
 
 install: ./gradlew -q jar --stacktrace

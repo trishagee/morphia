@@ -4,6 +4,8 @@
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jayway.awaitility/awaitility/1.5.0/8622c94b0c830e3e25c079d103d5c3d3b11aced2/awaitility-1.5.0.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jayway.awaitility/awaitility/1.5.0/33470944846f6396dbd714ce889ebed8e54531da/awaitility-1.5.0-sources.jar!/" />
+    </SOURCES>
   </library>
 </component>
