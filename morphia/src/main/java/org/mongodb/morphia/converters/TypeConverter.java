@@ -4,6 +4,7 @@ import org.mongodb.morphia.mapping.MappedField;
 import org.mongodb.morphia.mapping.Mapper;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * @author Uwe Schaefer, (us@thomas-daily.de)
@@ -125,12 +126,8 @@ public abstract class TypeConverter {
      * checks if Class f is in classes *
      */
     protected boolean oneOfClasses(final Class f, final Class[] classes) {
-        for (final Class c : classes) {
-            if (c.equals(f)) {
-                return true;
-            }
-        }
-        return false;
+        return Arrays.stream(classes)
+                     .anyMatch(c -> Objects.equals(c, f));
     }
 
     Class[] copy(final Class[] array) {

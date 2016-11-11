@@ -56,6 +56,7 @@ import java.util.UUID;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 
 /**
@@ -79,10 +80,10 @@ public final class ReflectionUtils {
      */
     public static Field[] getDeclaredAndInheritedFields(final Class type, final boolean returnFinalFields) {
         final List<Field> allFields = new ArrayList<Field>();
-        allFields.addAll(getValidFields(type.getDeclaredFields(), returnFinalFields));
+        allFields.addAll(getValidFields(type.getDeclaredFields(), true, true));
         Class parent = type.getSuperclass();
         while ((parent != null) && (parent != Object.class)) {
-            allFields.addAll(getValidFields(parent.getDeclaredFields(), returnFinalFields));
+            allFields.addAll(getValidFields(parent.getDeclaredFields(), true, returnFinalFields));
             parent = parent.getSuperclass();
         }
         return allFields.toArray(new Field[allFields.size()]);
@@ -91,19 +92,21 @@ public final class ReflectionUtils {
     /**
      * Scans the array fields and returns any fields that are not static or (optionally) final.
      *
-     * @param fields            the fields to process
      * @param returnFinalFields include final fields in the results
+     * @param fields            the fields to process
+     * @param doSomething
      * @return the valid fields
      */
-    public static List<Field> getValidFields(final Field[] fields, final boolean returnFinalFields) {
-        final List<Field> validFields = new ArrayList<Field>();
-        // we ignore static and final fields
-        for (final Field field : fields) {
-            if (!Modifier.isStatic(field.getModifiers()) && (returnFinalFields || !Modifier.isFinal(field.getModifiers()))) {
-                validFields.add(field);
-            }
-        }
-        return validFields;
+    public static List<Field> getValidFields(final Field[] fields, boolean doSomething, final boolean b) {
+        return Arrays.stream(fields)
+                     .filter(field -> isNotStaticOrFinal(returnFinalFields, field))
+                     .collect(Collectors.toList());
+    }
+
+    private static boolean isNotStaticOrFinal(boolean returnFinalFields, Field field) {
+        return !Modifier.isStatic(field.getModifiers()) &&
+               (returnFinalFields ||
+                                                   !Modifier.isFinal(field.getModifiers()));
     }
 
     /**

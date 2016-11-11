@@ -52,23 +52,13 @@ public class EntityScanner {
         final Set<URL> s = new HashSet<URL>();
         s.addAll(ClasspathHelper.forClassLoader());
         s.addAll(ClasspathHelper.forJavaClassPath());
-        final Iterator<URL> iterator = s.iterator();
-        while (iterator.hasNext()) {
-            final URL url = iterator.next();
-            if (url.getPath().endsWith("jnilib")) {
-                iterator.remove();
-            }
-        }
+        s.removeIf(url -> url.getPath().endsWith("jnilib"));
         conf.setUrls(new ArrayList<URL>(s));
 
         conf.filterInputsBy(localPredicate);
         conf.addScanners(new SubTypesScanner());
 
-        final Reflections r = new Reflections(conf);
-
-        final Set<Class<?>> entities = r.getTypesAnnotatedWith(Entity.class);
-        for (final Class<?> c : entities) {
-            m.map(c);
-        }
+        new Reflections(conf).getTypesAnnotatedWith(Entity.class)
+                             .forEach(m::map);
     }
 }

@@ -46,6 +46,7 @@ import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -55,6 +56,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.stream.Stream;
 
 import static java.lang.String.format;
 import static org.mongodb.morphia.utils.ReflectionUtils.getParameterizedClass;
@@ -731,14 +733,10 @@ public class Mapper {
     }
 
     private Class<? extends Annotation> getFieldAnnotation(final MappedField mf) {
-        Class<? extends Annotation> annType = null;
-        for (final Class<? extends Annotation> testType : new Class[]{Property.class, Embedded.class, Serialized.class, Reference.class}) {
-            if (mf.hasAnnotation(testType)) {
-                annType = testType;
-                break;
-            }
-        }
-        return annType;
+        return (Class<? extends Annotation>) Stream.of(Property.class, Embedded.class, Serialized.class, Reference.class)
+                                                   .filter(mf::hasAnnotation)
+                                                   .findFirst()
+                                                   .orElse(null);
     }
 
     private boolean isAssignable(final MappedField mf, final Object value) {

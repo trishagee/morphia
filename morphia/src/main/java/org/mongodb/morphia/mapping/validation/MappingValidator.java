@@ -35,7 +35,6 @@ import java.util.TreeSet;
 
 import static java.lang.String.format;
 import static java.util.Collections.singletonList;
-import static java.util.Collections.sort;
 
 
 /**
@@ -96,15 +95,10 @@ public class MappingValidator {
             }
 
             // sort by class to make it more readable
-            final List<LogLine> l = new ArrayList<LogLine>();
-            for (final ConstraintViolation v : ve) {
-                l.add(new LogLine(v));
-            }
-            sort(l);
-
-            for (final LogLine line : l) {
-                line.log(LOG);
-            }
+            ve.stream()
+              .map(LogLine::new)
+              .sorted()
+              .forEach(logLine -> logLine.log(LOG));
         }
     }
 

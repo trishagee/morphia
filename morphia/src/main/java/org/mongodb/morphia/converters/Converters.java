@@ -244,13 +244,11 @@ public abstract class Converters {
             return tcs.get(0);
         }
 
-        for (final TypeConverter tc : untypedTypeEncoders) {
-            if (tc.canHandle(c)) {
-                return tc;
-            }
-        }
+        return untypedTypeEncoders.stream()
+                                  .filter(tc -> tc.canHandle(c))
+                                  .findFirst()
+                                  .orElse(null);
 
-        return null;
     }
 
     protected TypeConverter getEncoder(final Object val, final MappedField mf) {

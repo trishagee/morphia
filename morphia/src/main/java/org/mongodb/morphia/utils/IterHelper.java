@@ -98,14 +98,15 @@ public final class IterHelper<K, V> {
      * @param <K> the type map keys
      * @param <V> the type map values
      */
-    public abstract static class MapIterCallback<K, V> {
+    @FunctionalInterface
+    public static interface MapIterCallback<K, V> {
         /**
          * The method to call in the callback
          *
          * @param k the key from the map
          * @param v the value for the key
          */
-        public abstract void eval(K k, V v);
+        abstract void eval(K k, V v);
     }
 
     /**

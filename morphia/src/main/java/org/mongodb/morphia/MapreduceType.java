@@ -1,6 +1,8 @@
 package org.mongodb.morphia;
 
 
+import java.util.stream.IntStream;
+
 /**
  * Defines how the output of the map reduce job is handled.
  */
@@ -17,13 +19,12 @@ public enum MapreduceType {
      * @return the type represented by the value given
      */
     public static MapreduceType fromString(final String value) {
-        for (int i = 0; i < values().length; i++) {
-            final MapreduceType fo = values()[i];
-            if (fo.name().equals(value)) {
-                return fo;
-            }
-        }
-        return null;
+        return IntStream.range(0, values().length)
+                        .mapToObj(i -> values()[i])
+                        .filter(fo -> fo.name()
+                                        .equals(value))
+                        .findFirst()
+                        .orElse(null);
     }
 
 }

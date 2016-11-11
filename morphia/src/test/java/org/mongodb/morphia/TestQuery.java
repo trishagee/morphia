@@ -981,27 +981,23 @@ public class TestQuery extends TestBase {
 
         assertEquals(0, query.countAll());
 
-        executorService.scheduleAtFixedRate(new Runnable() {
-            @Override
-            public void run() {
-                getDs().save(new CappedPic(System.currentTimeMillis() + ""));
-            }
-        }, 0, 500, TimeUnit.MILLISECONDS);
+        executorService.scheduleAtFixedRate(
+() -> getDs().save(new CappedPic(System.currentTimeMillis() + "")),
+0, 500, TimeUnit.MILLISECONDS);
 
         final Iterator<CappedPic> tail = query.tail();
         Awaitility
             .await()
             .pollDelay(1, TimeUnit.SECONDS)
             .atMost(30, TimeUnit.SECONDS)
-            .until(new Callable<Boolean>() {
-                @Override
-                public Boolean call() throws Exception {
-                    found.add(tail.next());
-                    return found.size() >= 10;
-                }
-            });
+            .until(() -> foundTenItems(found, tail));
         executorService.shutdownNow();
         Assert.assertTrue(query.countAll() >= 10);
+    }
+
+    private Boolean foundTenItems(List<CappedPic> found, Iterator<CappedPic> tail) {
+        found.add(tail.next());
+        return found.size() >= 10;
     }
 
     @Test

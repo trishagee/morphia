@@ -1463,22 +1463,26 @@ public class DatastoreImpl implements AdvancedDatastore {
         // Ensure indexes from class annotation
         final List<Indexes> indexes = mc.getAnnotations(Indexes.class);
         if (indexes != null) {
-            for (final Indexes idx : indexes) {
-                if (idx.value().length > 0) {
-                    for (final Index index : idx.value()) {
-                        if (index.fields().length != 0) {
-                            ensureIndex(mc, dbColl, index.fields(), index.options(), background, parentMCs, parentMFs);
-                        } else {
-                            LOG.warning(format("This index on '%s' is using deprecated configuration options.  Please update to use the "
-                                                   + "fields value on @Index: %s", mc.getClazz().getName(), index.toString()));
-                            final BasicDBObject fields = parseFieldsString(index.value(), mc.getClazz(), mapper,
-                                                                           !index.disableValidation(), parentMCs, parentMFs);
-                            ensureIndex(dbColl, index.name(), fields, index.unique(), index.dropDups(),
-                                        index.background() ? index.background() : background, index.sparse(), index.expireAfterSeconds());
-                        }
-                    }
-                }
-            }
+            indexes.stream()
+                   .filter(idx -> idx.value().length > 0)
+                   .flatMap(idx -> Arrays.stream(idx.value()))
+                   .forEach(index -> {
+                       if (index.fields().length != 0) {
+                           ensureIndex(mc, dbColl, index.fields(), index.options(), background, parentMCs, parentMFs);
+                       } else {
+                           LOG.warning(format(
+                                   "This index on '%s' is using deprecated configuration options.  Please update to " +
+                                   "use the "
+                                   + "fields value on @Index: %s", mc.getClazz()
+                                                                     .getName(), index.toString()));
+                           final BasicDBObject fields = parseFieldsString(index.value(), mc.getClazz(), mapper,
+                                                                          !index.disableValidation(), parentMCs,
+                                                                          parentMFs);
+                           ensureIndex(dbColl, index.name(), fields, index.unique(), index.dropDups(),
+                                       index.background() ? index.background() : background, index.sparse(), index
+                                               .expireAfterSeconds());
+                       }
+                   });
         }
     }
 
