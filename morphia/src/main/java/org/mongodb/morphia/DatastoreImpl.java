@@ -1279,10 +1279,11 @@ public class DatastoreImpl implements AdvancedDatastore {
         }
 
         final MappedClass mc = mapper.getMappedClass(entity);
-        if (mc.getAnnotation(NotSaved.class) != null) {
+        mc.getAnnotationOpt(NotSaved.class)
+          .ifPresent(x -> {
             throw new MappingException(format("Entity type: %s is marked as NotSaved which means you should not try to save it!",
                                               mc.getClazz().getName()));
-        }
+        });
 
         // involvedObjects is used not only as a cache but also as a list of what needs to be called for life-cycle methods at the end.
         final LinkedHashMap<Object, DBObject> involvedObjects = new LinkedHashMap<Object, DBObject>();
@@ -1450,10 +1451,10 @@ public class DatastoreImpl implements AdvancedDatastore {
 
     private <T> DBObject toDbObject(final T ent, final Map<Object, DBObject> involvedObjects) {
         final MappedClass mc = mapper.getMappedClass(ent);
-        if (mc.getAnnotation(NotSaved.class) != null) {
+        mc.getAnnotationOpt(NotSaved.class).ifPresent(x -> {
             throw new MappingException(format("Entity type: %s is marked as NotSaved which means you should not try to save it!",
                                               mc.getClazz().getName()));
-        }
+        });
         DBObject dbObject = entityToDBObj(ent, involvedObjects);
         List<MappedField> versionFields = mc.getFieldsAnnotatedWith(Version.class);
         for (MappedField mappedField : versionFields) {

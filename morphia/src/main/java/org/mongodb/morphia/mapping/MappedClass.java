@@ -53,9 +53,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
+import java.util.Optional;
 
 
 /**
@@ -319,6 +321,10 @@ public class MappedClass {
         final List<Annotation> found = foundAnnotations.get(clazz);
         return found == null || found.isEmpty() ? null : found.get(found.size() - 1);
     }
+    
+    public <A extends Annotation> Optional<A> getAnnotationOpt(final Class<A> clazz) {
+        return Optional.ofNullable((A)getAnnotation(clazz));
+    }
 
     /**
      * Looks for an annotation in the annotations found on a class while mapping
@@ -505,7 +511,7 @@ public class MappedClass {
      */
     // TODO: Remove this and make these fields dynamic or auto-set some other way
     public void update() {
-        embeddedAn = (Embedded) getAnnotation(Embedded.class);
+        embeddedAn = (Embedded) getAnnotationOpt(Embedded.class).orElse(null);
         entityAn = (Entity) getFirstAnnotation(Entity.class);
         // polymorphicAn = (Polymorphic) getAnnotation(Polymorphic.class);
         final List<MappedField> fields = getFieldsAnnotatedWith(Id.class);
@@ -549,10 +555,9 @@ public class MappedClass {
         final List<Class<?>> lifecycleClasses = new ArrayList<Class<?>>();
         lifecycleClasses.add(clazz);
 
-        final EntityListeners entityLisAnn = (EntityListeners) getAnnotation(EntityListeners.class);
-        if (entityLisAnn != null && entityLisAnn.value().length != 0) {
-            Collections.addAll(lifecycleClasses, entityLisAnn.value());
-        }
+        getAnnotationOpt(EntityListeners.class)
+            .ifPresent(entityLisAnn ->
+Collections.addAll(lifecycleClasses, entityLisAnn.value()));
 
         for (final Class<?> cls : lifecycleClasses) {
             for (final Method m : ReflectionUtils.getDeclaredAndInheritedMethods(cls)) {

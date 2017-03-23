@@ -29,6 +29,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.Arrays;
 
 
 /**
@@ -73,13 +74,10 @@ public class IgnoreFieldsAnnotationTest extends TestBase {
     //remove any MappedField specified in @IgnoreFields on the class.
     private void processIgnoreFieldsAnnotations() {
         for (final MappedClass mc : getMorphia().getMapper().getMappedClasses()) {
-            final IgnoreFields ignores = (IgnoreFields) mc.getAnnotation(IgnoreFields.class);
-            if (ignores != null) {
-                for (final String field : ignores.value().split(",")) {
-                    final MappedField mf = mc.getMappedFieldByJavaField(field);
-                    mc.getPersistenceFields().remove(mf);
-                }
-            }
+            mc.getAnnotationOpt(IgnoreFields.class)
+                .map(ignores -> Arrays.stream(ignores.value().split(",")))
+                .ifPresent(fields -> fields.map(mc::getMappedFieldByJavaField)
+                                           .forEach(mc.getPersistenceFields()::remove));
         }
     }
 }
