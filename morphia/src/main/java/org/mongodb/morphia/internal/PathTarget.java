@@ -18,6 +18,7 @@ package org.mongodb.morphia.internal;
 
 import org.mongodb.morphia.mapping.MappedClass;
 import org.mongodb.morphia.mapping.MappedField;
+import org.mongodb.morphia.mapping.MappedFieldImpl;
 import org.mongodb.morphia.mapping.Mapper;
 import org.mongodb.morphia.query.ValidationException;
 
@@ -115,7 +116,7 @@ public class PathTarget {
 
             if (field != null) {
                 translate(field.getNameToStore());
-                if (field.isMap() && hasNext()) {
+                if (((MappedFieldImpl) field).isMap() && hasNext()) {
                     next();  // consume the map key segment
                 }
             } else {

@@ -1,6 +1,7 @@
 package org.mongodb.morphia.converters;
 
 import org.mongodb.morphia.mapping.MappedField;
+import org.mongodb.morphia.mapping.MappedFieldImpl;
 import org.mongodb.morphia.utils.IterHelper;
 import org.mongodb.morphia.utils.IterHelper.MapIterCallback;
 import org.mongodb.morphia.utils.ReflectionUtils;
@@ -24,7 +25,8 @@ public class MapOfValuesConverter extends TypeConverter {
         new IterHelper<Object, Object>().loopMap(fromDBObject, new MapIterCallback<Object, Object>() {
             @Override
             public void eval(final Object k, final Object val) {
-                final Object objKey = getMapper().getConverters().decode(mf.getMapKeyClass(), k, mf);
+                final Object objKey = getMapper().getConverters().decode(((MappedFieldImpl) mf).getMapKeyClass(), k,
+                mf);
                 values.put(objKey, val != null ? getMapper().getConverters().decode(mf.getSubClass(), val, mf) : null);
             }
         });
@@ -53,7 +55,7 @@ public class MapOfValuesConverter extends TypeConverter {
     @Override
     protected boolean isSupported(final Class<?> c, final MappedField optionalExtraInfo) {
         if (optionalExtraInfo != null) {
-            return optionalExtraInfo.isMap();
+            return ((MappedFieldImpl) optionalExtraInfo).isMap();
         } else {
             return ReflectionUtils.implementsInterface(c, Map.class);
         }

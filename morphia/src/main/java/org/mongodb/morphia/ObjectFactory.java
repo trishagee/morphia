@@ -2,6 +2,7 @@ package org.mongodb.morphia;
 
 import com.mongodb.DBObject;
 import org.mongodb.morphia.mapping.MappedField;
+import org.mongodb.morphia.mapping.MappedFieldImpl;
 import org.mongodb.morphia.mapping.Mapper;
 
 import java.util.List;

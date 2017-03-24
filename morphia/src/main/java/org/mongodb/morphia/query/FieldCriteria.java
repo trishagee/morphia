@@ -7,6 +7,7 @@ import org.mongodb.morphia.logging.Logger;
 import org.mongodb.morphia.logging.MorphiaLoggerFactory;
 import org.mongodb.morphia.mapping.MappedClass;
 import org.mongodb.morphia.mapping.MappedField;
+import org.mongodb.morphia.mapping.MappedFieldImpl;
 import org.mongodb.morphia.mapping.Mapper;
 import org.mongodb.morphia.utils.ReflectionUtils;
 
@@ -50,7 +51,8 @@ class FieldCriteria extends AbstractCriteria {
             if (value != null && !ReflectionUtils.isPropertyType(value.getClass())
                 && !ReflectionUtils.implementsInterface(value.getClass(), Iterable.class)) {
                 if (mf != null && !mf.isTypeMongoCompatible()) {
-                    mc = mapper.getMappedClass((mf.isSingleValue()) ? mf.getType() : mf.getSubClass());
+                    mc = mapper.getMappedClass((((MappedFieldImpl) mf).isSingleValue()) ? mf.getType() : mf
+                            .getSubClass());
                 } else {
                     mc = mapper.getMappedClass(value);
                 }

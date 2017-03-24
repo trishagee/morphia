@@ -3,6 +3,7 @@ package org.mongodb.morphia.converters;
 import com.mongodb.DBRef;
 import org.mongodb.morphia.Key;
 import org.mongodb.morphia.mapping.MappedField;
+import org.mongodb.morphia.mapping.MappedFieldImpl;
 
 /**
  * @author Uwe Schaefer, (us@thomas-daily.de)
@@ -45,8 +46,8 @@ public class KeyConverter extends TypeConverter {
         if (field == null) {
             return null;
         }
-        MappedField mappedField = field.getTypeParameters().get(0);
-        if (mappedField.getTypeParameters().size() != 0) {
+        MappedField mappedField = ((MappedFieldImpl) field).getTypeParameters().get(0);
+        if (((MappedFieldImpl) mappedField).getTypeParameters().size() != 0) {
             mappedField = getActualType(mappedField);
         }
         return mappedField;

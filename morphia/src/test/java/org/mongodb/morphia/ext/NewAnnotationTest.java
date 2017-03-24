@@ -23,6 +23,7 @@ import org.mongodb.morphia.TestBase;
 import org.mongodb.morphia.annotations.Id;
 import org.mongodb.morphia.mapping.MappedClass;
 import org.mongodb.morphia.mapping.MappedField;
+import org.mongodb.morphia.mapping.MappedFieldImpl;
 import org.mongodb.morphia.mapping.Mapper;
 
 import java.lang.annotation.ElementType;
@@ -39,7 +40,7 @@ public class NewAnnotationTest extends TestBase {
 
     @Test
     public void testIt() {
-        MappedField.addInterestingAnnotation(Lowercase.class);
+        MappedFieldImpl.addInterestingAnnotation(Lowercase.class);
         getMorphia().getMapper().addInterceptor(new ToLowercaseHelper());
         getMorphia().map(User.class);
         final User u = new User();

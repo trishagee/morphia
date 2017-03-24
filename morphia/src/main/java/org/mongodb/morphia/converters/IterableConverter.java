@@ -5,6 +5,7 @@ import com.mongodb.DBObject;
 import org.mongodb.morphia.ObjectFactory;
 import org.mongodb.morphia.mapping.EphemeralMappedField;
 import org.mongodb.morphia.mapping.MappedField;
+import org.mongodb.morphia.mapping.MappedFieldImpl;
 import org.mongodb.morphia.utils.ReflectionUtils;
 
 import java.lang.reflect.Array;
@@ -42,7 +43,7 @@ public class IterableConverter extends TypeConverter {
             // (List/Set/Array[])
             for (final Object o : (Iterable) fromDBObject) {
                 if (o instanceof DBObject) {
-                    final List<MappedField> typeParameters = mf.getTypeParameters();
+                    final List<MappedField> typeParameters = ((MappedFieldImpl) mf).getTypeParameters();
                     if (!typeParameters.isEmpty()) {
                         final MappedField mappedField = typeParameters.get(0);
                         if (mappedField instanceof EphemeralMappedField) {
@@ -109,7 +110,8 @@ public class IterableConverter extends TypeConverter {
     }
 
     @Override
-    protected boolean isSupported(final Class c, final MappedField mf) {
+    protected boolean isSupported(final Class c, final MappedField mappedField) {
+        MappedFieldImpl mf = (MappedFieldImpl) mappedField;
         if (mf != null) {
             return mf.isMultipleValues() && !mf.isMap(); //&& !mf.isTypeMongoCompatible();
         } else {
@@ -119,6 +121,6 @@ public class IterableConverter extends TypeConverter {
 
     private Collection<?> createNewCollection(final MappedField mf) {
         final ObjectFactory of = getMapper().getOptions().getObjectFactory();
-        return mf.isSet() ? of.createSet(mf) : of.createList(mf);
+        return ((MappedFieldImpl) mf).isSet() ? of.createSet(mf) : of.createList(mf);
     }
 }

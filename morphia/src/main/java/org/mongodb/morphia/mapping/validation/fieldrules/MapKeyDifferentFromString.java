@@ -5,6 +5,7 @@ import org.bson.types.ObjectId;
 import org.mongodb.morphia.annotations.Serialized;
 import org.mongodb.morphia.mapping.MappedClass;
 import org.mongodb.morphia.mapping.MappedField;
+import org.mongodb.morphia.mapping.MappedFieldImpl;
 import org.mongodb.morphia.mapping.Mapper;
 import org.mongodb.morphia.mapping.validation.ConstraintViolation;
 import org.mongodb.morphia.mapping.validation.ConstraintViolation.Level;
@@ -21,7 +22,7 @@ public class MapKeyDifferentFromString extends FieldConstraint {
 
     @Override
     protected void check(final Mapper mapper, final MappedClass mc, final MappedField mf, final Set<ConstraintViolation> ve) {
-        if (mf.isMap() && (!mf.hasAnnotation(Serialized.class))) {
+        if (((MappedFieldImpl) mf).isMap() && (!mf.hasAnnotation(Serialized.class))) {
             final Class<?> aClass = ReflectionUtils.getParameterizedClass(mf.getField(), 0);
             // WARN if not parameterized : null or Object...
             if (aClass == null || Object.class.equals(aClass)) {

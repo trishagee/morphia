@@ -22,6 +22,7 @@ import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Id;
 import org.mongodb.morphia.mapping.MappedClass;
 import org.mongodb.morphia.mapping.MappedField;
+import org.mongodb.morphia.mapping.MappedFieldImpl;
 import org.mongodb.morphia.mapping.Mapper;
 
 import java.lang.annotation.Annotation;
@@ -94,7 +95,8 @@ public class ExternalMapperExtTest extends TestBase {
             //copy the fields.
             for (final MappedField mf : sourceMC.getPersistenceFields()) {
                 final Map<Class<? extends Annotation>, Annotation> annMap = mf.getAnnotations();
-                final MappedField destMF = destMC.getMappedFieldByJavaField(mf.getJavaFieldName());
+                final MappedFieldImpl destMF = ((MappedFieldImpl) destMC
+                        .getMappedFieldByJavaField(mf.getJavaFieldName()));
                 if (destMF != null && annMap != null && !annMap.isEmpty()) {
                     for (final Entry<Class<? extends Annotation>, Annotation> e : annMap.entrySet()) {
                         destMF.addAnnotation(e.getKey(), e.getValue());

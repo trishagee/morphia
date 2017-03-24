@@ -5,6 +5,7 @@ import com.mongodb.DBObject;
 import org.mongodb.morphia.converters.SimpleValueConverter;
 import org.mongodb.morphia.converters.TypeConverter;
 import org.mongodb.morphia.mapping.MappedField;
+import org.mongodb.morphia.mapping.MappedFieldImpl;
 
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -5,6 +5,7 @@ import org.mongodb.morphia.logging.Logger;
 import org.mongodb.morphia.logging.MorphiaLoggerFactory;
 import org.mongodb.morphia.mapping.MappedClass;
 import org.mongodb.morphia.mapping.MappedField;
+import org.mongodb.morphia.mapping.MappedFieldImpl;
 import org.mongodb.morphia.mapping.Mapper;
 import org.mongodb.morphia.query.validation.AllOperationValidator;
 import org.mongodb.morphia.query.validation.DefaultTypeValidator;
@@ -75,7 +76,7 @@ final class QueryValidator {
                 }
 
                 i++;
-                if (mf != null && mf.isMap()) {
+                if (mf != null && ((MappedFieldImpl) mf).isMap()) {
                     //skip the map key validation, and move to the next part
                     i++;
                 }
@@ -97,7 +98,9 @@ final class QueryValidator {
                         throw new ValidationException(format("The field '%s' could not be found in '%s'", prop, mc.getClazz().getName()));
                     }
                     //get the next MappedClass for the next field validation
-                    mc = mapper.getMappedClass((mf.isSingleValue()) ? mf.getType() : mf.getSubClass());
+                    MappedFieldImpl mappedField = (MappedFieldImpl) mf;
+                    mc = mapper.getMappedClass((mappedField.isSingleValue())
+                                                       ? mf.getType() : mappedField.getSubClass());
                 }
             }
 
@@ -115,10 +118,14 @@ final class QueryValidator {
                 List<ValidationFailure> typeValidationFailures = new ArrayList<ValidationFailure>();
                 boolean compatibleForType = isCompatibleForOperator(mc, mf, mf.getType(), op, val, typeValidationFailures);
                 List<ValidationFailure> subclassValidationFailures = new ArrayList<ValidationFailure>();
-                boolean compatibleForSubclass = isCompatibleForOperator(mc, mf, mf.getSubClass(), op, val, subclassValidationFailures);
 
-                if ((mf.isSingleValue() && !compatibleForType)
-                    || mf.isMultipleValues() && !(compatibleForSubclass || compatibleForType)) {
+                MappedFieldImpl mappedField = (MappedFieldImpl) mf;
+                boolean compatibleForSubclass = isCompatibleForOperator(mc, mf,
+                                                                        mappedField.getSubClass()
+                , op, val, subclassValidationFailures);
+
+                if ((mappedField.isSingleValue() && !compatibleForType)
+                    || mappedField.isMultipleValues() && !(compatibleForSubclass || compatibleForType)) {
 
                     if (LOG.isWarningEnabled()) {
                         LOG.warning(format("The type(s) for the query/update may be inconsistent; using an instance of type '%s' "
@@ -135,7 +142,7 @@ final class QueryValidator {
     }
 
     private static boolean canQueryPast(final MappedField mf) {
-        return !(mf.isReference() || mf.hasAnnotation(Serialized.class));
+        return !(((MappedFieldImpl) mf).isReference() || mf.hasAnnotation(Serialized.class));
     }
 
     /*package*/

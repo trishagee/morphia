@@ -35,6 +35,7 @@ import org.mongodb.morphia.converters.SimpleValueConverter;
 import org.mongodb.morphia.converters.TypeConverter;
 import org.mongodb.morphia.entities.EntityWithListsAndArrays;
 import org.mongodb.morphia.mapping.MappedField;
+import org.mongodb.morphia.mapping.MappedFieldImpl;
 
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
@@ -347,7 +348,8 @@ public class CustomConvertersTest extends TestBase {
     private static class ListToMapConvert extends TypeConverter {
         @Override
         protected boolean isSupported(final Class c, final MappedField mf) {
-            return (mf != null) && mf.isMultipleValues() && !mf.isMap();
+            return (mf != null) && ((MappedFieldImpl) mf).isMultipleValues() && !(
+                    (MappedFieldImpl) mf).isMap();
         }
 
         @Override

@@ -5,6 +5,7 @@ import org.mongodb.morphia.annotations.Id;
 import org.mongodb.morphia.annotations.Reference;
 import org.mongodb.morphia.mapping.MappedClass;
 import org.mongodb.morphia.mapping.MappedField;
+import org.mongodb.morphia.mapping.MappedFieldImpl;
 import org.mongodb.morphia.mapping.Mapper;
 import org.mongodb.morphia.mapping.MappingException;
 import org.mongodb.morphia.mapping.validation.ConstraintViolation;
@@ -19,8 +20,10 @@ import java.util.Set;
 public class ReferenceToUnidentifiable extends FieldConstraint {
 
     @Override
-    protected void check(final Mapper mapper, final MappedClass mc, final MappedField mf, final Set<ConstraintViolation> ve) {
-        if (mf.hasAnnotation(Reference.class)) {
+    protected void check(final Mapper mapper, final MappedClass mc, final MappedField mappedField, final
+    Set<ConstraintViolation> ve) {
+        if (mappedField.hasAnnotation(Reference.class)) {
+            MappedFieldImpl mf = (MappedFieldImpl) mappedField;
             final Class realType = (mf.isSingleValue()) ? mf.getType() : mf.getSubClass();
 
             if (realType == null) {

@@ -5,6 +5,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import org.mongodb.morphia.internal.PathTarget;
 import org.mongodb.morphia.mapping.MappedField;
+import org.mongodb.morphia.mapping.MappedFieldImpl;
 import org.mongodb.morphia.mapping.Mapper;
 
 import java.util.ArrayList;

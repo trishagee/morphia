@@ -3,6 +3,7 @@ package org.mongodb.morphia.mapping.validation.fieldrules;
 
 import org.mongodb.morphia.mapping.MappedClass;
 import org.mongodb.morphia.mapping.MappedField;
+import org.mongodb.morphia.mapping.MappedFieldImpl;
 import org.mongodb.morphia.mapping.Mapper;
 import org.mongodb.morphia.mapping.validation.ConstraintViolation;
 import org.mongodb.morphia.mapping.validation.ConstraintViolation.Level;

@@ -23,7 +23,7 @@ import static java.util.Arrays.asList;
 public class MappedFieldTest extends TestBase {
     @Test
     public void arrayFieldMapping() {
-        final MappedField field = new MappedField(getField(TestEntity.class, "arrayOfInt"), TestEntity.class, getMorphia().getMapper());
+        final MappedFieldImpl field = new MappedFieldImpl(getField(TestEntity.class, "arrayOfInt"), TestEntity.class, getMorphia().getMapper());
 
         Assert.assertFalse(field.isSingleValue());
         Assert.assertTrue(field.isMultipleValues());
@@ -35,7 +35,7 @@ public class MappedFieldTest extends TestBase {
 
     @Test
     public void basicFieldMapping() {
-        final MappedField field = new MappedField(getField(TestEntity.class, "name"), TestEntity.class, getMorphia().getMapper());
+        final MappedFieldImpl field = new MappedFieldImpl(getField(TestEntity.class, "name"), TestEntity.class, getMorphia().getMapper());
 
         Assert.assertTrue(field.isSingleValue());
         Assert.assertTrue(String.class == field.getType());
@@ -45,7 +45,7 @@ public class MappedFieldTest extends TestBase {
 
     @Test
     public void collectionFieldMapping() {
-        final MappedField field = new MappedField(getField(TestEntity.class, "listOfString"), TestEntity.class, getMorphia().getMapper());
+        final MappedFieldImpl field = new MappedFieldImpl(getField(TestEntity.class, "listOfString"), TestEntity.class, getMorphia().getMapper());
 
         Assert.assertFalse(field.isSingleValue());
         Assert.assertTrue(field.isMultipleValues());
@@ -58,7 +58,7 @@ public class MappedFieldTest extends TestBase {
 
     @Test
     public void idFieldMapping() {
-        final MappedField field = new MappedField(getField(TestEntity.class, "id"), TestEntity.class, getMorphia().getMapper());
+        final MappedFieldImpl field = new MappedFieldImpl(getField(TestEntity.class, "id"), TestEntity.class, getMorphia().getMapper());
 
         Assert.assertTrue(field.isSingleValue());
         Assert.assertTrue(ObjectId.class == field.getType());
@@ -68,7 +68,7 @@ public class MappedFieldTest extends TestBase {
 
     @Test
     public void nestedCollectionsMapping() {
-        final MappedField field = new MappedField(getField(TestEntity.class, "listOfListOfString"),
+        final MappedFieldImpl field = new MappedFieldImpl(getField(TestEntity.class, "listOfListOfString"),
                                                   TestEntity.class,
                                                   getMorphia().getMapper());
 
@@ -81,7 +81,7 @@ public class MappedFieldTest extends TestBase {
         final MappedField typeParameter = level1Types.get(0);
         Assert.assertTrue(List.class == typeParameter.getConcreteType());
 
-        final List<MappedField> level2Types = typeParameter.getTypeParameters();
+        final List<MappedField> level2Types = ((MappedFieldImpl) typeParameter).getTypeParameters();
         final MappedField nested = level2Types.get(0);
         Assert.assertTrue(String.class == nested.getConcreteType());
         Assert.assertEquals("listOfListOfString", field.getJavaFieldName());

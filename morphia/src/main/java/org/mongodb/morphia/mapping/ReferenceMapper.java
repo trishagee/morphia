@@ -31,8 +31,10 @@ class ReferenceMapper implements CustomMapper {
     public static final Logger LOG = MorphiaLoggerFactory.get(ReferenceMapper.class);
 
     @Override
-    public void fromDBObject(final Datastore datastore, final DBObject dbObject, final MappedField mf, final Object entity,
+    public void fromDBObject(final Datastore datastore, final DBObject dbObject, final
+    MappedField mappedField, final Object entity,
                              final EntityCache cache, final Mapper mapper) {
+        MappedFieldImpl mf = (MappedFieldImpl) mappedField;
         final Class fieldType = mf.getType();
 
         final Reference refAnn = mf.getAnnotation(Reference.class);
@@ -47,8 +49,10 @@ class ReferenceMapper implements CustomMapper {
     }
 
     @Override
-    public void toDBObject(final Object entity, final MappedField mf, final DBObject dbObject, final Map<Object, DBObject> involvedObjects,
+    public void toDBObject(final Object entity, final MappedField mappedField, final DBObject dbObject,
+                           final Map<Object, DBObject> involvedObjects,
                            final Mapper mapper) {
+        MappedFieldImpl mf = (MappedFieldImpl) mappedField;
         final String name = mf.getNameToStore();
 
         final Object fieldValue = mf.getFieldValue(entity);
@@ -119,7 +123,7 @@ class ReferenceMapper implements CustomMapper {
         final Class referenceObjClass = mf.getSubClass();
         // load reference class.  this "fixes" #816
         mapper.getMappedClass(referenceObjClass);
-        Collection references = mf.isSet() ? mapper.getOptions().getObjectFactory().createSet(mf)
+        Collection references = ((MappedFieldImpl) mf).isSet() ? mapper.getOptions().getObjectFactory().createSet(mf)
                                            : mapper.getOptions().getObjectFactory().createList(mf);
 
         if (refAnn.lazy() && LazyFeatureDependencies.assertDependencyFullFilled()) {
@@ -179,7 +183,8 @@ class ReferenceMapper implements CustomMapper {
                 @Override
                 public void eval(final Object k, final Object val) {
 
-                    final Object objKey = mapper.getConverters().decode(mf.getMapKeyClass(), k, mf);
+                    final Object objKey = mapper.getConverters().decode(((MappedFieldImpl) mf).getMapKeyClass(), k,
+                    mf);
 
                     if (refAnn.lazy() && LazyFeatureDependencies.assertDependencyFullFilled()) {
                         final ProxiedEntityReferenceMap proxiedMap = (ProxiedEntityReferenceMap) map;
@@ -301,7 +306,7 @@ class ReferenceMapper implements CustomMapper {
         }
 
         final DBRef dbRef = idOnly ? null : (DBRef) ref;
-        final Key key = mapper.createKey(mf.isSingleValue() ? mf.getType() : mf.getSubClass(),
+        final Key key = mapper.createKey(((MappedFieldImpl) mf).isSingleValue() ? mf.getType() : mf.getSubClass(),
                                          idOnly ? ref : dbRef.getId());
 
         final Object cached = cache.getEntity(key);

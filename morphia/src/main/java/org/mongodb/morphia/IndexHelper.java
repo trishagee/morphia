@@ -37,6 +37,7 @@ import org.mongodb.morphia.logging.Logger;
 import org.mongodb.morphia.logging.MorphiaLoggerFactory;
 import org.mongodb.morphia.mapping.MappedClass;
 import org.mongodb.morphia.mapping.MappedField;
+import org.mongodb.morphia.mapping.MappedFieldImpl;
 import org.mongodb.morphia.mapping.Mapper;
 import org.mongodb.morphia.mapping.MappingException;
 import org.mongodb.morphia.utils.IndexType;
@@ -154,7 +155,8 @@ final class IndexHelper {
 
     private List<Index> collectNestedIndexes(final MappedClass mc, final List<MappedClass> parentMCs) {
         List<Index> list = new ArrayList<Index>();
-        for (final MappedField mf : mc.getPersistenceFields()) {
+        for (final MappedField mappedField : mc.getPersistenceFields()) {
+            MappedFieldImpl mf = (MappedFieldImpl) mappedField;
             if (!mf.isTypeMongoCompatible() && !mf.hasAnnotation(Reference.class) && !mf.hasAnnotation(Serialized.class)
                 && !mf.hasAnnotation(NotSaved.class) && !mf.isTransient()) {
 
@@ -347,7 +349,8 @@ final class IndexHelper {
         }
         if (path.size() > 1) {
             try {
-                Class concreteType = !mf.isSingleValue() ? mf.getSubClass() : mf.getConcreteType();
+                MappedFieldImpl mappedField = (MappedFieldImpl) mf;
+                Class concreteType = !mappedField.isSingleValue() ? mappedField.getSubClass() : mappedField.getConcreteType();
                 namePath += "." + findField(mapper.getMappedClass(concreteType), options, path.subList(1, path.size()));
             } catch (MappingException e) {
                 if (!options.disableValidation()) {

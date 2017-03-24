@@ -22,7 +22,7 @@ class EmbeddedMapper implements CustomMapper {
         if (rawVal == null || mf == null) {
             return true;
         }
-        if (mf.isSingleValue()) {
+        if (((MappedFieldImpl) mf).isSingleValue()) {
             return !(mf.getType().equals(rawVal.getClass()) && !(convertedVal instanceof BasicDBList));
         }
         boolean isDBObject = convertedVal instanceof DBObject;
@@ -38,9 +38,11 @@ class EmbeddedMapper implements CustomMapper {
 
     @SuppressWarnings("ConstantConditions")
     @Override
-    public void fromDBObject(final Datastore datastore, final DBObject dbObject, final MappedField mf, final Object entity,
+    public void fromDBObject(final Datastore datastore, final DBObject dbObject, final
+    MappedField mappedField, final Object entity,
                              final EntityCache cache, final Mapper mapper) {
         try {
+            MappedFieldImpl mf = (MappedFieldImpl) mappedField;
             if (mf.isMap()) {
                 readMap(datastore, mapper, entity, cache, mf, dbObject);
             } else if (mf.isMultipleValues()) {
@@ -78,8 +80,10 @@ class EmbeddedMapper implements CustomMapper {
     }
 
     @Override
-    public void toDBObject(final Object entity, final MappedField mf, final DBObject dbObject, final Map<Object, DBObject> involvedObjects,
+    public void toDBObject(final Object entity, final MappedField mappedField, final DBObject dbObject,
+                           final Map<Object, DBObject> involvedObjects,
                            final Mapper mapper) {
+        MappedFieldImpl mf = (MappedFieldImpl) mappedField;
         final String name = mf.getNameToStore();
 
         final Object fieldValue = mf.getFieldValue(entity);
@@ -110,8 +114,9 @@ class EmbeddedMapper implements CustomMapper {
 
     @SuppressWarnings("unchecked")
     private void readCollection(final Datastore datastore, final Mapper mapper, final Object entity, final EntityCache cache,
-                                final MappedField mf, final DBObject dbObject) {
+                                final MappedField mappedField, final DBObject dbObject) {
         Collection values;
+        MappedFieldImpl mf = (MappedFieldImpl) mappedField;
 
         final Object dbVal = mf.getDbObjectValue(dbObject);
         if (dbVal != null) {
@@ -159,7 +164,8 @@ class EmbeddedMapper implements CustomMapper {
 
     @SuppressWarnings("unchecked")
     private void readMap(final Datastore datastore, final Mapper mapper, final Object entity, final EntityCache cache,
-                         final MappedField mf, final DBObject dbObject) {
+                         final MappedField mappedField, final DBObject dbObject) {
+        final MappedFieldImpl mf = (MappedFieldImpl) mappedField;
         final DBObject dbObj = (DBObject) mf.getDbObjectValue(dbObject);
 
         if (dbObj != null) {
@@ -216,7 +222,7 @@ class EmbeddedMapper implements CustomMapper {
         Iterable coll = null;
 
         if (fieldValue != null) {
-            if (mf.isArray()) {
+            if (((MappedFieldImpl) mf).isArray()) {
                 coll = Arrays.asList((Object[]) fieldValue);
             } else {
                 coll = (Iterable) fieldValue;

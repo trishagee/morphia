@@ -245,8 +245,8 @@ public class Mapper {
      */
     public <T> T fromDb(final Datastore datastore, final DBObject dbObject, final T entity, final EntityCache cache) {
         //hack to bypass things and just read the value.
-        if (entity instanceof MappedField) {
-            readMappedField(datastore, (MappedField) entity, entity, cache, dbObject);
+        if (entity instanceof MappedFieldImpl) {
+            readMappedField(datastore, (MappedFieldImpl) entity, entity, cache, dbObject);
             return entity;
         }
 
@@ -833,7 +833,7 @@ public class Mapper {
     private boolean isMultiValued(final MappedField mf, final Object value) {
         final Class subClass = mf.getSubClass();
         return value instanceof Iterable
-            && mf.isMultipleValues()
+            && ((MappedFieldImpl) mf).isMultipleValues()
             && (Key.class.isAssignableFrom(subClass) || DBRef.class.isAssignableFrom(subClass));
     }
 

@@ -12,6 +12,7 @@ import org.mongodb.morphia.annotations.PrePersist;
 import org.mongodb.morphia.callbacks.TestSimpleValidationViaInterceptor.NonNullValidation.NonNullValidationException;
 import org.mongodb.morphia.mapping.MappedClass;
 import org.mongodb.morphia.mapping.MappedField;
+import org.mongodb.morphia.mapping.MappedFieldImpl;
 import org.mongodb.morphia.mapping.Mapper;
 
 import java.lang.annotation.ElementType;
@@ -28,7 +29,7 @@ import java.util.List;
 public class TestSimpleValidationViaInterceptor extends TestBase {
 
     static {
-        MappedField.addInterestingAnnotation(NonNull.class);
+        MappedFieldImpl.addInterestingAnnotation(NonNull.class);
     }
 
     @Test

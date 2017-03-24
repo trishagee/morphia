@@ -15,7 +15,7 @@ import java.util.Set;
  * This is a MappedField facade that allows us to convert and collect values to be gathered back in to a Map or Collection, e.g., rather
  * than directly on a mapped entity.  This are not mapped directly to a field on a class like MappedFields are.
  */
-public class EphemeralMappedField extends MappedField {
+public class EphemeralMappedField extends MappedFieldImpl {
     private ParameterizedType pType;
     private Object value;
     private MappedField parent;

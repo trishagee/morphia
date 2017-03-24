@@ -4,6 +4,7 @@ package org.mongodb.morphia.mapping.validation.fieldrules;
 import org.mongodb.morphia.annotations.Serialized;
 import org.mongodb.morphia.mapping.MappedClass;
 import org.mongodb.morphia.mapping.MappedField;
+import org.mongodb.morphia.mapping.MappedFieldImpl;
 import org.mongodb.morphia.mapping.Mapper;
 import org.mongodb.morphia.mapping.validation.ConstraintViolation;
 import org.mongodb.morphia.mapping.validation.ConstraintViolation.Level;
@@ -20,7 +21,7 @@ public class MapNotSerializable extends FieldConstraint {
 
     @Override
     protected void check(final Mapper mapper, final MappedClass mc, final MappedField mf, final Set<ConstraintViolation> ve) {
-        if (mf.isMap()) {
+        if (((MappedFieldImpl) mf).isMap()) {
             if (mf.hasAnnotation(Serialized.class)) {
                 final Class<?> keyClass = ReflectionUtils.getParameterizedClass(mf.getField(), 0);
                 final Class<?> valueClass = ReflectionUtils.getParameterizedClass(mf.getField(), 1);

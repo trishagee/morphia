@@ -2,6 +2,7 @@ package org.mongodb.morphia.query.validation;
 
 import com.mongodb.DBObject;
 import org.mongodb.morphia.mapping.MappedField;
+import org.mongodb.morphia.mapping.MappedFieldImpl;
 import org.mongodb.morphia.query.FilterOperator;
 
 import java.util.List;
@@ -49,7 +50,8 @@ public final class GeoWithinOperationValidator extends OperationValidator {
         if (!isArrayOfNumbers(mappedField) && !isIterableOfNumbers(mappedField)) {
             validationFailures.add(new ValidationFailure(format("For a $geoWithin operation, if field '%s' is an array or iterable it "
                                                                 + "should have numeric values. Instead it had: %s",
-                                                                mappedField, mappedField.getSubClass()
+                                                                mappedField,
+                                                                ((MappedFieldImpl) mappedField).getSubClass()
                                                                )));
 
         }
