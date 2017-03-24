@@ -55,7 +55,8 @@ public class MapOfValuesConverter extends TypeConverter {
     @Override
     protected boolean isSupported(final Class<?> c, final MappedField optionalExtraInfo) {
         if (optionalExtraInfo != null) {
-            return ((MappedFieldImpl) optionalExtraInfo).isMap();
+            return ((optionalExtraInfo instanceof MappedFieldImpl)
+                    && ((MappedFieldImpl) optionalExtraInfo).isMap());
         } else {
             return ReflectionUtils.implementsInterface(c, Map.class);
         }

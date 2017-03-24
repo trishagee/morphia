@@ -48,11 +48,9 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
@@ -67,7 +65,7 @@ import static java.util.Arrays.asList;
 public class MappedFieldImpl implements MappedField {
     private static final Logger LOG = MorphiaLoggerFactory.get(MappedFieldImpl.class);
     // The Annotations to look for when reflecting on the field (stored in the mappingAnnotations)
-    private static final List<Class<? extends Annotation>> INTERESTING = new ArrayList<Class<? extends Annotation>>();
+    static final List<Class<? extends Annotation>> INTERESTING = new ArrayList<Class<? extends Annotation>>();
 
     static {
         INTERESTING.add(Serialized.class);
@@ -86,21 +84,19 @@ public class MappedFieldImpl implements MappedField {
     // Annotations that have been found relevant to mapping
     private final Map<Class<? extends Annotation>, Annotation> foundAnnotations = new HashMap<Class<? extends Annotation>, Annotation>();
     private final List<MappedField> typeParameters = new ArrayList<MappedField>();
-    private Class persistedClass;
+    Class persistedClass;
     private Field field; // the field :)
-    private Class realType; // the real type
+    Class realType; // the real type
     private Constructor constructor; // the constructor for the type
-    private Type subType; // the type (T) for the Collection<T>/T[]/Map<?,T>
-    private Type mapKeyType; // the type (T) for the Map<T,?>
-    private boolean isSingleValue = true; // indicates the field is a single value
-    private boolean isMongoType;
+    Type subType; // the type (T) for the Collection<T>/T[]/Map<?,T>
+    Type mapKeyType; // the type (T) for the Map<T,?>
+    boolean isSingleValue = true; // indicates the field is a single value
+    boolean isMongoType;
     // indicated the type is a mongo compatible type (our version of value-type)
-    private boolean isMap; // indicated if it implements Map interface
-    private boolean isSet; // indicated if the collection is a set
-    //for debugging
-    private boolean isArray; // indicated if it is an Array
-    private boolean isCollection; // indicated if the collection is a list)
-    private Type genericType;
+    boolean isMap; // indicated if it implements Map interface
+    boolean isSet; // indicated if the collection is a set
+    boolean isCollection; // indicated if the collection is a list)
+    Type genericType;
 
     MappedFieldImpl(final Field f, final Class<?> clazz, final Mapper mapper) {
         f.setAccessible(true);
@@ -108,7 +104,6 @@ public class MappedFieldImpl implements MappedField {
         persistedClass = clazz;
         realType = field.getType();
         genericType = field.getGenericType();
-        discover(mapper);
     }
 
     /**
@@ -331,6 +326,7 @@ public class MappedFieldImpl implements MappedField {
      *
      * @return the parameterized type of the field
      */
+    @Override
     public Type getSubType() {
         return subType;
     }
@@ -374,13 +370,6 @@ public class MappedFieldImpl implements MappedField {
     }
 
     /**
-     * @return true if the MappedField is an array
-     */
-    public boolean isArray() {
-        return isArray;
-    }
-
-    /**
      * @return true if the MappedField is a Map
      */
     public boolean isMap() {
@@ -415,7 +404,7 @@ public class MappedFieldImpl implements MappedField {
      * @return true if this field is not a container type such as a List, Map, Set, or array
      */
     public boolean isSingleValue() {
-        if (!isSingleValue && !isMap && !isSet && !isArray && !isCollection) {
+        if (!isSingleValue && !isMap && !isSet && !isCollection) {
             throw new RuntimeException("Not single, but none of the types that are not-single.");
         }
         return isSingleValue;
@@ -481,9 +470,6 @@ public class MappedFieldImpl implements MappedField {
         if (isCollection) {
             sb.append(" collection:true,");
         }
-        if (isArray) {
-            sb.append(" array:true,");
-        }
 
         //remove last comma
         if (sb.charAt(sb.length() - 1) == ',') {
@@ -492,37 +478,6 @@ public class MappedFieldImpl implements MappedField {
 
         sb.append("); ").append(foundAnnotations.toString());
         return sb.toString();
-    }
-
-    /**
-     * Discovers interesting (that we care about) things about the field.
-     */
-    protected void discover(final Mapper mapper) {
-        for (final Class<? extends Annotation> clazz : INTERESTING) {
-            addAnnotation(clazz);
-        }
-
-        //type must be discovered before the constructor.
-        discoverType(mapper);
-        constructor = discoverConstructor();
-        discoverMultivalued();
-
-        // check the main type
-        isMongoType = ReflectionUtils.isPropertyType(realType);
-
-        // if the main type isn't supported by the Mongo, see if the subtype is.
-        // works for T[], List<T>, Map<?, T>, where T is Long/String/etc.
-        if (!isMongoType && subType != null) {
-            isMongoType = ReflectionUtils.isPropertyType(subType);
-        }
-
-        if (!isMongoType && !isSingleValue && (subType == null || subType == Object.class)) {
-            if (LOG.isWarningEnabled() && !mapper.getConverters().hasDbObjectConverter(this)) {
-                LOG.warning(format("The multi-valued field '%s' is a possible heterogeneous collection. It cannot be verified. "
-                                   + "Please declare a valid type to get rid of this warning. %s", getFullName(), subType));
-            }
-            isMongoType = true;
-        }
     }
 
     @SuppressWarnings("unchecked")
@@ -658,7 +613,7 @@ public class MappedFieldImpl implements MappedField {
 
     }
 
-    private Constructor discoverConstructor() {
+    void discoverConstructor() {
         Class<?> type = null;
         // get the first annotation with a concreteClass that isn't Object.class
         for (final Annotation an : foundAnnotations.values()) {
@@ -701,7 +656,7 @@ public class MappedFieldImpl implements MappedField {
 
             // short circuit to avoid wasting time throwing an exception trying to get a constructor we know doesnt exist
             if (type == List.class || type == Map.class) {
-                return null;
+                return;
             }
 
             if (type != null) {
@@ -713,36 +668,6 @@ public class MappedFieldImpl implements MappedField {
                 } catch (SecurityException e) {
                     // never mind.
                 }
-            }
-        }
-        return constructor;
-    }
-
-    private void discoverMultivalued() {
-        if (realType.isArray()
-            || Collection.class.isAssignableFrom(realType)
-            || Map.class.isAssignableFrom(realType)
-            || GenericArrayType.class.isAssignableFrom(genericType.getClass())) {
-
-            isSingleValue = false;
-
-            isMap = Map.class.isAssignableFrom(realType);
-            isSet = Set.class.isAssignableFrom(realType);
-            //for debugging
-            isCollection = Collection.class.isAssignableFrom(realType);
-            isArray = realType.isArray();
-
-            //for debugging with issue
-            if (!isMap && !isSet && !isCollection && !isArray) {
-                throw new MappingException(format("%s.%s is not a map/set/collection/array : %s", field.getName(),
-                                                  field.getDeclaringClass(), realType));
-            }
-
-            // get the subtype T, T[]/List<T>/Map<?,T>; subtype of Long[], List<Long> is Long
-            subType = (realType.isArray()) ? realType.getComponentType() : ReflectionUtils.getParameterizedType(field, isMap ? 1 : 0);
-
-            if (isMap) {
-                mapKeyType = ReflectionUtils.getParameterizedType(field, 0);
             }
         }
     }

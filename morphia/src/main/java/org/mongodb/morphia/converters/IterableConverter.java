@@ -111,9 +111,10 @@ public class IterableConverter extends TypeConverter {
 
     @Override
     protected boolean isSupported(final Class c, final MappedField mappedField) {
-        MappedFieldImpl mf = (MappedFieldImpl) mappedField;
-        if (mf != null) {
-            return mf.isMultipleValues() && !mf.isMap(); //&& !mf.isTypeMongoCompatible();
+        if (mappedField != null && mappedField instanceof MappedFieldImpl) {
+            return ((MappedFieldImpl) mappedField).isMultipleValues()
+                   && !((MappedFieldImpl) mappedField).isMap(); //&& !mf
+            // .isTypeMongoCompatible();
         } else {
             return c.isArray() || ReflectionUtils.implementsInterface(c, Iterable.class);
         }
@@ -121,6 +122,11 @@ public class IterableConverter extends TypeConverter {
 
     private Collection<?> createNewCollection(final MappedField mf) {
         final ObjectFactory of = getMapper().getOptions().getObjectFactory();
-        return ((MappedFieldImpl) mf).isSet() ? of.createSet(mf) : of.createList(mf);
+        if (mf instanceof MappedFieldImpl
+        && ((MappedFieldImpl) mf).isSet()) {
+            return of.createSet(mf);
+        } else {
+            return of.createList(mf);
+        }
     }
 }

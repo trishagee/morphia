@@ -832,9 +832,11 @@ public class Mapper {
 
     private boolean isMultiValued(final MappedField mf, final Object value) {
         final Class subClass = mf.getSubClass();
+        boolean multipleValues = mf instanceof ArrayMappedField
+                                 || ((MappedFieldImpl) mf).isMultipleValues();
         return value instanceof Iterable
-            && ((MappedFieldImpl) mf).isMultipleValues()
-            && (Key.class.isAssignableFrom(subClass) || DBRef.class.isAssignableFrom(subClass));
+               && multipleValues
+               && (Key.class.isAssignableFrom(subClass) || DBRef.class.isAssignableFrom(subClass));
     }
 
     private void readMappedField(final Datastore datastore, final MappedField mf, final Object entity, final EntityCache cache,

@@ -32,15 +32,17 @@ class ReferenceMapper implements CustomMapper {
 
     @Override
     public void fromDBObject(final Datastore datastore, final DBObject dbObject, final
-    MappedField mappedField, final Object entity,
+    MappedField mf, final Object entity,
                              final EntityCache cache, final Mapper mapper) {
-        MappedFieldImpl mf = (MappedFieldImpl) mappedField;
         final Class fieldType = mf.getType();
 
         final Reference refAnn = mf.getAnnotation(Reference.class);
-        if (mf.isMap()) {
+        if (mf instanceof MappedFieldImpl && ((MappedFieldImpl) mf).isMap()) {
             readMap(datastore, mapper, entity, refAnn, cache, mf, dbObject);
-        } else if (mf.isMultipleValues()) {
+        } else if (mf instanceof MappedFieldImpl
+                   && ((MappedFieldImpl) mf).isMultipleValues()) {
+            readCollection(datastore, mapper, dbObject, mf, entity, refAnn, cache);
+        } else if (mf instanceof ArrayMappedField) {
             readCollection(datastore, mapper, dbObject, mf, entity, refAnn, cache);
         } else {
             readSingle(datastore, mapper, entity, fieldType, refAnn, cache, mf, dbObject);
@@ -52,20 +54,22 @@ class ReferenceMapper implements CustomMapper {
     public void toDBObject(final Object entity, final MappedField mappedField, final DBObject dbObject,
                            final Map<Object, DBObject> involvedObjects,
                            final Mapper mapper) {
-        MappedFieldImpl mf = (MappedFieldImpl) mappedField;
-        final String name = mf.getNameToStore();
+        final String name = mappedField.getNameToStore();
 
-        final Object fieldValue = mf.getFieldValue(entity);
+        final Object fieldValue = mappedField.getFieldValue(entity);
 
         if (fieldValue == null && !mapper.getOptions().isStoreNulls()) {
             return;
         }
 
-        final Reference refAnn = mf.getAnnotation(Reference.class);
-        if (mf.isMap()) {
-            writeMap(mf, dbObject, name, fieldValue, refAnn, mapper);
-        } else if (mf.isMultipleValues()) {
-            writeCollection(mf, dbObject, name, fieldValue, refAnn, mapper);
+        final Reference refAnn = mappedField.getAnnotation(Reference.class);
+        if (mappedField instanceof MappedFieldImpl && ((MappedFieldImpl) mappedField).isMap()) {
+            writeMap(mappedField, dbObject, name, fieldValue, refAnn, mapper);
+        } else if (mappedField instanceof MappedFieldImpl
+                   && ((MappedFieldImpl) mappedField).isMultipleValues()) {
+            writeCollection(mappedField, dbObject, name, fieldValue, refAnn, mapper);
+        } else if (mappedField instanceof ArrayMappedField) {
+            writeCollection(mappedField, dbObject, name, fieldValue, refAnn, mapper);
         } else {
             writeSingle(dbObject, name, fieldValue, refAnn, mapper);
         }
@@ -123,8 +127,17 @@ class ReferenceMapper implements CustomMapper {
         final Class referenceObjClass = mf.getSubClass();
         // load reference class.  this "fixes" #816
         mapper.getMappedClass(referenceObjClass);
-        Collection references = ((MappedFieldImpl) mf).isSet() ? mapper.getOptions().getObjectFactory().createSet(mf)
-                                           : mapper.getOptions().getObjectFactory().createList(mf);
+        Collection references;
+        if (mf instanceof MappedFieldImpl
+        && ((MappedFieldImpl) mf).isSet()) {
+            references = mapper.getOptions()
+                               .getObjectFactory()
+                               .createSet(mf);
+        } else {
+            references = mapper.getOptions()
+                               .getObjectFactory()
+                               .createList(mf);
+        }
 
         if (refAnn.lazy() && LazyFeatureDependencies.assertDependencyFullFilled()) {
             final Object dbVal = mf.getDbObjectValue(dbObject);
@@ -306,8 +319,15 @@ class ReferenceMapper implements CustomMapper {
         }
 
         final DBRef dbRef = idOnly ? null : (DBRef) ref;
-        final Key key = mapper.createKey(((MappedFieldImpl) mf).isSingleValue() ? mf.getType() : mf.getSubClass(),
-                                         idOnly ? ref : dbRef.getId());
+        final Key key;
+        if (mf instanceof MappedFieldImpl
+        && ((MappedFieldImpl) mf).isSingleValue()) {
+            key = mapper.createKey(mf.getType(),
+                                   idOnly ? ref : dbRef.getId());
+        } else {
+            key = mapper.createKey(mf.getSubClass(),
+                                   idOnly ? ref : dbRef.getId());
+        }
 
         final Object cached = cache.getEntity(key);
         if (cached != null) {

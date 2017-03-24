@@ -5,6 +5,7 @@ import com.mongodb.DBObject;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
@@ -45,5 +46,7 @@ public interface MappedField {
     List<String> getLoadNames();
 
     Class getSubClass();
+
+    Type getSubType();
 
 }

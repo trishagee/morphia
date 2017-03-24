@@ -21,7 +21,7 @@ public class MapNotSerializable extends FieldConstraint {
 
     @Override
     protected void check(final Mapper mapper, final MappedClass mc, final MappedField mf, final Set<ConstraintViolation> ve) {
-        if (((MappedFieldImpl) mf).isMap()) {
+        if (mf instanceof MappedFieldImpl && ((MappedFieldImpl) mf).isMap()) {
             if (mf.hasAnnotation(Serialized.class)) {
                 final Class<?> keyClass = ReflectionUtils.getParameterizedClass(mf.getField(), 0);
                 final Class<?> valueClass = ReflectionUtils.getParameterizedClass(mf.getField(), 1);

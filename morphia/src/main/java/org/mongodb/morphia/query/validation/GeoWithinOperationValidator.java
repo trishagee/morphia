@@ -51,7 +51,7 @@ public final class GeoWithinOperationValidator extends OperationValidator {
             validationFailures.add(new ValidationFailure(format("For a $geoWithin operation, if field '%s' is an array or iterable it "
                                                                 + "should have numeric values. Instead it had: %s",
                                                                 mappedField,
-                                                                ((MappedFieldImpl) mappedField).getSubClass()
+                                                                mappedField.getSubClass()
                                                                )));
 
         }

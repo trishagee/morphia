@@ -34,6 +34,7 @@ import org.mongodb.morphia.converters.IntegerConverter;
 import org.mongodb.morphia.converters.SimpleValueConverter;
 import org.mongodb.morphia.converters.TypeConverter;
 import org.mongodb.morphia.entities.EntityWithListsAndArrays;
+import org.mongodb.morphia.mapping.ArrayMappedField;
 import org.mongodb.morphia.mapping.MappedField;
 import org.mongodb.morphia.mapping.MappedFieldImpl;
 
@@ -47,9 +48,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
@@ -70,7 +69,7 @@ public class CustomConvertersTest extends TestBase {
         getDs().save(entity);
 
         final DBObject dbObject = getDs().getCollection(EntityWithListsAndArrays.class).findOne();
-        Assert.assertFalse(dbObject.get("listOfStrings") instanceof BasicDBList);
+        assertThat(dbObject.get("listOfStrings"), not(instanceOf(BasicDBList.class)));
 
         final EntityWithListsAndArrays loaded = getDs().find(EntityWithListsAndArrays.class).get();
         Assert.assertEquals(entity.getListOfStrings(), loaded.getListOfStrings());
@@ -348,8 +347,11 @@ public class CustomConvertersTest extends TestBase {
     private static class ListToMapConvert extends TypeConverter {
         @Override
         protected boolean isSupported(final Class c, final MappedField mf) {
-            return (mf != null) && ((MappedFieldImpl) mf).isMultipleValues() && !(
-                    (MappedFieldImpl) mf).isMap();
+            if (!(mf instanceof MappedFieldImpl)) {
+                return false;
+            }
+            MappedFieldImpl mappedField = (MappedFieldImpl) mf;
+            return mappedField.isMultipleValues() && !mappedField.isMap();
         }
 
         @Override

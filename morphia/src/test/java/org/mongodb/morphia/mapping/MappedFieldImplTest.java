@@ -3,6 +3,7 @@ package org.mongodb.morphia.mapping;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import org.bson.types.ObjectId;
+import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mongodb.morphia.TestBase;
@@ -20,24 +21,26 @@ import java.util.Map;
 
 import static java.util.Arrays.asList;
 
-public class MappedFieldTest extends TestBase {
+public class MappedFieldImplTest extends TestBase {
     @Test
     public void arrayFieldMapping() {
-        final MappedFieldImpl field = new MappedFieldImpl(getField(TestEntity.class, "arrayOfInt"), TestEntity.class, getMorphia().getMapper());
+        MappedField mappedField = MappedFieldFactory.create(getField(TestEntity.class, "arrayOfInt"), TestEntity.class, getMorphia().getMapper());
 
-        Assert.assertFalse(field.isSingleValue());
-        Assert.assertTrue(field.isMultipleValues());
-        Assert.assertTrue(field.isArray());
-        Assert.assertTrue(field.getType().isArray());
-        Assert.assertEquals("arrayOfInt", field.getJavaFieldName());
-        Assert.assertEquals("arrayOfInt", field.getNameToStore());
+        Assert.assertThat(mappedField, CoreMatchers.instanceOf(ArrayMappedField.class));
+//        Assert.assertTrue(mappedField instanceof ArrayMappedField);
+        Assert.assertTrue(((ArrayMappedField) mappedField).isArray());
+        Assert.assertTrue(mappedField.getType().isArray());
+        Assert.assertEquals("arrayOfInt", mappedField.getJavaFieldName());
+        Assert.assertEquals("arrayOfInt", mappedField.getNameToStore());
     }
 
     @Test
     public void basicFieldMapping() {
-        final MappedFieldImpl field = new MappedFieldImpl(getField(TestEntity.class, "name"), TestEntity.class, getMorphia().getMapper());
+        final MappedField field = MappedFieldFactory.create(getField(TestEntity.class, "name"),
+                                                            TestEntity.class, getMorphia().getMapper());
 
-        Assert.assertTrue(field.isSingleValue());
+        Assert.assertThat(field, CoreMatchers.instanceOf(MappedFieldImpl.class));
+//        Assert.assertTrue(field.isSingleValue());
         Assert.assertTrue(String.class == field.getType());
         Assert.assertEquals("name", field.getJavaFieldName());
         Assert.assertEquals("n", field.getNameToStore());
@@ -45,22 +48,27 @@ public class MappedFieldTest extends TestBase {
 
     @Test
     public void collectionFieldMapping() {
-        final MappedFieldImpl field = new MappedFieldImpl(getField(TestEntity.class, "listOfString"), TestEntity.class, getMorphia().getMapper());
+        final MappedField field = MappedFieldFactory.create(getField(TestEntity.class,
+                                                                     "listOfString"),
+                                                            TestEntity.class, getMorphia().getMapper());
 
-        Assert.assertFalse(field.isSingleValue());
-        Assert.assertTrue(field.isMultipleValues());
-        Assert.assertFalse(field.isArray());
+        Assert.assertThat(field, CoreMatchers.instanceOf(MappedFieldImpl.class));
+        MappedFieldImpl mf = (MappedFieldImpl) field;
+        Assert.assertFalse(mf.isSingleValue());
+        Assert.assertTrue(mf.isMultipleValues());
         Assert.assertTrue(List.class == field.getType());
-        Assert.assertTrue(String.class == field.getSubType());
+        Assert.assertTrue(String.class == mf.getSubType());
         Assert.assertEquals("listOfString", field.getJavaFieldName());
         Assert.assertEquals("listOfString", field.getNameToStore());
     }
 
     @Test
     public void idFieldMapping() {
-        final MappedFieldImpl field = new MappedFieldImpl(getField(TestEntity.class, "id"), TestEntity.class, getMorphia().getMapper());
+        final MappedField field = MappedFieldFactory.create(getField(TestEntity.class, "id"),
+                                                            TestEntity.class, getMorphia().getMapper());
 
-        Assert.assertTrue(field.isSingleValue());
+        Assert.assertThat(field, CoreMatchers.instanceOf(MappedFieldImpl.class));
+//        Assert.assertTrue(field.isSingleValue());
         Assert.assertTrue(ObjectId.class == field.getType());
         Assert.assertEquals("id", field.getJavaFieldName());
         Assert.assertEquals("_id", field.getNameToStore());
@@ -68,16 +76,18 @@ public class MappedFieldTest extends TestBase {
 
     @Test
     public void nestedCollectionsMapping() {
-        final MappedFieldImpl field = new MappedFieldImpl(getField(TestEntity.class, "listOfListOfString"),
-                                                  TestEntity.class,
-                                                  getMorphia().getMapper());
+        final MappedField field = MappedFieldFactory.create(getField(TestEntity.class,
+                                                                     "listOfListOfString"),
+                                                            TestEntity.class,
+                                                            getMorphia().getMapper());
 
-        Assert.assertFalse(field.isSingleValue());
-        Assert.assertTrue(field.isMultipleValues());
-        Assert.assertFalse(field.isArray());
+        Assert.assertThat(field, CoreMatchers.instanceOf(MappedFieldImpl.class));
+        MappedFieldImpl mf = (MappedFieldImpl) field;
+        Assert.assertFalse(mf.isSingleValue());
+        Assert.assertTrue(mf.isMultipleValues());
         Assert.assertTrue(List.class == field.getType());
 
-        final List<MappedField> level1Types = field.getTypeParameters();
+        final List<MappedField> level1Types = mf.getTypeParameters();
         final MappedField typeParameter = level1Types.get(0);
         Assert.assertTrue(List.class == typeParameter.getConcreteType());
 

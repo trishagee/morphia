@@ -571,7 +571,8 @@ public class MappedClass {
             final int fieldMods = field.getModifiers();
             if (!isIgnorable(field, fieldMods, mapper)) {
                 if (field.isAnnotationPresent(Id.class)) {
-                    persistenceFields.add(new MappedFieldImpl(field, clazz, mapper));
+                    MappedField mappedField = MappedFieldFactory.create(field, clazz, mapper);
+                    persistenceFields.add(mappedField);
                     update();
                 } else if (field.isAnnotationPresent(Property.class)
                            || field.isAnnotationPresent(Reference.class)
@@ -579,10 +580,13 @@ public class MappedClass {
                            || field.isAnnotationPresent(Serialized.class)
                            || isSupportedType(field.getType())
                            || ReflectionUtils.implementsInterface(field.getType(), Serializable.class)) {
-                    persistenceFields.add(new MappedFieldImpl(field, clazz, mapper));
+
+                    MappedField mappedField = MappedFieldFactory.create(field, clazz, mapper);
+                    persistenceFields.add(mappedField);
                 } else {
                     if (mapper.getOptions().getDefaultMapper() != null) {
-                        persistenceFields.add(new MappedFieldImpl(field, clazz, mapper));
+                        MappedField mappedField = MappedFieldFactory.create(field, clazz, mapper);
+                        persistenceFields.add(mappedField);
                     } else if (LOG.isWarningEnabled()) {
                         LOG.warning(format("Ignoring (will not persist) field: %s.%s [type:%s]", clazz.getName(), field.getName(),
                                            field.getType().getName()));

@@ -156,7 +156,7 @@ final class IndexHelper {
     private List<Index> collectNestedIndexes(final MappedClass mc, final List<MappedClass> parentMCs) {
         List<Index> list = new ArrayList<Index>();
         for (final MappedField mappedField : mc.getPersistenceFields()) {
-            MappedFieldImpl mf = (MappedFieldImpl) mappedField;
+            MappedField mf = mappedField;
             if (!mf.isTypeMongoCompatible() && !mf.hasAnnotation(Reference.class) && !mf.hasAnnotation(Serialized.class)
                 && !mf.hasAnnotation(NotSaved.class) && !mf.isTransient()) {
 
@@ -164,7 +164,13 @@ final class IndexHelper {
                 parents.add(mc);
 
                 List<MappedClass> classes = new ArrayList<MappedClass>();
-                MappedClass mappedClass = mapper.getMappedClass(mf.isSingleValue() ? mf.getType() : mf.getSubClass());
+                Class clzz;
+                if (mf instanceof MappedFieldImpl) {
+                    clzz = mf.getType();
+                } else {
+                    clzz = mf.getSubClass();
+                }
+                MappedClass mappedClass = mapper.getMappedClass(clzz);
                 classes.add(mappedClass);
                 classes.addAll(mapper.getSubTypes(mappedClass));
                 for (MappedClass aClass : classes) {

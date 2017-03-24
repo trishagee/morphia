@@ -96,7 +96,12 @@ public class DefaultCreator implements ObjectFactory {
     public Object createInstance(final Mapper mapper, final MappedField mf, final DBObject dbObj) {
         Class c = getClass(dbObj);
         if (c == null) {
-            c = ((MappedFieldImpl) mf).isSingleValue() ? mf.getConcreteType() : mf.getSubClass();
+            if (mf instanceof MappedFieldImpl
+                && ((MappedFieldImpl) mf).isSingleValue()) {
+                c = mf.getConcreteType();
+            } else {
+                c = mf.getSubClass();
+            }
             if (c.equals(Object.class)) {
                 c = mf.getConcreteType();
             }

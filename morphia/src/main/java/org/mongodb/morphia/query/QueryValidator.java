@@ -3,6 +3,7 @@ package org.mongodb.morphia.query;
 import org.mongodb.morphia.annotations.Serialized;
 import org.mongodb.morphia.logging.Logger;
 import org.mongodb.morphia.logging.MorphiaLoggerFactory;
+import org.mongodb.morphia.mapping.ArrayMappedField;
 import org.mongodb.morphia.mapping.MappedClass;
 import org.mongodb.morphia.mapping.MappedField;
 import org.mongodb.morphia.mapping.MappedFieldImpl;
@@ -76,7 +77,7 @@ final class QueryValidator {
                 }
 
                 i++;
-                if (mf != null && ((MappedFieldImpl) mf).isMap()) {
+                if (mf != null && mf instanceof MappedFieldImpl && ((MappedFieldImpl) mf).isMap()) {
                     //skip the map key validation, and move to the next part
                     i++;
                 }
@@ -119,13 +120,22 @@ final class QueryValidator {
                 boolean compatibleForType = isCompatibleForOperator(mc, mf, mf.getType(), op, val, typeValidationFailures);
                 List<ValidationFailure> subclassValidationFailures = new ArrayList<ValidationFailure>();
 
-                MappedFieldImpl mappedField = (MappedFieldImpl) mf;
+
                 boolean compatibleForSubclass = isCompatibleForOperator(mc, mf,
-                                                                        mappedField.getSubClass()
+                                                                        mf.getSubClass()
                 , op, val, subclassValidationFailures);
 
-                if ((mappedField.isSingleValue() && !compatibleForType)
-                    || mappedField.isMultipleValues() && !(compatibleForSubclass || compatibleForType)) {
+                boolean notCompatibleSingleValue =
+                        mf instanceof MappedFieldImpl
+                        && ((MappedFieldImpl) mf).isSingleValue()
+                        && !compatibleForType;
+                boolean notCompatibleMultiValue =
+                        ((mf instanceof MappedFieldImpl
+                          && ((MappedFieldImpl) mf).isMultipleValues())
+                         || (mf instanceof ArrayMappedField))
+                        && !(compatibleForSubclass || compatibleForType);
+
+                if (notCompatibleSingleValue || notCompatibleMultiValue) {
 
                     if (LOG.isWarningEnabled()) {
                         LOG.warning(format("The type(s) for the query/update may be inconsistent; using an instance of type '%s' "
