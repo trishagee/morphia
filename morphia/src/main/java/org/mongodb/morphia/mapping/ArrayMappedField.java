@@ -12,13 +12,14 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
-public class ArrayMappedField implements MappedField{
+public class ArrayMappedField implements MappedField {
     private static final Logger LOG = MorphiaLoggerFactory.get(ArrayMappedField.class);
 
     private final Type subType;
+    private final boolean isArray;
+    private final MappedFieldImpl mappedField;
+
     private boolean isMongoType = false;
-    private boolean isArray = true;
-    private MappedFieldImpl mappedField;
 
     ArrayMappedField(MappedFieldImpl mappedField, Mapper mapper) {
         this.mappedField = mappedField;
@@ -26,14 +27,13 @@ public class ArrayMappedField implements MappedField{
         Class realType = mappedField.realType;
         isArray = realType.isArray();
 
-        // get the subtype T, T[]/List<T>/Map<?,T>; subtype of Long[], List<Long> is Long
-        if (realType.isArray()) {
-            subType = realType.getComponentType();
-        } else {
-            subType = ReflectionUtils
-                    .getParameterizedType(mappedField.getField(), 0);
-        }
+        // get the subtype T[]; subtype of Long[], List<Long> is Long
+        subType = realType.getComponentType();
 
+        setIsMongoType(mapper, realType);
+    }
+
+    private void setIsMongoType(Mapper mapper, Class realType) {
         isMongoType = ReflectionUtils.isPropertyType(realType);
 
         if (!isMongoType && subType != null) {
@@ -42,10 +42,13 @@ public class ArrayMappedField implements MappedField{
 
         if (!isMongoType
             && (subType == null || subType == Object.class)) {
-            if (LOG.isWarningEnabled() && !mapper.getConverters().hasDbObjectConverter(this)) {
+            if (LOG.isWarningEnabled() && !mapper.getConverters()
+                                                 .hasDbObjectConverter(this)) {
                 LOG.warning(String.format("The multi-valued field '%s' is a possible " +
                                           "heterogeneous collection. It cannot be verified. "
-                                   + "Please declare a valid type to get rid of this warning. %s", getFullName(), subType));
+                                          +
+                                          "Please declare a valid type to get rid of this warning" +
+                                          ". %s", getFullName(), subType));
             }
             isMongoType = true;
         }
