@@ -24,7 +24,7 @@ public class MappedFieldFactory {
     /**
      * Discovers interesting (that we care about) things about the field.
      */
-    protected static MappedField discover(final Mapper mapper, MappedFieldImpl mappedField) {
+    private static MappedField discover(final Mapper mapper, MappedFieldImpl mappedField) {
         for (final Class<? extends Annotation> clazz : mappedField.INTERESTING) {
             mappedField.addAnnotation(clazz);
         }
@@ -33,29 +33,15 @@ public class MappedFieldFactory {
         mappedField.discoverType(mapper);
         mappedField.discoverConstructor();
         return discoverMultivalued(mappedField, mapper);
-
-//        boolean isMongoType;
-//        isMongoType = ReflectionUtils.isPropertyType(mappedField.realType);
-
-//        if (!isMongoType && !mf.isSingleValue()
-//            && (mf.getSubType() == null || mf.getSubType() == Object.class)) {
-//            if (LOG.isWarningEnabled() && !mapper.getConverters().hasDbObjectConverter(mf)) {
-//                LOG.warning(format("The multi-valued field '%s' is a possible heterogeneous collection. It cannot be verified. "
-//                                   + "Please declare a valid type to get rid of this warning. %s", mf.getFullName(), mf.subType));
-//            }
-//            mf.isMongoType = true;
-//        }
     }
 
     private static MappedField discoverMultivalued(MappedFieldImpl mappedField, Mapper mapper) {
         if (mappedField.realType.isArray()
             || GenericArrayType.class.isAssignableFrom(mappedField.genericType.getClass())) {
-
             return new ArrayMappedField(mappedField, mapper);
         }
         else if (Collection.class.isAssignableFrom(mappedField.realType)
                  || Map.class.isAssignableFrom(mappedField.realType)) {
-
             mappedField.isSingleValue = false;
 
             mappedField.isMap = Map.class.isAssignableFrom(mappedField.realType);
@@ -73,7 +59,11 @@ public class MappedFieldFactory {
                                                                               0);
             }
         }
+        setMongoType(mappedField, mapper);
+        return mappedField;
+    }
 
+    private static void setMongoType(MappedFieldImpl mappedField, Mapper mapper) {
         boolean isMongoType = ReflectionUtils.isPropertyType(mappedField.realType);
         mappedField.isMongoType = isMongoType;
 
@@ -91,7 +81,5 @@ public class MappedFieldFactory {
             }
             mappedField.isMongoType = true;
         }
-        return mappedField;
     }
-
 }

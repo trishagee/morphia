@@ -16,10 +16,8 @@ public class ArrayMappedField implements MappedField{
     private static final Logger LOG = MorphiaLoggerFactory.get(ArrayMappedField.class);
 
     private final Type subType;
-    private final boolean isSingleValue = false;
     private boolean isMongoType = false;
     private boolean isArray = true;
-    private final boolean isMultipleVales = true;
     private MappedFieldImpl mappedField;
 
     ArrayMappedField(MappedFieldImpl mappedField, Mapper mapper) {
