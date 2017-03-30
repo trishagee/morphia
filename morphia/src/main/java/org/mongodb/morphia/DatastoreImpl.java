@@ -56,7 +56,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 
 import static com.mongodb.BasicDBObject.parse;
 import static com.mongodb.BasicDBObjectBuilder.start;
@@ -272,23 +271,12 @@ public class DatastoreImpl implements AdvancedDatastore {
     @Override
     public void enableDocumentValidation() {
         for (final MappedClass mc : mapper.getMappedClasses()) {
-            process(mc, mc.getAnnotation(Validation.class));
+            mc.getAnnotation(Validation.class)
+              .ifPresent(validation -> applyValidationRulesToCollection(mc, validation));
         }
     }
 
-    private void process(final MappedClass mc, final Optional<Validation> optionalValidation) {
-        optionalValidation.ifPresent(validation -> {
-            applyValidationRulesToCollection(mc, validation);
-        });
-    }
-
-    void process(final MappedClass mc, final Validation validation) {
-        if (validation != null) {
-            applyValidationRulesToCollection(mc, validation);
-        }
-    }
-
-    private void applyValidationRulesToCollection(MappedClass mc, Validation validation) {
+    void applyValidationRulesToCollection(MappedClass mc, Validation validation) {
         String collectionName = mc.getCollectionName();
         CommandResult result = getDB()
                 .command(new BasicDBObject("collMod", collectionName)
