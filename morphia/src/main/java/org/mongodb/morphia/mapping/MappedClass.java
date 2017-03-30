@@ -57,7 +57,6 @@ import java.util.Optional;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
-import java.util.Optional;
 
 
 /**
@@ -311,19 +310,13 @@ public class MappedClass {
         return getMappedField(name) != null;
     }
 
-    /**
-     * Looks for an annotation of the type given
-     *
-     * @param clazz the type to search for
-     * @return the instance if it was found, if more than one was found, the last one added
-     */
-    public Annotation getAnnotation(final Class<? extends Annotation> clazz) {
+    public <A extends Annotation> Optional<A> getAnnotation(final Class<A> clazz) {
         final List<Annotation> found = foundAnnotations.get(clazz);
-        return found == null || found.isEmpty() ? null : found.get(found.size() - 1);
-    }
-    
-    public <A extends Annotation> Optional<A> getAnnotationOpt(final Class<A> clazz) {
-        return Optional.ofNullable((A)getAnnotation(clazz));
+        if (found == null || found.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.of((A)found.get(found.size() - 1));
+        }
     }
 
     /**
@@ -511,7 +504,7 @@ public class MappedClass {
      */
     // TODO: Remove this and make these fields dynamic or auto-set some other way
     public void update() {
-        embeddedAn = (Embedded) getAnnotationOpt(Embedded.class).orElse(null);
+        embeddedAn = (Embedded) getAnnotation(Embedded.class).orElse(null);
         entityAn = (Entity) getFirstAnnotation(Entity.class);
         // polymorphicAn = (Polymorphic) getAnnotation(Polymorphic.class);
         final List<MappedField> fields = getFieldsAnnotatedWith(Id.class);
@@ -555,7 +548,7 @@ public class MappedClass {
         final List<Class<?>> lifecycleClasses = new ArrayList<Class<?>>();
         lifecycleClasses.add(clazz);
 
-        getAnnotationOpt(EntityListeners.class)
+        getAnnotation(EntityListeners.class)
             .ifPresent(entityLisAnn ->
 Collections.addAll(lifecycleClasses, entityLisAnn.value()));
 

@@ -23,7 +23,6 @@ import org.mongodb.morphia.TestBase;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Id;
 import org.mongodb.morphia.mapping.MappedClass;
-import org.mongodb.morphia.mapping.MappedField;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -74,7 +73,7 @@ public class IgnoreFieldsAnnotationTest extends TestBase {
     //remove any MappedField specified in @IgnoreFields on the class.
     private void processIgnoreFieldsAnnotations() {
         for (final MappedClass mc : getMorphia().getMapper().getMappedClasses()) {
-            mc.getAnnotationOpt(IgnoreFields.class)
+            mc.getAnnotation(IgnoreFields.class)
                 .map(ignores -> Arrays.stream(ignores.value().split(",")))
                 .ifPresent(fields -> fields.map(mc::getMappedFieldByJavaField)
                                            .forEach(mc.getPersistenceFields()::remove));

@@ -272,11 +272,11 @@ public class DatastoreImpl implements AdvancedDatastore {
     @Override
     public void enableDocumentValidation() {
         for (final MappedClass mc : mapper.getMappedClasses()) {
-            process(mc, mc.getAnnotationOpt(Validation.class));
+            process(mc, mc.getAnnotation(Validation.class));
         }
     }
 
-    void process(final MappedClass mc, final Optional<Validation> optionalValidation) {
+    private void process(final MappedClass mc, final Optional<Validation> optionalValidation) {
         optionalValidation.ifPresent(validation -> {
             applyValidationRulesToCollection(mc, validation);
         });
@@ -1291,7 +1291,7 @@ public class DatastoreImpl implements AdvancedDatastore {
         }
 
         final MappedClass mc = mapper.getMappedClass(entity);
-        mc.getAnnotationOpt(NotSaved.class)
+        mc.getAnnotation(NotSaved.class)
           .ifPresent(x -> {
             throw new MappingException(format("Entity type: %s is marked as NotSaved which means you should not try to save it!",
                                               mc.getClazz().getName()));
@@ -1463,7 +1463,7 @@ public class DatastoreImpl implements AdvancedDatastore {
 
     private <T> DBObject toDbObject(final T ent, final Map<Object, DBObject> involvedObjects) {
         final MappedClass mc = mapper.getMappedClass(ent);
-        mc.getAnnotationOpt(NotSaved.class).ifPresent(x -> {
+        mc.getAnnotation(NotSaved.class).ifPresent(x -> {
             throw new MappingException(format("Entity type: %s is marked as NotSaved which means you should not try to save it!",
                                               mc.getClazz().getName()));
         });
