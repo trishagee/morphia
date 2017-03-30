@@ -56,6 +56,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 import static com.mongodb.BasicDBObject.parse;
 import static com.mongodb.BasicDBObjectBuilder.start;
@@ -271,30 +272,41 @@ public class DatastoreImpl implements AdvancedDatastore {
     @Override
     public void enableDocumentValidation() {
         for (final MappedClass mc : mapper.getMappedClasses()) {
-            process(mc, (Validation) mc.getAnnotation(Validation.class));
+            process(mc, mc.getAnnotationOpt(Validation.class));
         }
+    }
+
+    void process(final MappedClass mc, final Optional<Validation> optionalValidation) {
+        optionalValidation.ifPresent(validation -> {
+            applyValidationRulesToCollection(mc, validation);
+        });
     }
 
     void process(final MappedClass mc, final Validation validation) {
         if (validation != null) {
-            String collectionName = mc.getCollectionName();
-            CommandResult result = getDB()
-                .command(new BasicDBObject("collMod", collectionName)
-                             .append("validator", parse(validation.value()))
-                             .append("validationLevel", validation.level().getValue())
-                             .append("validationAction", validation.action().getValue())
-                        );
+            applyValidationRulesToCollection(mc, validation);
+        }
+    }
 
-            if (!result.ok()) {
-                if (result.getInt("code") == 26) {
-                    ValidationOptions options = new ValidationOptions()
+    private void applyValidationRulesToCollection(MappedClass mc, Validation validation) {
+        String collectionName = mc.getCollectionName();
+        CommandResult result = getDB()
+                .command(new BasicDBObject("collMod", collectionName)
+                                 .append("validator", parse(validation.value()))
+                                 .append("validationLevel", validation.level()
+                                                                      .getValue())
+                                 .append("validationAction", validation.action()
+                                                                       .getValue())
+                );
+        if (!result.ok()) {
+            if (result.getInt("code") == 26) {
+                ValidationOptions options = new ValidationOptions()
                         .validator(parse(validation.value()))
                         .validationLevel(validation.level())
                         .validationAction(validation.action());
-                    getDatabase().createCollection(collectionName, new CreateCollectionOptions().validationOptions(options));
-                } else {
-                    result.throwOnError();
-                }
+                getDatabase().createCollection(collectionName, new CreateCollectionOptions().validationOptions(options));
+            } else {
+                result.throwOnError();
             }
         }
     }
