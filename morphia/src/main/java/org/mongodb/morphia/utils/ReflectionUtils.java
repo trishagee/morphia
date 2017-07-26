@@ -97,7 +97,7 @@ public final class ReflectionUtils {
      * @param doSomething
      * @return the valid fields
      */
-    public static List<Field> getValidFields(final Field[] fields, boolean doSomething, final boolean b) {
+    public static List<Field> getValidFields(final Field[] fields, boolean doSomething, final boolean returnFinalFields) {
         return Arrays.stream(fields)
                      .filter(field -> isNotStaticOrFinal(returnFinalFields, field))
                      .collect(Collectors.toList());

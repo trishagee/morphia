@@ -20,7 +20,6 @@
         <module name="guice-plug" />
         <module name="logging-slf4j" />
         <module name="morphia-morphia" />
-        <module name="no-proxy-deps-tests" />
         <module name="validation" />
       </profile>
     </annotationProcessing>
