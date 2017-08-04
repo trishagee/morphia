@@ -20,11 +20,7 @@ public class ByteConverter extends TypeConverter implements SimpleValueConverter
     }
 
     @Override
-    public Object decode(final Class targetClass, final Object val, final MappedField optionalExtraInfo) {
-        if (val == null) {
-            return null;
-        }
-
+    public Object decode(final Class targetClass, @NotNull final Object val, final MappedField optionalExtraInfo) {
         if (val.getClass().equals(targetClass)) {
             return val;
         }

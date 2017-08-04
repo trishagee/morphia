@@ -19,7 +19,7 @@ public class LocaleConverter extends TypeConverter<Locale> implements SimpleValu
 
     @Override
     public Locale decode(final Class<Locale> targetClass,
-                         final Object fromDBObject, final MappedField optionalExtraInfo) {
+                         @NotNull final Object fromDBObject, final MappedField optionalExtraInfo) {
         return parseLocale(fromDBObject.toString());
     }
 

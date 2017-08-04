@@ -22,7 +22,7 @@ public class GeometryQueryConverter extends TypeConverter<Geometry> implements S
     }
 
     @Override
-    public Geometry decode(final Class<Geometry> targetClass, final Object fromDBObject, final MappedField optionalExtraInfo) {
+    public Geometry decode(final Class<Geometry> targetClass, @NotNull final Object fromDBObject, final MappedField optionalExtraInfo) {
         throw new UnsupportedOperationException("Should never have to decode a query object");
     }
 

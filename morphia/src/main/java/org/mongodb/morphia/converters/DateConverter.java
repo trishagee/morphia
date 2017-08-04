@@ -1,6 +1,7 @@
 package org.mongodb.morphia.converters;
 
 
+import org.jetbrains.annotations.NotNull;
 import org.mongodb.morphia.logging.Logger;
 import org.mongodb.morphia.logging.MorphiaLoggerFactory;
 import org.mongodb.morphia.mapping.MappedField;
@@ -31,11 +32,7 @@ public class DateConverter extends TypeConverter<Date> implements SimpleValueCon
     }
 
     @Override
-    public Date decode(final Class<Date> targetClass, final Object val, final MappedField optionalExtraInfo) {
-        if (val == null) {
-            return null;
-        }
-
+    public Date decode(final Class<Date> targetClass, @NotNull final Object val, final MappedField optionalExtraInfo) {
         if (val instanceof Date) {
             return (Date) val;
         }

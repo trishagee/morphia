@@ -2,6 +2,7 @@ package org.mongodb.morphia.converters;
 
 
 import org.bson.types.ObjectId;
+import org.jetbrains.annotations.NotNull;
 import org.mongodb.morphia.mapping.MappedField;
 
 
@@ -20,11 +21,7 @@ public class ObjectIdConverter extends TypeConverter implements SimpleValueConve
     }
 
     @Override
-    public Object decode(final Class targetClass, final Object val, final MappedField optionalExtraInfo) {
-        if (val == null) {
-            return null;
-        }
-
+    public Object decode(final Class targetClass, @NotNull final Object val, final MappedField optionalExtraInfo) {
         if (val instanceof ObjectId) {
             return val;
         }

@@ -36,7 +36,7 @@ public class GeometryShapeConverter extends TypeConverter<Geometry> implements S
     }
 
     @Override
-    public Geometry decode(final Class<Geometry> targetClass, final Object fromDBObject, final MappedField optionalExtraInfo) {
+    public Geometry decode(final Class<Geometry> targetClass, @NotNull final Object fromDBObject, final MappedField optionalExtraInfo) {
         return decodeObject((List) ((DBObject) fromDBObject).get("coordinates"), factories);
     }
 

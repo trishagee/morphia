@@ -24,7 +24,7 @@ public class NamedCoordinateReferenceSystemConverter extends TypeConverter<Coord
 
     @Override
     public CoordinateReferenceSystem decode(final Class<CoordinateReferenceSystem> targetClass,
-                                            final Object fromDBObject, final MappedField optionalExtraInfo) {
+                                            @NotNull final Object fromDBObject, final MappedField optionalExtraInfo) {
         throw new UnsupportedOperationException("We should never need to decode these");
     }
 

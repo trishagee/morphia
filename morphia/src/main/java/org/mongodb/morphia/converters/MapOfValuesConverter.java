@@ -15,12 +15,7 @@ import java.util.Map;
 public class MapOfValuesConverter extends TypeConverter<Map> {
     @Override
     @SuppressWarnings("unchecked")
-    public Map decode(final Class targetClass, final Object fromDBObject, final MappedField mf) {
-        if (fromDBObject == null) {
-            return null;
-        }
-
-
+    public Map decode(final Class targetClass, @NotNull final Object fromDBObject, final MappedField mf) {
         final Map values = getMapper().getOptions().getObjectFactory().createMap(mf);
         new IterHelper<Object, Object>().loopMap(fromDBObject, new MapIterCallback<Object, Object>() {
             @Override

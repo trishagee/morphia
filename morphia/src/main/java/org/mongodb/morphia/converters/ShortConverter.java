@@ -1,6 +1,7 @@
 package org.mongodb.morphia.converters;
 
 
+import org.jetbrains.annotations.NotNull;
 import org.mongodb.morphia.mapping.MappedField;
 
 import java.lang.reflect.Array;
@@ -20,11 +21,7 @@ public class ShortConverter extends TypeConverter implements SimpleValueConverte
     }
 
     @Override
-    public Object decode(final Class targetClass, final Object val, final MappedField optionalExtraInfo) {
-        if (val == null) {
-            return null;
-        }
-
+    public Object decode(final Class targetClass, @NotNull final Object val, final MappedField optionalExtraInfo) {
         if (val instanceof Short) {
             return val;
         }

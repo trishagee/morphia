@@ -1,6 +1,7 @@
 package org.mongodb.morphia.geo;
 
 import com.mongodb.DBObject;
+import org.jetbrains.annotations.NotNull;
 import org.mongodb.morphia.converters.SimpleValueConverter;
 import org.mongodb.morphia.converters.TypeConverter;
 import org.mongodb.morphia.mapping.MappedField;
@@ -21,7 +22,7 @@ public class GeometryConverter extends TypeConverter<Geometry> implements Simple
     }
 
     @Override
-    public Geometry decode(final Class<Geometry> targetClass, final Object fromDBObject, final MappedField
+    public Geometry decode(final Class<Geometry> targetClass, @NotNull final Object fromDBObject, final MappedField
             optionalExtraInfo) {
         DBObject dbObject = (DBObject) fromDBObject;
         String type = (String) dbObject.get("type");

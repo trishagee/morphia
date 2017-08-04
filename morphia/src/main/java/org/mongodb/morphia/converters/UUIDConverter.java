@@ -23,8 +23,8 @@ public class UUIDConverter extends TypeConverter implements SimpleValueConverter
     }
 
     @Override
-    public Object decode(final Class targetClass, final Object fromDBObject, final MappedField optionalExtraInfo) {
-        return fromDBObject == null ? null : UUID.fromString((String) fromDBObject);
+    public Object decode(final Class targetClass, @NotNull final Object fromDBObject, final MappedField optionalExtraInfo) {
+        return UUID.fromString((String) fromDBObject);
     }
 
     @Override

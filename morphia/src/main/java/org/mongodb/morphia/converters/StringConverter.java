@@ -1,6 +1,7 @@
 package org.mongodb.morphia.converters;
 
 
+import org.jetbrains.annotations.NotNull;
 import org.mongodb.morphia.mapping.MappedField;
 import org.mongodb.morphia.utils.ReflectionUtils;
 
@@ -20,11 +21,7 @@ public class StringConverter extends TypeConverter implements SimpleValueConvert
     }
 
     @Override
-    public Object decode(final Class targetClass, final Object fromDBObject, final MappedField optionalExtraInfo) {
-        if (fromDBObject == null) {
-            return null;
-        }
-
+    public Object decode(final Class targetClass, @NotNull final Object fromDBObject, final MappedField optionalExtraInfo) {
         if (targetClass.equals(fromDBObject.getClass())) {
             return fromDBObject;
         }

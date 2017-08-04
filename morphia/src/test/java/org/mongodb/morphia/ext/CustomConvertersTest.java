@@ -149,7 +149,7 @@ public class CustomConvertersTest extends TestBase {
         }
 
         @Override
-        public Object decode(final Class targetClass, final Object fromDBObject, final MappedField optionalExtraInfo) {
+        public Object decode(final Class targetClass, @NotNull final Object fromDBObject, final MappedField optionalExtraInfo) {
             if (fromDBObject == null) {
                 return null;
             }
@@ -265,7 +265,7 @@ public class CustomConvertersTest extends TestBase {
             }
 
             @Override
-            public ValueObject decode(final Class targetClass, final Object fromDBObject, final MappedField optionalExtraInfo) {
+            public ValueObject decode(final Class targetClass, @NotNull final Object fromDBObject, final MappedField optionalExtraInfo) {
                 if (fromDBObject == null) {
                     return null;
                 }
@@ -330,7 +330,7 @@ public class CustomConvertersTest extends TestBase {
         }
 
         @Override
-        public Object decode(final Class targetClass, final Object fromDBObject, final MappedField optionalExtraInfo) {
+        public Object decode(final Class targetClass, @NotNull final Object fromDBObject, final MappedField optionalExtraInfo) {
             try {
                 return new MimeType(((BasicDBObject) fromDBObject).getString("mimeType"));
             } catch (MimeTypeParseException ex) {
@@ -352,7 +352,7 @@ public class CustomConvertersTest extends TestBase {
         }
 
         @Override
-        public List decode(final Class<List> targetClass, final Object fromDBObject, final MappedField optionalExtraInfo) {
+        public List decode(final Class<List> targetClass, @NotNull final Object fromDBObject, final MappedField optionalExtraInfo) {
             if (fromDBObject != null) {
                 Map<String, Object> map = (Map<String, Object>) fromDBObject;
                 List<Object> list = new ArrayList<Object>(map.size());

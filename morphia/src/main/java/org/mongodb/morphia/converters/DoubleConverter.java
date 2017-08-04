@@ -1,6 +1,7 @@
 package org.mongodb.morphia.converters;
 
 
+import org.jetbrains.annotations.NotNull;
 import org.mongodb.morphia.mapping.MappedField;
 import org.mongodb.morphia.utils.ReflectionUtils;
 
@@ -21,11 +22,7 @@ public class DoubleConverter extends TypeConverter implements SimpleValueConvert
     }
 
     @Override
-    public Object decode(final Class targetClass, final Object val, final MappedField optionalExtraInfo) {
-        if (val == null) {
-            return null;
-        }
-
+    public Object decode(final Class targetClass, @NotNull final Object val, final MappedField optionalExtraInfo) {
         if (val instanceof Double) {
             return val;
         }

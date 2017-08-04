@@ -18,11 +18,7 @@ import static java.lang.String.format;
  */
 public class SerializedObjectConverter extends TypeConverter {
     @Override
-    public Object decode(final Class targetClass, final Object fromDBObject, final MappedField f) {
-        if (fromDBObject == null) {
-            return null;
-        }
-
+    public Object decode(final Class targetClass, @NotNull final Object fromDBObject, final MappedField f) {
         if (!((fromDBObject instanceof Binary) || (fromDBObject instanceof byte[]))) {
             throw new MappingException(format("The stored data is not a DBBinary or byte[] instance for %s ; it is a %s",
                                               f.getFullName(), fromDBObject.getClass().getName()));

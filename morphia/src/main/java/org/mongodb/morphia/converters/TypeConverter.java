@@ -31,6 +31,9 @@ public abstract class TypeConverter<T> {
      * @return the new instance
      */
     public final T decode(final Class<T> targetClass, final Object fromDBObject) {
+        if (fromDBObject == null) {
+            return null;
+        }
         return decode(targetClass, fromDBObject, null);
     }
 
@@ -44,7 +47,9 @@ public abstract class TypeConverter<T> {
      * @param optionalExtraInfo the MappedField that contains the metadata useful for decoding
      * @return the new instance
      */
-    public abstract T decode(Class<T> targetClass, Object fromDBObject, MappedField optionalExtraInfo);
+    public abstract T decode(Class<T> targetClass,
+                             @NotNull Object fromDBObject,
+                             MappedField optionalExtraInfo);
 
     /**
      * encode the type safe java object into the corresponding {@link com.mongodb.DBObject}

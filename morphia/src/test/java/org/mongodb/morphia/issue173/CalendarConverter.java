@@ -20,10 +20,7 @@ public class CalendarConverter extends TypeConverter implements SimpleValueConve
     }
 
     @Override
-    public Object decode(final Class type, final Object o, final MappedField mf) {
-        if (o == null) {
-            return null;
-        }
+    public Object decode(final Class type, @NotNull final Object o, final MappedField mf) {
         final List values = (List) o;
         if (values.size() < 2) {
             return null;

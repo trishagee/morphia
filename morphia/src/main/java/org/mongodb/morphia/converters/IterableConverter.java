@@ -24,8 +24,8 @@ import static java.lang.String.format;
 public class IterableConverter extends TypeConverter {
     @Override
     @SuppressWarnings("unchecked")
-    public Object decode(final Class targetClass, final Object fromDBObject, final MappedField mf) {
-        if (mf == null || fromDBObject == null) {
+    public Object decode(final Class targetClass, @NotNull final Object fromDBObject, final MappedField mf) {
+        if (mf == null) {
             return fromDBObject;
         }
 

@@ -21,7 +21,7 @@ public class TimestampConverter extends DateConverter {
     }
 
     @Override
-    public Date decode(final Class targetClass, final Object val, final MappedField optionalExtraInfo) {
+    public Date decode(final Class targetClass, @NotNull final Object val, final MappedField optionalExtraInfo) {
         final Date d = super.decode(targetClass, val, optionalExtraInfo);
         return new Timestamp(d.getTime());
     }

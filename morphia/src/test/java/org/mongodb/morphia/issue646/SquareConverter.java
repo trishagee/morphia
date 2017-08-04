@@ -12,11 +12,7 @@ public class SquareConverter extends TypeConverter implements SimpleValueConvert
     }
 
     @Override
-    public Object decode(final Class targetClass, final Object fromDBObject, final MappedField optionalExtraInfo) {
-        if (fromDBObject == null) {
-            return null;
-        }
-
+    public Object decode(final Class targetClass, @NotNull final Object fromDBObject, final MappedField optionalExtraInfo) {
         if (fromDBObject instanceof String) {
             return new Square();
         }

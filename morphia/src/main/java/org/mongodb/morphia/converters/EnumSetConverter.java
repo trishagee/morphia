@@ -24,11 +24,7 @@ public class EnumSetConverter extends TypeConverter implements SimpleValueConver
 
     @Override
     @SuppressWarnings("unchecked")
-    public Object decode(final Class targetClass, final Object fromDBObject, final MappedField optionalExtraInfo) {
-        if (fromDBObject == null) {
-            return null;
-        }
-
+    public Object decode(final Class targetClass, @NotNull final Object fromDBObject, final MappedField optionalExtraInfo) {
         final Class enumType = optionalExtraInfo.getSubClass();
 
         final List l = (List) fromDBObject;

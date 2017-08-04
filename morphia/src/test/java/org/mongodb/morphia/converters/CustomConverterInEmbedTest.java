@@ -115,7 +115,7 @@ public class CustomConverterInEmbedTest extends TestBase {
         }
 
         @Override
-        public Object decode(final Class targetClass, final Object fromDBObject, final MappedField optionalExtraInfo) {
+        public Object decode(final Class targetClass, @NotNull final Object fromDBObject, final MappedField optionalExtraInfo) {
             return new Foo((String) fromDBObject);
         }
 
@@ -214,7 +214,7 @@ public class CustomConverterInEmbedTest extends TestBase {
         }
 
         @Override
-        public Object decode(final Class targetClass, final Object fromDBObject, final MappedField optionalExtraInfo) {
+        public Object decode(final Class targetClass, @NotNull final Object fromDBObject, final MappedField optionalExtraInfo) {
             DBObject dbObject = (DBObject) fromDBObject;
             return new ComplexFoo((String) dbObject.get("first"), (String) dbObject.get("second"));
         }
@@ -240,7 +240,7 @@ public class CustomConverterInEmbedTest extends TestBase {
         }
 
         @Override
-        public Object decode(final Class targetClass, final Object fromDBObject, final MappedField optionalExtraInfo) {
+        public Object decode(final Class targetClass, @NotNull final Object fromDBObject, final MappedField optionalExtraInfo) {
             BasicDBList dbObject = (BasicDBList) fromDBObject;
             return new ArrayFoo((String) dbObject.get(1), (String) dbObject.get(2));
         }
