@@ -5,6 +5,8 @@ import org.jetbrains.annotations.NotNull;
 import org.mongodb.morphia.Key;
 import org.mongodb.morphia.mapping.MappedField;
 
+import java.util.Optional;
+
 /**
  * @author Uwe Schaefer, (us@thomas-daily.de)
  * @author scotthernandez
@@ -28,8 +30,8 @@ public class KeyConverter extends TypeConverter {
     }
 
     @Override
-    public Object encode(@NotNull final Object t, final MappedField optionalExtraInfo) {
-        return getMapper().keyToDBRef((Key) t);
+    public Optional<?> encode(@NotNull final Object t, final MappedField optionalExtraInfo) {
+        return Optional.ofNullable(getMapper().keyToDBRef((Key) t));
     }
 
 }

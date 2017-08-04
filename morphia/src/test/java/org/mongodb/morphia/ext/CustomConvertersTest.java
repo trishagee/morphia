@@ -46,6 +46,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -150,18 +151,15 @@ public class CustomConvertersTest extends TestBase {
 
         @Override
         public Object decode(final Class targetClass, @NotNull final Object fromDBObject, final MappedField optionalExtraInfo) {
-            if (fromDBObject == null) {
-                return null;
-            }
             final IntegerConverter intConverter = new IntegerConverter();
             final Integer i = (Integer) intConverter.decode(targetClass, fromDBObject, optionalExtraInfo);
             return (char) i.intValue();
         }
 
         @Override
-        public Object encode(@NotNull final Object value, final MappedField optionalExtraInfo) {
+        public Optional<?> encode(@NotNull final Object value, final MappedField optionalExtraInfo) {
             final Character c = (Character) value;
-            return (int) c.charValue();
+            return Optional.of((int) c);
         }
     }
 
@@ -266,21 +264,14 @@ public class CustomConvertersTest extends TestBase {
 
             @Override
             public ValueObject decode(final Class targetClass, @NotNull final Object fromDBObject, final MappedField optionalExtraInfo) {
-                if (fromDBObject == null) {
-                    return null;
-                }
                 return create((Long) fromDBObject);
             }
 
 
 
             @Override
-            public Long encode(@NotNull final ValueObject value, final MappedField optionalExtraInfo) {
-                if (value == null) {
-                    return null;
-                }
-                final ValueObject source = (ValueObject) value;
-                return source.value;
+            public Optional<?> encode(@NotNull final ValueObject value, final MappedField optionalExtraInfo) {
+                return Optional.of(value.value);
             }
 
         }
@@ -324,13 +315,14 @@ public class CustomConvertersTest extends TestBase {
         private javax.activation.MimeType mimeType;
     }
 
-    public static class MimeTypeConverter extends TypeConverter {
+    public static class MimeTypeConverter extends TypeConverter<MimeType> {
         public MimeTypeConverter() {
             super(MimeType.class);
         }
 
         @Override
-        public Object decode(final Class targetClass, @NotNull final Object fromDBObject, final MappedField optionalExtraInfo) {
+        public MimeType decode(final Class targetClass, @NotNull final Object fromDBObject,
+                               final MappedField optionalExtraInfo) {
             try {
                 return new MimeType(((BasicDBObject) fromDBObject).getString("mimeType"));
             } catch (MimeTypeParseException ex) {
@@ -339,8 +331,9 @@ public class CustomConvertersTest extends TestBase {
         }
 
         @Override
-        public Object encode(@NotNull final Object value, final MappedField optionalExtraInfo) {
-            return ((MimeType) value).getBaseType();
+        public Optional<?> encode(@NotNull final MimeType value, final MappedField
+                optionalExtraInfo) {
+            return Optional.of(value.getBaseType());
         }
     }
 
@@ -353,26 +346,22 @@ public class CustomConvertersTest extends TestBase {
 
         @Override
         public List decode(final Class<List> targetClass, @NotNull final Object fromDBObject, final MappedField optionalExtraInfo) {
-            if (fromDBObject != null) {
-                Map<String, Object> map = (Map<String, Object>) fromDBObject;
-                List<Object> list = new ArrayList<Object>(map.size());
-                for (Entry<String, Object> entry : map.entrySet()) {
-                    list.add(Integer.parseInt(entry.getKey()), entry.getValue());
-                }
-
-                return list;
+            Map<String, Object> map = (Map<String, Object>) fromDBObject;
+            List<Object> list = new ArrayList<>(map.size());
+            for (Entry<String, Object> entry : map.entrySet()) {
+                list.add(Integer.parseInt(entry.getKey()), entry.getValue());
             }
-            return null;
+            return list;
         }
 
         @Override
-        public Object encode(@NotNull final List value, final MappedField optionalExtraInfo) {
+        public Optional<Map> encode(@NotNull final List value, final MappedField optionalExtraInfo) {
             Map<String, Object> map = new LinkedHashMap<String, Object>();
             List<Object> list = (List<Object>) value;
             for (int i = 0; i < list.size(); i++) {
                 map.put(i + "", list.get(i));
             }
-            return map;
+            return Optional.of(map);
         }
     }
 }

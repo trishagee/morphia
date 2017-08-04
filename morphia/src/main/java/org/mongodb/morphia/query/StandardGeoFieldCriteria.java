@@ -1,11 +1,14 @@
 package org.mongodb.morphia.query;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.BasicDBObjectBuilder;
 import com.mongodb.DBObject;
 import org.mongodb.morphia.geo.CoordinateReferenceSystem;
 import org.mongodb.morphia.geo.Geometry;
 import org.mongodb.morphia.geo.GeometryQueryConverter;
 import org.mongodb.morphia.geo.NamedCoordinateReferenceSystemConverter;
+
+import java.util.Optional;
 
 import static org.mongodb.morphia.query.FilterOperator.NEAR;
 
@@ -15,7 +18,7 @@ import static org.mongodb.morphia.query.FilterOperator.NEAR;
  */
 class StandardGeoFieldCriteria extends FieldCriteria {
     private final Integer maxDistanceMeters;
-    private final DBObject geometryAsDBObject;
+    private DBObject geometryAsDBObject;
     private CoordinateReferenceSystem crs;
 
     protected StandardGeoFieldCriteria(final QueryImpl<?> query, final String field, final FilterOperator operator, final Geometry value,
@@ -30,7 +33,8 @@ class StandardGeoFieldCriteria extends FieldCriteria {
         super(query, field, operator, value, validateNames, validateTypes);
         this.maxDistanceMeters = maxDistanceMeters;
         GeometryQueryConverter geometryQueryConverter = new GeometryQueryConverter(query.getDatastore().getMapper());
-        geometryAsDBObject = (DBObject) geometryQueryConverter.encode(value, null);
+        Optional<BasicDBObject> encodedQuery = geometryQueryConverter.encode(value, null);
+        encodedQuery.ifPresent(basicDBObject -> geometryAsDBObject = basicDBObject);
     }
 
     @Override
@@ -49,7 +53,9 @@ class StandardGeoFieldCriteria extends FieldCriteria {
             case INTERSECTS:
                 query = BasicDBObjectBuilder.start(operator.val(), geometryAsDBObject);
                 if (crs != null) {
-                    ((DBObject) geometryAsDBObject.get("$geometry")).put("crs", new NamedCoordinateReferenceSystemConverter().encode(crs));
+                    ((DBObject) geometryAsDBObject.get("$geometry"))
+                            .put("crs", new NamedCoordinateReferenceSystemConverter()
+                                    .encode(crs).orElse(null));
                 }
                 break;
             default:

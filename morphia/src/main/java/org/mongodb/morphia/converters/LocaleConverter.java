@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import org.mongodb.morphia.mapping.MappedField;
 
 import java.util.Locale;
+import java.util.Optional;
 
 /**
  * Converts a Locale to/from a valid database structure.
@@ -20,15 +21,7 @@ public class LocaleConverter extends TypeConverter<Locale> implements SimpleValu
     @Override
     public Locale decode(final Class<Locale> targetClass,
                          @NotNull final Object fromDBObject, final MappedField optionalExtraInfo) {
-        return parseLocale(fromDBObject.toString());
-    }
-
-    @Override
-    public Object encode(@NotNull final Locale val, final MappedField optionalExtraInfo) {
-        return val.toString();
-    }
-
-    Locale parseLocale(final String localeString) {
+        final String localeString = fromDBObject.toString();
         if ((localeString != null) && (localeString.length() != 0)) {
             final int index = localeString.indexOf("_");
             final int index2 = localeString.indexOf("_", index + 1);
@@ -49,4 +42,10 @@ public class LocaleConverter extends TypeConverter<Locale> implements SimpleValu
 
         return null;
     }
+
+    @Override
+    public Optional<String> encode(@NotNull final Locale val, final MappedField optionalExtraInfo) {
+        return Optional.of(val.toString());
+    }
+
 }

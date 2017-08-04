@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import static java.lang.String.format;
 
@@ -73,12 +74,12 @@ public class IterableConverter extends TypeConverter {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Object encode(@NotNull final Object value, final MappedField mf) {
+    public Optional<?> encode(@NotNull final Object value, final MappedField mf) {
         final Iterable<?> iterableValues;
 
         if (value.getClass().isArray()) {
             if (Array.getLength(value) == 0 || value.getClass().getComponentType().isPrimitive()) {
-                return value;
+                return Optional.of(value);
             }
 
             iterableValues = Arrays.asList((Object[]) value);
@@ -101,7 +102,11 @@ public class IterableConverter extends TypeConverter {
                 values.add(getMapper().getConverters().encode(o));
             }
         }
-        return !values.isEmpty() || getMapper().getOptions().isStoreEmpties() ? values : null;
+        if (!values.isEmpty() || getMapper().getOptions().isStoreEmpties()) {
+            return Optional.of(values);
+        } else {
+            return Optional.empty();
+        }
     }
 
     @Override

@@ -11,6 +11,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Optional;
 import java.util.TimeZone;
 
 
@@ -39,7 +40,7 @@ public class CalendarConverter extends TypeConverter implements SimpleValueConve
     }
 
     @Override
-    public Object encode(@NotNull final Object val, final MappedField optionalExtraInfo) {
+    public Optional<List> encode(@NotNull final Object val, final MappedField optionalExtraInfo) {
         final Calendar calendar = (Calendar) val;
         final long millis = calendar.getTimeInMillis();
         // . a date so that we can see it clearly in MongoVue
@@ -50,6 +51,6 @@ public class CalendarConverter extends TypeConverter implements SimpleValueConve
         final List<Object> values = new ArrayList<Object>();
         values.add(utcDate);
         values.add(calendar.getTimeZone().getID());
-        return values;
+        return Optional.of(values);
     }
 }

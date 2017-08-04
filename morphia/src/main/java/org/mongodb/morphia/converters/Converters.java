@@ -113,7 +113,8 @@ public abstract class Converters {
         if (o == null) {
             return null;
         }
-        return getEncoder(c).encode(o);
+        TypeConverter typeConverter = getEncoder(c);
+        return typeConverter.encode(o).orElse(null);
     }
 
     /**
@@ -236,7 +237,8 @@ public abstract class Converters {
         final Object fieldValue = mf.getFieldValue(containingObject);
         final TypeConverter enc = getEncoder(fieldValue, mf);
 
-        Object encoded = fieldValue != null ? enc.encode(fieldValue, mf) : null;
+        Object encoded;
+        encoded = fieldValue != null ? enc.encode(fieldValue, mf).orElse(null) : null;
         if (encoded != null || opts.isStoreNulls()) {
             dbObj.put(mf.getNameToStore(), encoded);
         }

@@ -1,6 +1,5 @@
 package org.mongodb.morphia.ext;
 
-
 import com.mongodb.DBObject;
 import org.bson.types.ObjectId;
 import org.jetbrains.annotations.NotNull;
@@ -13,6 +12,7 @@ import org.mongodb.morphia.converters.SimpleValueConverter;
 import org.mongodb.morphia.converters.TypeConverter;
 import org.mongodb.morphia.mapping.MappedField;
 
+import java.util.Optional;
 
 /**
  * Example converter which stores the enum value instead of string (name)
@@ -35,20 +35,19 @@ public class EnumValueConverterTest extends TestBase {
 
     }
 
-    private static class AEnumConverter extends TypeConverter implements SimpleValueConverter {
-
+    private static class AEnumConverter extends TypeConverter<AEnum> implements SimpleValueConverter {
         public AEnumConverter() {
             super(AEnum.class);
         }
 
         @Override
-        public Object decode(final Class targetClass, @NotNull final Object fromDBObject, final MappedField optionalExtraInfo) {
+        public AEnum decode(final Class targetClass, @NotNull final Object fromDBObject, final MappedField optionalExtraInfo) {
             return AEnum.values()[(Integer) fromDBObject];
         }
 
         @Override
-        public Object encode(@NotNull final Object value, final MappedField optionalExtraInfo) {
-            return ((Enum) value).ordinal();
+        public Optional<?> encode(@NotNull final AEnum value, final MappedField optionalExtraInfo) {
+            return Optional.of(value.ordinal());
         }
     }
 

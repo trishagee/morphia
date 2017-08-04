@@ -8,6 +8,7 @@ import static org.junit.Assert.assertThat;
 import static org.mongodb.morphia.geo.GeoJson.lineString;
 import static org.mongodb.morphia.geo.GeoJson.point;
 
+@SuppressWarnings("ConstantConditions")
 public class GeometryShapeConverterTest extends TestBase {
     @Test
     public void shouldConvertAnEntityWithAPolygonGeoJsonType() {
@@ -19,7 +20,7 @@ public class GeometryShapeConverterTest extends TestBase {
                                           lineString(point(2.2, 2.1), point(2.4, 1.9), point(2.4, 1.7), point(2.1, 1.8), point(2.2, 2.1)));
 
         // when
-        Object encodedPolygon = converter.encode(polygon);
+        Object encodedPolygon = converter.encode(polygon).get();
 
         // then
         assertThat(encodedPolygon.toString(), JSONMatcher.jsonEqual("  {"
@@ -54,7 +55,7 @@ public class GeometryShapeConverterTest extends TestBase {
         Point point = point(3.0, 7.0);
 
         // when
-        Object dbObject = pointConverter.encode(point, null);
+        Object dbObject = pointConverter.encode(point, null).get();
 
 
         // then
@@ -76,7 +77,7 @@ public class GeometryShapeConverterTest extends TestBase {
                                                                              point(1.5, 2.0)));
 
         // when
-        Object encoded = converter.encode(multiLineString);
+        Object encoded = converter.encode(multiLineString).get();
 
         // then
         assertThat(encoded.toString(), JSONMatcher.jsonEqual("  {"
@@ -111,7 +112,7 @@ public class GeometryShapeConverterTest extends TestBase {
                                                          polygonWithHoles);
 
         // when
-        Object encoded = converter.encode(multiPolygon);
+        Object encoded = converter.encode(multiPolygon).get();
 
         // then
         assertThat(encoded.toString(), JSONMatcher.jsonEqual("  {"
@@ -151,7 +152,7 @@ public class GeometryShapeConverterTest extends TestBase {
         LineString lineString = lineString(point(1, 2), point(3, 5), point(19, 13));
 
         // when
-        Object encodedLineString = converter.encode(lineString);
+        Object encodedLineString = converter.encode(lineString).get();
 
         // then
         assertThat(encodedLineString.toString(), JSONMatcher.jsonEqual("  {"

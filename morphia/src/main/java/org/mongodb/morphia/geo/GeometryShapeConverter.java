@@ -10,6 +10,7 @@ import org.mongodb.morphia.mapping.MappedField;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.mongodb.morphia.geo.GeoJsonType.LINE_STRING;
 import static org.mongodb.morphia.geo.GeoJsonType.MULTI_LINE_STRING;
@@ -41,10 +42,10 @@ public class GeometryShapeConverter extends TypeConverter<Geometry> implements S
     }
 
     @Override
-    public Object encode(@NotNull final Geometry value, final MappedField optionalExtraInfo) {
+    public Optional<?> encode(@NotNull final Geometry value, final MappedField optionalExtraInfo) {
         Object encodedObjects = encodeObjects(((Geometry) value).getCoordinates());
-        return new BasicDBObject("type", geoJsonType.getType())
-                   .append("coordinates", encodedObjects);
+        return Optional.of(new BasicDBObject("type", geoJsonType.getType())
+                                   .append("coordinates", encodedObjects));
     }
 
     /*

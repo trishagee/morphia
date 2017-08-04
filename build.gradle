@@ -40,8 +40,6 @@ configure(subprojects.findAll { it.name != 'util' }) {
     apply plugin: 'optional-base'
 
     group = 'org.mongodb.morphia'
-    sourceCompatibility = JavaVersion.VERSION_1_6
-    targetCompatibility = JavaVersion.VERSION_1_6
 
     evaluationDependsOn(':util')
 

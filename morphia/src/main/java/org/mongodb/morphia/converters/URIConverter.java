@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import org.mongodb.morphia.mapping.MappedField;
 
 import java.net.URI;
+import java.util.Optional;
 
 
 /**
@@ -29,7 +30,7 @@ public class URIConverter extends TypeConverter implements SimpleValueConverter 
     }
 
     @Override
-    public String encode(@NotNull final Object uri, final MappedField optionalExtraInfo) {
-        return uri.toString().replace(".", "%46");
+    public Optional<?> encode(@NotNull final Object uri, final MappedField optionalExtraInfo) {
+        return Optional.of(uri.toString().replace(".", "%46"));
     }
 }

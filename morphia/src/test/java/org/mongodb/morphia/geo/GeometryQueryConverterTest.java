@@ -1,5 +1,6 @@
 package org.mongodb.morphia.geo;
 
+import com.mongodb.BasicDBObject;
 import org.junit.Test;
 import org.mongodb.morphia.TestBase;
 import org.mongodb.morphia.testutil.JSONMatcher;
@@ -8,6 +9,7 @@ import static org.junit.Assert.assertThat;
 import static org.mongodb.morphia.geo.GeoJson.point;
 
 public class GeometryQueryConverterTest extends TestBase {
+    @SuppressWarnings("ConstantConditions")
     @Test
     public void shouldCorrectlyEncodePointsIntoQueryDocument() {
         // given
@@ -17,7 +19,7 @@ public class GeometryQueryConverterTest extends TestBase {
         Point point = point(3.0, 7.0);
 
         // when
-        Object dbObject = geometryConverter.encode(point);
+        BasicDBObject dbObject = (BasicDBObject) geometryConverter.encode(point).get();
 
 
         // then
