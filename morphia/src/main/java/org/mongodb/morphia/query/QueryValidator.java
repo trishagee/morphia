@@ -46,14 +46,14 @@ final class QueryValidator {
                                      final StringBuilder origProp, final FilterOperator op,
                                      final Object val, final boolean validateNames,
                                      final boolean validateTypes) {
+        if (clazz == null) {
+            return null;
+        }
         Optional<MappedField> mf = Optional.empty();
         final String propertyName = origProp.toString();
         boolean hasTranslations = false;
 
         if (!isOperator(propertyName)) {
-            if (clazz == null) {
-                return null;
-            }
             final String[] parts = propertyName.split("\\.");
 
             MappedClass mc = mapper.getMappedClass(clazz);
