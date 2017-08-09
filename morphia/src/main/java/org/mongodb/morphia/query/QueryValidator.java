@@ -55,17 +55,21 @@ final class QueryValidator {
 
         if (!isOperator(propertyName)) {
             final String[] parts = propertyName.split("\\.");
-
             MappedClass mc = mapper.getMappedClass(clazz);
+
             int i = 0;
             while (i < parts.length) {
                 final String part = parts[i];
                 boolean fieldIsArrayOperator = part.equals("$");
+                if (fieldIsArrayOperator) {
+                    i++;
+                    continue;
+                }
 
                 mf = mc.getMappedField(part);
 
                 //translate from java field name to stored field name
-                if (!mf.isPresent() && !fieldIsArrayOperator) {
+                if (!mf.isPresent()) {
                     mf = mc.getMappedFieldByJavaField(part);
                     if (validateNames && !mf.isPresent()) {
                         throw new ValidationException(format("The field '%s' could not be found in '%s' while validating - %s; if you wish to continue please disable validation.", part, mc.getClazz().getName(), propertyName));
@@ -86,21 +90,19 @@ final class QueryValidator {
                     break;
                 }
 
-                if (!fieldIsArrayOperator) {
-                    //catch people trying to search/update into @Reference/@Serialized fields
-                    if (validateNames && !canQueryPast(mf.get())) {
-                        throw new ValidationException(format("Cannot use dot-notation past '%s' in '%s'; found while validating - %s", part, mc.getClazz().getName(), propertyName));
-                    }
-
-                    if (!mf.isPresent() && mc.isInterface()) {
-                        break;
-                    } else if (!mf.isPresent()) {
-                        throw new ValidationException(format("The field '%s' could not be found in '%s'", propertyName, mc.getClazz().getName()));
-                    }
-                    //get the next MappedClass for the next field validation
-                    MappedField mappedField = mf.get();
-                    mc = mapper.getMappedClass((mappedField.isSingleValue()) ? mappedField.getType() : mappedField.getSubClass());
+                //catch people trying to search/update into @Reference/@Serialized fields
+                if (validateNames && !canQueryPast(mf.get())) {
+                    throw new ValidationException(format("Cannot use dot-notation past '%s' in '%s'; found while validating - %s", part, mc.getClazz().getName(), propertyName));
                 }
+
+                if (!mf.isPresent() && mc.isInterface()) {
+                    break;
+                } else if (!mf.isPresent()) {
+                    throw new ValidationException(format("The field '%s' could not be found in '%s'", propertyName, mc.getClazz().getName()));
+                }
+                //get the next MappedClass for the next field validation
+                MappedField mappedField = mf.get();
+                mc = mapper.getMappedClass((mappedField.isSingleValue()) ? mappedField.getType() : mappedField.getSubClass());
             }
 
             //record new property string if there has been a translation to any part
