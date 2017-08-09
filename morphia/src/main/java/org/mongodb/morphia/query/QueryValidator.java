@@ -1,6 +1,7 @@
 package org.mongodb.morphia.query;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.mongodb.morphia.annotations.Serialized;
 import org.mongodb.morphia.logging.Logger;
 import org.mongodb.morphia.logging.MorphiaLoggerFactory;
@@ -40,22 +41,24 @@ final class QueryValidator {
     /**
      * Validate the path, and value type, returning the mapped field for the field at the path
      */
-    static MappedField validateQuery(final Class clazz, final Mapper mapper, final StringBuilder origProp, final FilterOperator op,
-                                     final Object val, final boolean validateNames, final boolean validateTypes) {
+    @Nullable
+    static MappedField validateQuery(@Nullable final Class clazz, final Mapper mapper,
+                                     final StringBuilder origProp, final FilterOperator op,
+                                     final Object val, final boolean validateNames,
+                                     final boolean validateTypes) {
         Optional<MappedField> mf = Optional.empty();
-        final String prop = origProp.toString();
+        final String propertyName = origProp.toString();
         boolean hasTranslations = false;
 
-        if (!origProp.substring(0, 1).equals("$")) {
-            final String[] parts = prop.split("\\.");
+        if (!isOperator(propertyName)) {
             if (clazz == null) {
                 return null;
             }
+            final String[] parts = propertyName.split("\\.");
 
             MappedClass mc = mapper.getMappedClass(clazz);
-            //CHECKSTYLE:OFF
-            for (int i = 0; ; ) {
-                //CHECKSTYLE:ON
+            int i = 0;
+            while (i < parts.length) {
                 final String part = parts[i];
                 boolean fieldIsArrayOperator = part.equals("$");
 
@@ -65,10 +68,7 @@ final class QueryValidator {
                 if (!mf.isPresent() && !fieldIsArrayOperator) {
                     mf = mc.getMappedFieldByJavaField(part);
                     if (validateNames && !mf.isPresent()) {
-                        throw new ValidationException(format("The field '%s' could not be found in '%s' while validating - %s; if "
-                                                             + "you wish to continue please disable validation.", part,
-                                                             mc.getClazz().getName(), prop
-                                                            ));
+                        throw new ValidationException(format("The field '%s' could not be found in '%s' while validating - %s; if you wish to continue please disable validation.", part, mc.getClazz().getName(), propertyName));
                     }
                     hasTranslations = true;
                     if (mf.isPresent()) {
@@ -89,14 +89,13 @@ final class QueryValidator {
                 if (!fieldIsArrayOperator) {
                     //catch people trying to search/update into @Reference/@Serialized fields
                     if (validateNames && !canQueryPast(mf.get())) {
-                        throw new ValidationException(format("Cannot use dot-notation past '%s' in '%s'; found while"
-                                                             + " validating - %s", part, mc.getClazz().getName(), prop));
+                        throw new ValidationException(format("Cannot use dot-notation past '%s' in '%s'; found while validating - %s", part, mc.getClazz().getName(), propertyName));
                     }
 
                     if (!mf.isPresent() && mc.isInterface()) {
                         break;
                     } else if (!mf.isPresent()) {
-                        throw new ValidationException(format("The field '%s' could not be found in '%s'", prop, mc.getClazz().getName()));
+                        throw new ValidationException(format("The field '%s' could not be found in '%s'", propertyName, mc.getClazz().getName()));
                     }
                     //get the next MappedClass for the next field validation
                     MappedField mappedField = mf.get();
@@ -108,9 +107,9 @@ final class QueryValidator {
             if (hasTranslations) {
                 origProp.setLength(0); // clear existing content
                 origProp.append(parts[0]);
-                for (int i = 1; i < parts.length; i++) {
+                for (int j = 1; j < parts.length; j++) {
                     origProp.append('.');
-                    origProp.append(parts[i]);
+                    origProp.append(parts[j]);
                 }
             }
 
@@ -136,6 +135,10 @@ final class QueryValidator {
             }
         }
         return mf.orElse(null);
+    }
+
+    private static boolean isOperator(String origProp) {
+        return origProp.substring(0, 1).equals("$");
     }
 
     private static boolean canQueryPast(@NotNull final MappedField mf) {
