@@ -80,12 +80,12 @@ final class QueryValidator {
                     }
                 }
 
-                i++;
                 if (mf.isPresent() && mf.get().isMap()) {
                     //skip the map key validation, and move to the next part
-                    i++;
+                    i += 2;
                     continue;
                 }
+                i++;
 
                 if (i >= parts.length) {
                     continue;
