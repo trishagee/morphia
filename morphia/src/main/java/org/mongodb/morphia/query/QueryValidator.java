@@ -31,6 +31,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static java.lang.String.format;
+import static java.util.Arrays.stream;
+import static java.util.stream.Collectors.joining;
 
 final class QueryValidator {
     private static final Logger LOG = MorphiaLoggerFactory.get(QueryValidator.class);
@@ -51,7 +53,6 @@ final class QueryValidator {
         }
         final String propertyName = origProp.toString();
         Optional<MappedField> mf = Optional.empty();
-        boolean hasTranslations = false;
 
         if (!isOperator(propertyName)) {
             final String[] parts = propertyName.split("\\.");
@@ -74,7 +75,6 @@ final class QueryValidator {
                     if (validateNames && !mf.isPresent()) {
                         throw new ValidationException(format("The field '%s' could not be found in '%s' while validating - %s; if you wish to continue please disable validation.", fieldName, mc.getClazz().getName(), propertyName));
                     }
-                    hasTranslations = true;
                     if (mf.isPresent()) {
                         parts[i] = mf.get().getNameToStore();
                     }
@@ -106,15 +106,10 @@ final class QueryValidator {
                 mc = mapper.getMappedClass((mappedField.isSingleValue()) ? mappedField.getType() : mappedField.getSubClass());
             }
 
-            //record new property string if there has been a translation to any part
-            if (hasTranslations) {
-                origProp.setLength(0); // clear existing content
-                origProp.append(parts[0]);
-                for (int j = 1; j < parts.length; j++) {
-                    origProp.append('.');
-                    origProp.append(parts[j]);
-                }
-            }
+            // NASTY: Using a parameter as an output. Setting the StringBuffer to include any
+            // translations, e.g. MongoDB property names vs Java property names
+            origProp.setLength(0); // clear existing content
+            origProp.append(stream(parts).collect(joining(".")));
 
             if (validateTypes && mf.isPresent()) {
                 MappedField mappedField = mf.get();
