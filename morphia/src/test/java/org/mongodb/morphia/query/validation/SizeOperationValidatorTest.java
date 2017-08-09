@@ -21,8 +21,8 @@ public class SizeOperationValidatorTest {
     public void shouldAllowSizeOperatorForArrayListTypesAndIntegerValues() {
         // given
         MappedClass mappedClass = new MappedClass(EntityWithListsAndArrays.class, new Mapper());
-        MappedField mappedField = mappedClass.getMappedField("arrayListOfIntegers");
-        List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
+        MappedField mappedField = mappedClass.getMappedField("arrayListOfIntegers").orElse(null);
+        List<ValidationFailure> validationFailures = new ArrayList<>();
 
         // when
         boolean validationApplied = SizeOperationValidator.getInstance().apply(mappedField, SIZE, 3, validationFailures);
@@ -36,8 +36,8 @@ public class SizeOperationValidatorTest {
     public void shouldAllowSizeOperatorForArrayTypeAndIntValues() {
         // given
         MappedClass mappedClass = new MappedClass(EntityWithListsAndArrays.class, new Mapper());
-        MappedField mappedField = mappedClass.getMappedField("arrayOfInts");
-        List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
+        MappedField mappedField = mappedClass.getMappedField("arrayOfInts").orElse(null);
+        List<ValidationFailure> validationFailures = new ArrayList<>();
 
         // when
         boolean validationApplied = SizeOperationValidator.getInstance().apply(mappedField, SIZE, 3, validationFailures);
@@ -51,8 +51,8 @@ public class SizeOperationValidatorTest {
     public void shouldAllowSizeOperatorForArrayTypeAndLongValues() {
         // given
         MappedClass mappedClass = new MappedClass(EntityWithListsAndArrays.class, new Mapper());
-        MappedField mappedField = mappedClass.getMappedField("arrayOfInts");
-        List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
+        MappedField mappedField = mappedClass.getMappedField("arrayOfInts").orElse(null);
+        List<ValidationFailure> validationFailures = new ArrayList<>();
 
         // when
         boolean validationApplied = SizeOperationValidator.getInstance().apply(mappedField, SIZE, 3L, validationFailures);
@@ -66,8 +66,8 @@ public class SizeOperationValidatorTest {
     public void shouldAllowSizeOperatorForIterableTypesAndIntegerValues() {
         // given
         MappedClass mappedClass = new MappedClass(EntityWithListsAndArrays.class, new Mapper());
-        MappedField mappedField = mappedClass.getMappedField("setOfIntegers");
-        List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
+        MappedField mappedField = mappedClass.getMappedField("setOfIntegers").orElse(null);
+        List<ValidationFailure> validationFailures = new ArrayList<>();
 
         // when
         boolean validationApplied = SizeOperationValidator.getInstance().apply(mappedField, SIZE, 3, validationFailures);
@@ -81,8 +81,8 @@ public class SizeOperationValidatorTest {
     public void shouldAllowSizeOperatorForListTypesAndIntValues() {
         // given
         MappedClass mappedClass = new MappedClass(EntityWithListsAndArrays.class, new Mapper());
-        MappedField mappedField = mappedClass.getMappedField("listOfIntegers");
-        List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
+        MappedField mappedField = mappedClass.getMappedField("listOfIntegers").orElse(null);
+        List<ValidationFailure> validationFailures = new ArrayList<>();
 
         // when
         boolean validationApplied = SizeOperationValidator.getInstance().apply(mappedField, SIZE, 3, validationFailures);
@@ -96,8 +96,8 @@ public class SizeOperationValidatorTest {
     public void shouldAllowSizeOperatorForListTypesAndLongValues() {
         // given
         MappedClass mappedClass = new MappedClass(EntityWithListsAndArrays.class, new Mapper());
-        MappedField mappedField = mappedClass.getMappedField("listOfIntegers");
-        List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
+        MappedField mappedField = mappedClass.getMappedField("listOfIntegers").orElse(null);
+        List<ValidationFailure> validationFailures = new ArrayList<>();
 
         // when
         boolean validationApplied = SizeOperationValidator.getInstance().apply(mappedField, SIZE, 3L, validationFailures);
@@ -111,8 +111,8 @@ public class SizeOperationValidatorTest {
     public void shouldContainValidationFailuresForBothErrorsWhenTypeIsWrongAndValueIsWrong() {
         // given
         MappedClass mappedClass = new MappedClass(EntityWithListsAndArrays.class, new Mapper());
-        MappedField mappedField = mappedClass.getMappedField("notAnArrayOrList");
-        List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
+        MappedField mappedField = mappedClass.getMappedField("notAnArrayOrList").orElse(null);
+        List<ValidationFailure> validationFailures = new ArrayList<>();
 
         // when
         boolean validationApplied = SizeOperationValidator.getInstance().apply(mappedField, SIZE, "value", validationFailures);
@@ -126,8 +126,8 @@ public class SizeOperationValidatorTest {
     public void shouldNotApplyValidationToOperatorThatIsNotSize() {
         // given
         MappedClass mappedClass = new MappedClass(EntityWithListsAndArrays.class, new Mapper());
-        MappedField mappedField = mappedClass.getMappedField("list");
-        List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
+        MappedField mappedField = mappedClass.getMappedField("list").orElse(null);
+        List<ValidationFailure> validationFailures = new ArrayList<>();
 
         // when
         boolean validationApplied = SizeOperationValidator.getInstance().apply(mappedField, EQUAL, 1, validationFailures);
@@ -141,8 +141,8 @@ public class SizeOperationValidatorTest {
     public void shouldRejectSizeOperatorForNonIntegerValues() {
         // given
         MappedClass mappedClass = new MappedClass(EntityWithListsAndArrays.class, new Mapper());
-        MappedField mappedField = mappedClass.getMappedField("listOfStrings");
-        List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
+        MappedField mappedField = mappedClass.getMappedField("listOfStrings").orElse(null);
+        List<ValidationFailure> validationFailures = new ArrayList<>();
 
         // when
         boolean validationApplied = SizeOperationValidator.getInstance().apply(mappedField, SIZE, "value", validationFailures);
@@ -157,8 +157,8 @@ public class SizeOperationValidatorTest {
     public void shouldRejectSizeOperatorForNonListTypes() {
         // given
         MappedClass mappedClass = new MappedClass(EntityWithListsAndArrays.class, new Mapper());
-        MappedField mappedField = mappedClass.getMappedField("notAnArrayOrList");
-        List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
+        MappedField mappedField = mappedClass.getMappedField("notAnArrayOrList").orElse(null);
+        List<ValidationFailure> validationFailures = new ArrayList<>();
 
         // when
         boolean validationApplied = SizeOperationValidator.getInstance().apply(mappedField, SIZE, 3, validationFailures);

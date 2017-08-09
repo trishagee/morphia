@@ -82,7 +82,7 @@ public class IgnoreFieldsAnnotationTest extends TestBase {
             final IgnoreFields ignores = (IgnoreFields) mc.getAnnotation(IgnoreFields.class);
             if (ignores != null) {
                 for (final String field : ignores.value().split(",")) {
-                    final MappedField mf = mc.getMappedFieldByJavaField(field);
+                    final MappedField mf = mc.getMappedFieldByJavaField(field).get();
                     mc.getPersistenceFields().remove(mf);
                 }
             }

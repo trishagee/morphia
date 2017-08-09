@@ -28,6 +28,7 @@ import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -94,10 +95,10 @@ public class ExternalMapperExtTest extends TestBase {
             //copy the fields.
             for (final MappedField mf : sourceMC.getPersistenceFields()) {
                 final Map<Class<? extends Annotation>, Annotation> annMap = mf.getAnnotations();
-                final MappedField destMF = destMC.getMappedFieldByJavaField(mf.getJavaFieldName());
-                if (destMF != null && annMap != null && !annMap.isEmpty()) {
+                final Optional<MappedField> destMF = destMC.getMappedFieldByJavaField(mf.getJavaFieldName());
+                if (destMF.isPresent() && annMap != null && !annMap.isEmpty()) {
                     for (final Entry<Class<? extends Annotation>, Annotation> e : annMap.entrySet()) {
-                        destMF.addAnnotation(e.getKey(), e.getValue());
+                        destMF.get().addAnnotation(e.getKey(), e.getValue());
                     }
                 }
             }

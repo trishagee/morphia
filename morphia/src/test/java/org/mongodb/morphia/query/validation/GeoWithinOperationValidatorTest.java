@@ -7,7 +7,7 @@ import org.mongodb.morphia.mapping.MappedField;
 import org.mongodb.morphia.mapping.Mapper;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.containsString;
@@ -22,7 +22,9 @@ public class GeoWithinOperationValidatorTest {
         // given
         List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
         MappedClass mappedClass = new MappedClass(GeoEntity.class, new Mapper());
-        MappedField mappedField = mappedClass.getMappedField("list");
+        MappedField mappedField = mappedClass.getMappedField("list").orElse(null);
+
+        // expect
         assertThat(GeoWithinOperationValidator.getInstance().apply(mappedField, GEO_WITHIN, new BasicDBObject("$box", 1),
                                                                    validationFailures), is(true));
     }
@@ -32,9 +34,9 @@ public class GeoWithinOperationValidatorTest {
         // given
         List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
         MappedClass mappedClass = new MappedClass(GeoEntity.class, new Mapper());
-        MappedField mappedField = mappedClass.getMappedField("array");
+        MappedField mappedField = mappedClass.getMappedField("array").orElse(null);
 
-        // when
+        // expect
         assertThat(GeoWithinOperationValidator.getInstance().apply(mappedField, GEO_WITHIN, new BasicDBObject("$box", 1),
                                                                    validationFailures), is(true));
     }
@@ -57,7 +59,7 @@ public class GeoWithinOperationValidatorTest {
         // given
         List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
         MappedClass mappedClass = new MappedClass(InvalidGeoEntity.class, new Mapper());
-        MappedField mappedField = mappedClass.getMappedField("arrayOfStrings");
+        MappedField mappedField = mappedClass.getMappedField("arrayOfStrings").orElse(null);
 
         // when
         boolean validationApplied = GeoWithinOperationValidator.getInstance().apply(mappedField, GEO_WITHIN, new BasicDBObject("$box", 1),
@@ -74,7 +76,7 @@ public class GeoWithinOperationValidatorTest {
         // given
         List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
         MappedClass mappedClass = new MappedClass(InvalidGeoEntity.class, new Mapper());
-        MappedField mappedField = mappedClass.getMappedField("listOfStrings");
+        MappedField mappedField = mappedClass.getMappedField("listOfStrings").orElse(null);
 
         // when
         boolean validationApplied = GeoWithinOperationValidator.getInstance().apply(mappedField,
@@ -93,7 +95,7 @@ public class GeoWithinOperationValidatorTest {
         // given
         List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
         MappedClass mappedClass = new MappedClass(GeoEntity.class, new Mapper());
-        MappedField mappedField = mappedClass.getMappedField("array");
+        MappedField mappedField = mappedClass.getMappedField("array").orElse(null);
 
         // when
         boolean validationApplied = GeoWithinOperationValidator.getInstance().apply(mappedField,
@@ -113,7 +115,7 @@ public class GeoWithinOperationValidatorTest {
         // given
         List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
         MappedClass mappedClass = new MappedClass(GeoEntity.class, new Mapper());
-        MappedField mappedField = mappedClass.getMappedField("array");
+        MappedField mappedField = mappedClass.getMappedField("array").orElse(null);
 
         // when
         boolean validationApplied = GeoWithinOperationValidator.getInstance().apply(mappedField,
@@ -131,12 +133,12 @@ public class GeoWithinOperationValidatorTest {
     @SuppressWarnings("unused")
     private static class GeoEntity {
         private final int[] array = {1};
-        private final List<Integer> list = Arrays.asList(1);
+        private final List<Integer> list = Collections.singletonList(1);
     }
 
     @SuppressWarnings("unused")
     private static class InvalidGeoEntity {
         private final String[] arrayOfStrings = {"1"};
-        private final List<String> listOfStrings = Arrays.asList("1");
+        private final List<String> listOfStrings = Collections.singletonList("1");
     }
 }

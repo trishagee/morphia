@@ -65,7 +65,7 @@ public class VersionTest extends TestBase {
 
     @Test
     public void testVersionFieldNameContribution() throws Exception {
-        final MappedField mappedFieldByJavaField = getMorphia().getMapper().getMappedClass(ALong.class).getMappedFieldByJavaField("v");
+        final MappedField mappedFieldByJavaField = getMorphia().getMapper().getMappedClass(ALong.class).getMappedFieldByJavaField("v").get();
         Assert.assertEquals("versionNameContributedByAnnotation", mappedFieldByJavaField.getNameToStore());
     }
 

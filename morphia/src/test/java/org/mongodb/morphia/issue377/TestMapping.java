@@ -79,7 +79,7 @@ public class TestMapping extends TestBase {
         user.userObject = new SerializableObject();
 
         MappedClass mc = new MappedClass(User.class, mapper);
-        MappedField mf = mc.getMappedField("userObject");
+        MappedField mf = mc.getMappedField("userObject").orElse(null);
 
         // when
         Object dbValue = mapper.toMongoObject(mf, null, user.userObject);
@@ -101,7 +101,7 @@ public class TestMapping extends TestBase {
         user.list = list;
 
         MappedClass mc = new MappedClass(ListEntity.class, mapper);
-        MappedField mf = mc.getMappedField("list");
+        MappedField mf = mc.getMappedField("list").orElse(null);
 
         // when
         Object dbValue = mapper.toMongoObject(mf, null, user.list);

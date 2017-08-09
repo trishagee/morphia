@@ -30,6 +30,7 @@ import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Id;
 import org.mongodb.morphia.annotations.Serialized;
 import org.mongodb.morphia.mapping.DefaultCreator;
+import org.mongodb.morphia.mapping.MappedClass;
 import org.mongodb.morphia.mapping.Mapper;
 import org.mongodb.morphia.mapping.MappingException;
 import org.mongodb.morphia.mapping.cache.DefaultEntityCache;
@@ -183,8 +184,11 @@ public class TestMapping extends TestBase {
         final DBCollection stuff = getDb().getCollection("stuff");
         final DBCollection rectangles = getDb().getCollection("rectangles");
 
-        assertTrue("'ne' field should not be persisted!", !getMorphia().getMapper().getMCMap().get(ContainsRef.class.getName())
-                                                                       .containsJavaFieldName("ne"));
+        MappedClass mappedClass = getMorphia().getMapper()
+                                              .getMCMap()
+                                              .get(ContainsRef.class.getName());
+        assertTrue("'ne' field should not be persisted!",
+                   !mappedClass.containsJavaFieldName("ne"));
 
         final Rectangle r = new Rectangle(1, 1);
         final DBObject rDbObject = getMorphia().toDBObject(r);

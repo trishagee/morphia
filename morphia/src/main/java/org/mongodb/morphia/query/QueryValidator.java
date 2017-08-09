@@ -1,5 +1,6 @@
 package org.mongodb.morphia.query;
 
+import org.jetbrains.annotations.NotNull;
 import org.mongodb.morphia.annotations.Serialized;
 import org.mongodb.morphia.logging.Logger;
 import org.mongodb.morphia.logging.MorphiaLoggerFactory;
@@ -26,6 +27,7 @@ import org.mongodb.morphia.query.validation.ValidationFailure;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static java.lang.String.format;
 
@@ -40,9 +42,7 @@ final class QueryValidator {
      */
     static MappedField validateQuery(final Class clazz, final Mapper mapper, final StringBuilder origProp, final FilterOperator op,
                                      final Object val, final boolean validateNames, final boolean validateTypes) {
-        //TODO: cache validations (in static?).
-
-        MappedField mf = null;
+        Optional<MappedField> mf = Optional.empty();
         final String prop = origProp.toString();
         boolean hasTranslations = false;
 
@@ -62,22 +62,22 @@ final class QueryValidator {
                 mf = mc.getMappedField(part);
 
                 //translate from java field name to stored field name
-                if (mf == null && !fieldIsArrayOperator) {
+                if (!mf.isPresent() && !fieldIsArrayOperator) {
                     mf = mc.getMappedFieldByJavaField(part);
-                    if (validateNames && mf == null) {
+                    if (validateNames && !mf.isPresent()) {
                         throw new ValidationException(format("The field '%s' could not be found in '%s' while validating - %s; if "
                                                              + "you wish to continue please disable validation.", part,
                                                              mc.getClazz().getName(), prop
                                                             ));
                     }
                     hasTranslations = true;
-                    if (mf != null) {
-                        parts[i] = mf.getNameToStore();
+                    if (mf.isPresent()) {
+                        parts[i] = mf.get().getNameToStore();
                     }
                 }
 
                 i++;
-                if (mf != null && mf.isMap()) {
+                if (mf.isPresent() && mf.get().isMap()) {
                     //skip the map key validation, and move to the next part
                     i++;
                 }
@@ -88,18 +88,19 @@ final class QueryValidator {
 
                 if (!fieldIsArrayOperator) {
                     //catch people trying to search/update into @Reference/@Serialized fields
-                    if (validateNames && !canQueryPast(mf)) {
+                    if (validateNames && !canQueryPast(mf.get())) {
                         throw new ValidationException(format("Cannot use dot-notation past '%s' in '%s'; found while"
                                                              + " validating - %s", part, mc.getClazz().getName(), prop));
                     }
 
-                    if (mf == null && mc.isInterface()) {
+                    if (!mf.isPresent() && mc.isInterface()) {
                         break;
-                    } else if (mf == null) {
+                    } else if (!mf.isPresent()) {
                         throw new ValidationException(format("The field '%s' could not be found in '%s'", prop, mc.getClazz().getName()));
                     }
                     //get the next MappedClass for the next field validation
-                    mc = mapper.getMappedClass((mf.isSingleValue()) ? mf.getType() : mf.getSubClass());
+                    MappedField mappedField = mf.get();
+                    mc = mapper.getMappedClass((mappedField.isSingleValue()) ? mappedField.getType() : mappedField.getSubClass());
                 }
             }
 
@@ -113,19 +114,20 @@ final class QueryValidator {
                 }
             }
 
-            if (validateTypes && mf != null) {
-                List<ValidationFailure> typeValidationFailures = new ArrayList<ValidationFailure>();
-                boolean compatibleForType = isCompatibleForOperator(mc, mf, mf.getType(), op, val, typeValidationFailures);
-                List<ValidationFailure> subclassValidationFailures = new ArrayList<ValidationFailure>();
-                boolean compatibleForSubclass = isCompatibleForOperator(mc, mf, mf.getSubClass(), op, val, subclassValidationFailures);
+            if (validateTypes && mf.isPresent()) {
+                MappedField mappedField = mf.get();
+                List<ValidationFailure> typeValidationFailures = new ArrayList<>();
+                boolean compatibleForType = isCompatibleForOperator(mc, mappedField, mappedField.getType(), op, val, typeValidationFailures);
+                List<ValidationFailure> subclassValidationFailures = new ArrayList<>();
+                boolean compatibleForSubclass = isCompatibleForOperator(mc, mappedField, mappedField.getSubClass(), op, val, subclassValidationFailures);
 
-                if ((mf.isSingleValue() && !compatibleForType)
-                    || mf.isMultipleValues() && !(compatibleForSubclass || compatibleForType)) {
+                if ((mappedField.isSingleValue() && !compatibleForType)
+                    || mappedField.isMultipleValues() && !(compatibleForSubclass || compatibleForType)) {
 
                     if (LOG.isWarningEnabled()) {
                         LOG.warning(format("The type(s) for the query/update may be inconsistent; using an instance of type '%s' "
                                            + "for the field '%s.%s' which is declared as '%s'", val.getClass().getName(),
-                                           mf.getDeclaringClass().getName(), mf.getJavaFieldName(), mf.getType().getName()
+                                           mappedField.getDeclaringClass().getName(), mappedField.getJavaFieldName(), mappedField.getType().getName()
                                           ));
                         typeValidationFailures.addAll(subclassValidationFailures);
                         LOG.warning("Validation warnings: \n" + typeValidationFailures);
@@ -133,10 +135,10 @@ final class QueryValidator {
                 }
             }
         }
-        return mf;
+        return mf.orElse(null);
     }
 
-    private static boolean canQueryPast(final MappedField mf) {
+    private static boolean canQueryPast(@NotNull final MappedField mf) {
         return !(mf.isReference() || mf.hasAnnotation(Serialized.class));
     }
 

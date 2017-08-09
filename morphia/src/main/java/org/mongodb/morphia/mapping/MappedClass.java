@@ -2,6 +2,7 @@ package org.mongodb.morphia.mapping;
 
 
 import com.mongodb.DBObject;
+import org.jetbrains.annotations.NotNull;
 import org.mongodb.morphia.EntityInterceptor;
 import org.mongodb.morphia.annotations.Converters;
 import org.mongodb.morphia.annotations.Embedded;
@@ -36,6 +37,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
@@ -265,7 +267,7 @@ public class MappedClass {
      * @return true if a Java field with that name is found
      */
     public boolean containsJavaFieldName(final String name) {
-        return getMappedField(name) != null;
+        return getMappedField(name).isPresent();
     }
 
     /**
@@ -372,11 +374,11 @@ public class MappedClass {
      * @param storedName the name to search for
      * @return true if that mapped field name is found
      */
-    public MappedField getMappedField(final String storedName) {
+    @NotNull
+    public Optional<MappedField> getMappedField(final String storedName) {
         return persistenceFields.stream()
                                 .filter(mf -> mf.hasName(storedName))
-                                .findFirst()
-                                .orElse(null);
+                                .findFirst();
     }
 
     /**
@@ -385,14 +387,10 @@ public class MappedClass {
      * @param name the Java field name to search for
      * @return the MappedField for the named Java field
      */
-    public MappedField getMappedFieldByJavaField(final String name) {
-        for (final MappedField mf : persistenceFields) {
-            if (name.equals(mf.getJavaFieldName())) {
-                return mf;
-            }
-        }
-
-        return null;
+    public Optional<MappedField> getMappedFieldByJavaField(final String name) {
+        return persistenceFields.stream()
+                                .filter(mf -> name.equals(mf.getJavaFieldName()))
+                                .findFirst();
     }
 
     /**

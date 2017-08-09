@@ -16,6 +16,7 @@ import com.mongodb.MongoException;
 import com.mongodb.ReadPreference;
 import com.mongodb.WriteConcern;
 import com.mongodb.WriteResult;
+import org.jetbrains.annotations.Nullable;
 import org.mongodb.morphia.aggregation.AggregationPipeline;
 import org.mongodb.morphia.aggregation.AggregationPipelineImpl;
 import org.mongodb.morphia.annotations.CappedAt;
@@ -62,6 +63,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
@@ -1332,6 +1334,7 @@ public class DatastoreImpl implements AdvancedDatastore {
         return opts;
     }
 
+    @Nullable
     private MappedField findField(final List<String> namePath, final MappedClass mc, final String value) {
         if (value.contains(".")) {
             String segment = value.substring(0, value.indexOf("."));
@@ -1345,14 +1348,12 @@ public class DatastoreImpl implements AdvancedDatastore {
                 return null;
             }
         } else {
-            MappedField mf = mc.getMappedField(value);
-            if (mf == null) {
+            Optional<MappedField> mf = mc.getMappedField(value);
+            if (!mf.isPresent()) {
                 mf = mc.getMappedFieldByJavaField(value);
             }
-            if (mf != null) {
-                namePath.add(mf.getNameToStore());
-            }
-            return mf;
+            mf.ifPresent(mappedField -> namePath.add(mappedField.getNameToStore()));
+            return mf.orElse(null);
         }
     }
 

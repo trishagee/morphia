@@ -14,7 +14,7 @@ public class MappedFieldTypeValidatorTest {
     public void shouldAllowAListThatDoesNotContainNumbers() {
         // given
         MappedClass mappedClass = new MappedClass(EntityWithListsAndArrays.class, new Mapper());
-        MappedField mappedField = mappedClass.getMappedField("listOfIntegers");
+        MappedField mappedField = mappedClass.getMappedField("listOfIntegers").get();
 
         // expect
         assertThat(MappedFieldTypeValidator.isIterableOfNumbers(mappedField), is(true));
@@ -24,7 +24,7 @@ public class MappedFieldTypeValidatorTest {
     public void shouldAllowArraysOfNumbers() {
         // given
         MappedClass mappedClass = new MappedClass(EntityWithListsAndArrays.class, new Mapper());
-        MappedField mappedField = mappedClass.getMappedField("arrayOfInts");
+        MappedField mappedField = mappedClass.getMappedField("arrayOfInts").get();
 
         // expect
         assertThat(MappedFieldTypeValidator.isArrayOfNumbers(mappedField), is(true));
@@ -34,7 +34,7 @@ public class MappedFieldTypeValidatorTest {
     public void shouldRejectAListThatDoesNotContainNumbers() {
         // given
         MappedClass mappedClass = new MappedClass(EntityWithListsAndArrays.class, new Mapper());
-        MappedField mappedField = mappedClass.getMappedField("listOfStrings");
+        MappedField mappedField = mappedClass.getMappedField("listOfStrings").get();
 
         // expect
         assertThat(MappedFieldTypeValidator.isIterableOfNumbers(mappedField), is(false));
@@ -44,7 +44,7 @@ public class MappedFieldTypeValidatorTest {
     public void shouldRejectArraysOfStrings() {
         // given
         MappedClass mappedClass = new MappedClass(EntityWithListsAndArrays.class, new Mapper());
-        MappedField mappedField = mappedClass.getMappedField("arrayOfStrings");
+        MappedField mappedField = mappedClass.getMappedField("arrayOfStrings").get();
 
         // expect
         assertThat(MappedFieldTypeValidator.isArrayOfNumbers(mappedField), is(false));

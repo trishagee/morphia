@@ -11,7 +11,6 @@ import org.mongodb.morphia.annotations.Reference;
 import org.mongodb.morphia.mapping.MappedClass;
 import org.mongodb.morphia.mapping.MappedField;
 import org.mongodb.morphia.mapping.Mapper;
-import org.mongodb.morphia.query.validation.ValidationFailure;
 
 import java.util.ArrayList;
 
@@ -39,35 +38,35 @@ public class QueryForSubtypeTest extends TestBase {
 
     @Test
     public void testImplementingClassIsCompatibleWithInterface() {
-        MappedField user = jobMappedClass.getMappedField("owner");
+        MappedField user = jobMappedClass.getMappedField("owner").orElse(null);
 
         boolean compatible = isCompatibleForOperator(jobMappedClass,
                                                      user,
                                                      User.class,
                                                      EQUAL,
                                                      new UserImpl(),
-                                                     new ArrayList<ValidationFailure>());
+                                                     new ArrayList<>());
 
         assertThat(compatible, is(true));
     }
 
     @Test
     public void testIntSizeShouldBeCompatibleWithArrayList() {
-        MappedField attributes = jobMappedClass.getMappedField("attributes");
+        MappedField attributes = jobMappedClass.getMappedField("attributes").orElse(null);
 
         boolean compatible = isCompatibleForOperator(jobMappedClass,
                                                      attributes,
                                                      ArrayList.class,
                                                      SIZE,
                                                      2,
-                                                     new ArrayList<ValidationFailure>());
+                                                     new ArrayList<>());
 
         assertThat(compatible, is(true));
     }
 
     @Test
     public void testSubclassOfKeyShouldBeCompatibleWithFieldUser() {
-        MappedField user = jobMappedClass.getMappedField("owner");
+        MappedField user = jobMappedClass.getMappedField("owner").orElse(null);
         Key<User> anonymousKeySubclass = new Key<User>(User.class, "User", 212L) {
         };
 
@@ -76,7 +75,7 @@ public class QueryForSubtypeTest extends TestBase {
                                                      User.class,
                                                      EQUAL,
                                                      anonymousKeySubclass,
-                                                     new ArrayList<ValidationFailure>());
+                                                     new ArrayList<>());
 
         assertThat(compatible, is(true));
     }
