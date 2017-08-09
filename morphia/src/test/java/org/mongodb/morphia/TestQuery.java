@@ -20,7 +20,6 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.MongoException;
-import com.mongodb.MongoInternalException;
 import org.bson.types.CodeWScope;
 import org.bson.types.ObjectId;
 import org.junit.After;
@@ -65,6 +64,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mongodb.morphia.testutil.JSONMatcher.jsonEqual;
 
 
@@ -728,7 +728,7 @@ public class TestQuery extends TestBase {
 
         try {
             getDs().find(ContainsPic.class, "pic.name", "foo").get();
-            assertNull("um, query validation should have thrown");
+            fail("Query validation should have thrown");
         } catch (ValidationException e) {
             assertTrue(e.getMessage().contains("Cannot use dot-"));
         }
@@ -807,7 +807,7 @@ public class TestQuery extends TestBase {
             getDs()
                 .find(ContainsRenamedFields.class)
                 .retrievedFields(true, "bad field name").get();
-            Assert.fail("Validation should have caught the bad field");
+            fail("Validation should have caught the bad field");
         } catch (ValidationException e) {
             // success!
         }
@@ -981,9 +981,7 @@ public class TestQuery extends TestBase {
         try {
             // must fail
             assertNotNull(getDs().find(PhotoWithKeywords.class).where(hasKeyword.getCode()).get());
-            Assert.fail("Invalid javascript magically isn't invalid anymore?");
-        } catch (MongoInternalException e) {
-            // fine
+            fail("Invalid javascript magically isn't invalid anymore?");
         } catch (MongoException e) {
             // fine
         }

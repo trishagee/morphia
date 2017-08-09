@@ -42,15 +42,15 @@ final class QueryValidator {
      * Validate the path, and value type, returning the mapped field for the field at the path
      */
     @Nullable
-    static MappedField validateQuery(@Nullable final Class clazz, final Mapper mapper,
-                                     final StringBuilder origProp, final FilterOperator op,
+    static MappedField validateQuery(@Nullable final Class clazz, @NotNull final Mapper mapper,
+                                     @NotNull final StringBuilder origProp, final FilterOperator op,
                                      final Object val, final boolean validateNames,
                                      final boolean validateTypes) {
         if (clazz == null) {
             return null;
         }
-        Optional<MappedField> mf = Optional.empty();
         final String propertyName = origProp.toString();
+        Optional<MappedField> mf = Optional.empty();
         boolean hasTranslations = false;
 
         if (!isOperator(propertyName)) {
@@ -59,20 +59,20 @@ final class QueryValidator {
 
             int i = 0;
             while (i < parts.length) {
-                final String part = parts[i];
-                boolean fieldIsArrayOperator = part.equals("$");
-                if (fieldIsArrayOperator) {
+                final String fieldName = parts[i];
+                if (isArrayOperator(fieldName)) {
+                    // ignore and move on
                     i++;
                     continue;
                 }
 
-                mf = mc.getMappedField(part);
+                mf = mc.getMappedField(fieldName);
 
                 //translate from java field name to stored field name
                 if (!mf.isPresent()) {
-                    mf = mc.getMappedFieldByJavaField(part);
+                    mf = mc.getMappedFieldByJavaField(fieldName);
                     if (validateNames && !mf.isPresent()) {
-                        throw new ValidationException(format("The field '%s' could not be found in '%s' while validating - %s; if you wish to continue please disable validation.", part, mc.getClazz().getName(), propertyName));
+                        throw new ValidationException(format("The field '%s' could not be found in '%s' while validating - %s; if you wish to continue please disable validation.", fieldName, mc.getClazz().getName(), propertyName));
                     }
                     hasTranslations = true;
                     if (mf.isPresent()) {
@@ -84,15 +84,16 @@ final class QueryValidator {
                 if (mf.isPresent() && mf.get().isMap()) {
                     //skip the map key validation, and move to the next part
                     i++;
+                    continue;
                 }
 
                 if (i >= parts.length) {
-                    break;
+                    continue;
                 }
 
                 //catch people trying to search/update into @Reference/@Serialized fields
                 if (validateNames && !canQueryPast(mf.get())) {
-                    throw new ValidationException(format("Cannot use dot-notation past '%s' in '%s'; found while validating - %s", part, mc.getClazz().getName(), propertyName));
+                    throw new ValidationException(format("Cannot use dot-notation past '%s' in '%s'; found while validating - %s", fieldName, mc.getClazz().getName(), propertyName));
                 }
 
                 if (!mf.isPresent() && mc.isInterface()) {
@@ -139,8 +140,12 @@ final class QueryValidator {
         return mf.orElse(null);
     }
 
-    private static boolean isOperator(String origProp) {
-        return origProp.substring(0, 1).equals("$");
+    private static boolean isArrayOperator(@NotNull final String propertyName) {
+        return propertyName.equals("$");
+    }
+
+    private static boolean isOperator(@NotNull final String propertyName) {
+        return propertyName.startsWith("$");
     }
 
     private static boolean canQueryPast(@NotNull final MappedField mf) {
