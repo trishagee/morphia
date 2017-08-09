@@ -113,30 +113,31 @@ final class QueryValidator {
             origProp.append(stream(parts).collect(joining(".")));
 
             if (validateTypes && mf.isPresent()) {
-                MappedField mappedField = mf.get();
-                List<ValidationFailure> typeValidationFailures = new ArrayList<>();
-                boolean compatibleForType = isCompatibleForOperator(mc, mappedField, mappedField.getType(), op, val, typeValidationFailures);
-                List<ValidationFailure> subclassValidationFailures = new ArrayList<>();
-                boolean compatibleForSubclass = isCompatibleForOperator(mc, mappedField, mappedField.getSubClass(), op, val, subclassValidationFailures);
-
-                if ((mappedField.isSingleValue() && !compatibleForType)
-                    || mappedField.isMultipleValues() && !(compatibleForSubclass || compatibleForType)) {
-
-                    if (LOG.isWarningEnabled()) {
-                        LOG.warning(format("The type(s) for the query/update may be inconsistent; using an instance of type '%s' "
-                                           + "for the field '%s.%s' which is declared as '%s'", val.getClass().getName(),
-                                           mappedField.getDeclaringClass().getName(), mappedField.getJavaFieldName(), mappedField.getType().getName()
-                                          ));
-                        typeValidationFailures.addAll(subclassValidationFailures);
-                        LOG.warning("Validation warnings: \n" + typeValidationFailures);
-                    }
-                }
+                validateTypes(op, val, mc, mf.get());
             }
         }
         return mf.orElse(null);
     }
 
-    private static void exception(String message, String... params) {
+    private static void validateTypes(FilterOperator operator, Object value, MappedClass mc, MappedField mappedField) {
+        List<ValidationFailure> validationFailures = new ArrayList<>();
+        boolean compatibleForType = isCompatibleForOperator(mc, mappedField, mappedField.getType(), operator, value, validationFailures);
+        boolean compatibleForSubclass = isCompatibleForOperator(mc, mappedField, mappedField.getSubClass(), operator, value, validationFailures);
+
+        if ((mappedField.isSingleValue() && !compatibleForType)
+            || mappedField.isMultipleValues() && !(compatibleForSubclass || compatibleForType)) {
+
+            if (LOG.isWarningEnabled()) {
+                LOG.warning(format("The type(s) for the query/update may be inconsistent; using an instance of type '%s' "
+                                   + "for the field '%s.%s' which is declared as '%s'", value.getClass().getName(),
+                                   mappedField.getDeclaringClass().getName(), mappedField.getJavaFieldName(), mappedField.getType().getName()
+                                  ));
+                LOG.warning("Validation warnings: \n" + validationFailures);
+            }
+        }
+    }
+
+    private static void exception(String message, Object... params) {
         throw new ValidationException(format(message, params));
     }
 
