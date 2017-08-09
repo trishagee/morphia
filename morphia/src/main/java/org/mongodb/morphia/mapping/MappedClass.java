@@ -373,15 +373,10 @@ public class MappedClass {
      * @return true if that mapped field name is found
      */
     public MappedField getMappedField(final String storedName) {
-        for (final MappedField mf : persistenceFields) {
-            for (final String n : mf.getLoadNames()) {
-                if (storedName.equals(n)) {
-                    return mf;
-                }
-            }
-        }
-
-        return null;
+        return persistenceFields.stream()
+                                .filter(mf -> mf.hasName(storedName))
+                                .findFirst()
+                                .orElse(null);
     }
 
     /**

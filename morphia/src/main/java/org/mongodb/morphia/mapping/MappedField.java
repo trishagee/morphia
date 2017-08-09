@@ -722,4 +722,9 @@ public class MappedField {
     void setMapKeyType(final Class mapKeyType) {
         this.mapKeyType = mapKeyType;
     }
+
+    boolean hasName(String storedName) {
+        return getLoadNames().stream()
+                             .anyMatch(storedName::equals);
+    }
 }
