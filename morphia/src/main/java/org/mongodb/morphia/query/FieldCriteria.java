@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.mongodb.morphia.query.QueryValidator.validateQuery;
+import static org.mongodb.morphia.query.QueryValidator.validateTypes;
 
 /**
  * Defines a Criteria against a field
@@ -37,14 +38,13 @@ public class FieldCriteria extends AbstractCriteria {
                             final boolean validateNames, final boolean validateTypes, final boolean not) {
         //validate might modify prop string to translate java field name to db field name
         final StringBuilder sb = new StringBuilder(fieldName);
-        final MappedField mf = validateQuery(query.getEntityClass(),
-                                             query.getDatastore().getMapper(),
-                                             sb,
-                                             op,
-                                             value,
-                                             validateNames,
-                                             validateTypes);
-
+        final QueryValidator.ValidatedField validatedField = validateQuery(query.getEntityClass(),
+                                                               query.getDatastore().getMapper(),
+                                                               sb, validateNames);
+        if (validateTypes) {
+            validateTypes(validatedField, op, value);
+        }
+        final MappedField mf = validatedField.getMappedField();
         final Mapper mapper = query.getDatastore().getMapper();
 
         MappedClass mc = null;

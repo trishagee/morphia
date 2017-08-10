@@ -43,20 +43,21 @@ final class QueryValidator {
     /**
      * Validate the path, and value type, returning the mapped field for the field at the path
      */
-    @Nullable
-    static MappedField validateQuery(@Nullable final Class clazz, @NotNull final Mapper mapper,
-                                     @NotNull final StringBuilder origProp, final FilterOperator op,
-                                     final Object val, final boolean validateNames,
-                                     final boolean validateTypes) {
+    @NotNull
+    static ValidatedField validateQuery(@Nullable final Class clazz, @NotNull final Mapper mapper,
+                                        @NotNull final StringBuilder origProp,
+                                        final boolean validateNames) {
+        final ValidatedField returnValue = new ValidatedField();
         if (clazz == null) {
-            return null;
+            return returnValue;
         }
         final String path = origProp.toString();
-        Optional<MappedField> mf = Optional.empty();
+        Optional<MappedField> mf;
 
         if (!isOperator(path)) {
             final String[] parts = path.split("\\.");
             MappedClass mc = mapper.getMappedClass(clazz);
+            returnValue.mappedClass = mc;
 
             int i = 0;
             while (i < parts.length) {
@@ -75,6 +76,7 @@ final class QueryValidator {
                     mf = getMappedFieldFromJavaName(validateNames, parts, mc, i, fieldName,
                                                     exceptionFactory);
                 }
+                returnValue.mappedField = mf.orElse(null);
 
                 if (mf.isPresent() && mf.get().isMap()) {
                     //skip the map key validation, and move to the next part
@@ -107,40 +109,47 @@ final class QueryValidator {
             // translations, e.g. MongoDB property names vs Java property names
             origProp.setLength(0); // clear existing content
             origProp.append(stream(parts).collect(joining(".")));
+        }
+        return returnValue;
+    }
 
-            if (validateTypes && mf.isPresent()) {
-                validateTypes(op, val, mc, mf.get());
+    static void validateTypes(@NotNull ValidatedField validatedField, FilterOperator operator,
+                              Object value) {
+        List<ValidationFailure> validationFailures = new ArrayList<>();
+        final MappedField mappedField = validatedField.mappedField;
+        final MappedClass mc = validatedField.mappedClass;
+        if (mappedField != null) {
+            boolean compatibleForType = isCompatibleForOperator(mc, mappedField, mappedField.getType(), operator, value, validationFailures);
+            boolean compatibleForSubclass = isCompatibleForOperator(mc, mappedField, mappedField.getSubClass(), operator, value, validationFailures);
+
+            if ((mappedField.isSingleValue() && !compatibleForType)
+                || mappedField.isMultipleValues() && !(compatibleForSubclass || compatibleForType)) {
+
+                if (LOG.isWarningEnabled()) {
+                    LOG.warning(format("The type(s) for the query/update may be inconsistent; " +
+                                       "using an instance of type '%s' "
+                                       + "for the field '%s.%s' which is declared as '%s'", value.getClass().getName(),
+                                       mappedField.getDeclaringClass().getName(), mappedField.getJavaFieldName(), mappedField.getType().getName()
+                    ));
+                    LOG.warning("Validation warnings: \n" + validationFailures);
+                }
             }
         }
-        return mf.orElse(null);
     }
 
     @NotNull
-    private static Optional<MappedField> getMappedFieldFromJavaName(boolean validateNames, String[] parts, MappedClass mc, int i, String fieldName, ValidationExceptionFactory exceptionFactory) {
+    private static Optional<MappedField> getMappedFieldFromJavaName(boolean validateNames,
+                                                                    String[] parts,
+                                                                    MappedClass mc,
+                                                                    int i, String fieldName,
+                                                                    ValidationExceptionFactory
+                                                                                exceptionFactory) {
         Optional<MappedField> mf = mc.getMappedFieldByJavaField(fieldName);
         if (validateNames && !mf.isPresent()) {
             exceptionFactory.throwFieldNotFoundException();
         }
         mf.ifPresent(mappedField -> parts[i] = mappedField.getNameToStore());
         return mf;
-    }
-
-    private static void validateTypes(FilterOperator operator, Object value, MappedClass mc, MappedField mappedField) {
-        List<ValidationFailure> validationFailures = new ArrayList<>();
-        boolean compatibleForType = isCompatibleForOperator(mc, mappedField, mappedField.getType(), operator, value, validationFailures);
-        boolean compatibleForSubclass = isCompatibleForOperator(mc, mappedField, mappedField.getSubClass(), operator, value, validationFailures);
-
-        if ((mappedField.isSingleValue() && !compatibleForType)
-            || mappedField.isMultipleValues() && !(compatibleForSubclass || compatibleForType)) {
-
-            if (LOG.isWarningEnabled()) {
-                LOG.warning(format("The type(s) for the query/update may be inconsistent; using an instance of type '%s' "
-                                   + "for the field '%s.%s' which is declared as '%s'", value.getClass().getName(),
-                                   mappedField.getDeclaringClass().getName(), mappedField.getJavaFieldName(), mappedField.getType().getName()
-                                  ));
-                LOG.warning("Validation warnings: \n" + validationFailures);
-            }
-        }
     }
 
     private static boolean isArrayOperator(@NotNull final String propertyName) {
@@ -178,12 +187,26 @@ final class QueryValidator {
                                     || DoubleTypeValidator.getInstance().apply(type, value, validationFailures)
                                     || PatternValueValidator.getInstance().apply(type, value, validationFailures)
                                     || EntityAnnotatedValueValidator.getInstance().apply(type, value, validationFailures)
-                                    || ListValueValidator.getInstance().apply(type, value, validationFailures)
+                                    || ListValueValidator.getInstance().apply(type, value,
+                                                                              validationFailures)
                                     || EntityTypeAndIdValueValidator.getInstance()
-                                                                    .apply(mappedClass, mappedField, value, validationFailures)
+                                                                    .apply(mappedClass,
+                                                                           mappedField, value,
+                                                                           validationFailures)
                                     || DefaultTypeValidator.getInstance().apply(type, value, validationFailures);
 
         return validationApplied && validationFailures.size() == 0;
+    }
+
+    static class ValidatedField {
+        @Nullable
+        private MappedField mappedField;
+        private MappedClass mappedClass;
+
+        @Nullable
+        public MappedField getMappedField() {
+            return mappedField;
+        }
     }
 
 }

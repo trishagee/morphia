@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.mongodb.morphia.query.QueryValidator.validateQuery;
+import static org.mongodb.morphia.query.QueryValidator.validateTypes;
 
 
 /**
@@ -203,13 +204,17 @@ public class UpdateOpsImpl<T> implements UpdateOperations<T> {
         }
 
         Object val = null;
-        MappedField mf = null;
+        QueryValidator.ValidatedField validatedField = new QueryValidator.ValidatedField();
         final StringBuilder sb = new StringBuilder(f);
-        if (validateNames || validateTypes) {
-            mf = validateQuery(clazz, mapper, sb, FilterOperator.EQUAL, val, validateNames, validateTypes);
+        if (validateNames) {
+            validatedField = validateQuery(clazz, mapper, sb, validateNames);
+            if (validateTypes) {
+                validateTypes(validatedField, FilterOperator.EQUAL, val);
+            }
         }
 
         if (convert) {
+            final MappedField mf = validatedField.getMappedField();
             if (UpdateOperator.PULL_ALL.equals(op) && value instanceof List) {
                 val = toDBObjList(mf, (List<?>) value);
             } else {
