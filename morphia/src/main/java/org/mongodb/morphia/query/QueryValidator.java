@@ -61,6 +61,7 @@ final class QueryValidator {
             int i = 0;
             while (i < parts.length) {
                 final String fieldName = parts[i];
+                final ValidationExceptionFactory exceptionFactory = new ValidationExceptionFactory(fieldName, mc.getClazz().getName(), path);
                 if (isArrayOperator(fieldName)) {
                     // ignore and move on
                     i++;
@@ -71,13 +72,8 @@ final class QueryValidator {
 
                 //translate from java field name to stored field name
                 if (!mf.isPresent()) {
-                    mf = mc.getMappedFieldByJavaField(fieldName);
-                    if (validateNames && !mf.isPresent()) {
-                        exception("The field '%s' could not be found in '%s' while validating - %s; if you wish to continue please disable validation.", fieldName, mc.getClazz().getName(), path);
-                    }
-                    if (mf.isPresent()) {
-                        parts[i] = mf.get().getNameToStore();
-                    }
+                    mf = getMappedFieldFromJavaName(validateNames, parts, mc, i, fieldName,
+                                                    exceptionFactory);
                 }
 
                 if (mf.isPresent() && mf.get().isMap()) {
@@ -93,14 +89,14 @@ final class QueryValidator {
 
                 //catch people trying to search/update into @Reference/@Serialized fields
                 if (validateNames && !canQueryPast(mf.get())) {
-                    exception("Cannot use dot-notation past '%s' in '%s'; found while validating - %s", fieldName, mc.getClazz().getName(), path);
+                    exceptionFactory.throwQueryingReferenceFieldsException();
                 }
 
                 if (!mf.isPresent() && mc.isInterface()) {
                     break;
                 }
                 if (!mf.isPresent()) {
-                    exception("The field '%s' could not be found in '%s'", fieldName, mc.getClazz().getName());
+                    exceptionFactory.throwFieldNotFoundException();
                 }
                 //get the next MappedClass for the next field validation
                 MappedField mappedField = mf.get();
@@ -119,6 +115,16 @@ final class QueryValidator {
         return mf.orElse(null);
     }
 
+    @NotNull
+    private static Optional<MappedField> getMappedFieldFromJavaName(boolean validateNames, String[] parts, MappedClass mc, int i, String fieldName, ValidationExceptionFactory exceptionFactory) {
+        Optional<MappedField> mf = mc.getMappedFieldByJavaField(fieldName);
+        if (validateNames && !mf.isPresent()) {
+            exceptionFactory.throwFieldNotFoundException();
+        }
+        mf.ifPresent(mappedField -> parts[i] = mappedField.getNameToStore());
+        return mf;
+    }
+
     private static void validateTypes(FilterOperator operator, Object value, MappedClass mc, MappedField mappedField) {
         List<ValidationFailure> validationFailures = new ArrayList<>();
         boolean compatibleForType = isCompatibleForOperator(mc, mappedField, mappedField.getType(), operator, value, validationFailures);
@@ -135,10 +141,6 @@ final class QueryValidator {
                 LOG.warning("Validation warnings: \n" + validationFailures);
             }
         }
-    }
-
-    private static void exception(String message, Object... params) {
-        throw new ValidationException(format(message, params));
     }
 
     private static boolean isArrayOperator(@NotNull final String propertyName) {
