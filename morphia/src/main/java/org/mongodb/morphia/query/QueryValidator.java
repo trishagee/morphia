@@ -31,9 +31,9 @@ import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static java.lang.String.format;
+import static java.util.stream.Collectors.joining;
 
 final class QueryValidator {
     private static final Logger LOG = MorphiaLoggerFactory.get(QueryValidator.class);
@@ -46,23 +46,22 @@ final class QueryValidator {
      */
     @NotNull
     static ValidatedField validateQuery(@Nullable final Class clazz, @NotNull final Mapper mapper,
-                                        @NotNull final StringBuilder origProp,
-                                        final boolean validateNames) {
+                                        @NotNull final String propertyPath, final boolean validateNames) {
         final ValidatedField returnValue = new ValidatedField();
+        final FieldName fieldName = new FieldName(propertyPath);
+        returnValue.fieldName = fieldName;
         if (clazz == null) {
             return returnValue;
         }
-        final String path = origProp.toString();
         Optional<MappedField> mf;
 
-        if (!isOperator(path)) {
-            final FieldName fieldName = new FieldName(path);
+        if (!isOperator(propertyPath)) {
             MappedClass mc = mapper.getMappedClass(clazz);
             returnValue.mappedClass = mc;
 
             while (fieldName.hasMoreElements()) {
                 final String name = fieldName.nextElement();
-                final ValidationExceptionFactory exceptionFactory = new ValidationExceptionFactory(name, mc.getClazz().getName(), path);
+                final ValidationExceptionFactory exceptionFactory = new ValidationExceptionFactory(name, mc.getClazz().getName(), propertyPath);
                 if (isArrayOperator(name)) {
                     // ignore and move on
                     continue;
@@ -98,11 +97,6 @@ final class QueryValidator {
                     }
                 }
             }
-
-            // NASTY: Using a parameter as an output. Setting the StringBuffer to include any
-            // translations, e.g. MongoDB property names vs Java property names
-            origProp.setLength(0); // clear existing content
-            origProp.append(fieldName.getMongoName());
         }
         return returnValue;
     }
@@ -195,10 +189,15 @@ final class QueryValidator {
         @Nullable
         private MappedField mappedField;
         private MappedClass mappedClass;
+        private FieldName fieldName;
 
         @Nullable
         public MappedField getMappedField() {
             return mappedField;
+        }
+
+        public String getStoredFieldName() {
+            return fieldName.getMongoName();
         }
     }
 
@@ -227,7 +226,7 @@ final class QueryValidator {
         }
 
         public String getMongoName() {
-            return mongoFieldTokens.stream().collect(Collectors.joining("."));
+            return mongoFieldTokens.stream().collect(joining("."));
         }
     }
 }

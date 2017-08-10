@@ -205,9 +205,8 @@ public class UpdateOpsImpl<T> implements UpdateOperations<T> {
 
         Object val = null;
         QueryValidator.ValidatedField validatedField = new QueryValidator.ValidatedField();
-        final StringBuilder sb = new StringBuilder(f);
         if (validateNames) {
-            validatedField = validateQuery(clazz, mapper, sb, validateNames);
+            validatedField = validateQuery(clazz, mapper, f, validateNames);
             if (validateTypes) {
                 validateTypes(validatedField, FilterOperator.EQUAL, val);
             }
@@ -234,9 +233,9 @@ public class UpdateOpsImpl<T> implements UpdateOperations<T> {
         final String opString = op.val();
 
         if (!ops.containsKey(opString)) {
-            ops.put(opString, new HashMap<String, Object>());
+            ops.put(opString, new HashMap<>());
         }
-        ops.get(opString).put(sb.toString(), val);
+        ops.get(opString).put(validatedField.getStoredFieldName(), val);
     }
 
     protected UpdateOperations<T> remove(final String fieldExpr, final boolean firstNotLast) {

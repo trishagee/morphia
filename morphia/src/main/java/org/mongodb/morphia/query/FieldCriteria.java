@@ -37,10 +37,9 @@ public class FieldCriteria extends AbstractCriteria {
     protected FieldCriteria(final QueryImpl<?> query, final String fieldName, final FilterOperator op, final Object value,
                             final boolean validateNames, final boolean validateTypes, final boolean not) {
         //validate might modify prop string to translate java field name to db field name
-        final StringBuilder sb = new StringBuilder(fieldName);
         final QueryValidator.ValidatedField validatedField = validateQuery(query.getEntityClass(),
                                                                query.getDatastore().getMapper(),
-                                                               sb, validateNames);
+                                                               fieldName, validateNames);
         if (validateTypes) {
             validateTypes(validatedField, op, value);
         }
@@ -82,7 +81,7 @@ public class FieldCriteria extends AbstractCriteria {
             ((DBObject) mappedValue).removeField(Mapper.ID_KEY);
         }
 
-        this.field = sb.toString();
+        this.field = validatedField.getStoredFieldName();
         operator = op;
         this.value = mappedValue;
         this.not = not;

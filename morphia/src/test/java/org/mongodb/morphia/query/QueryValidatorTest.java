@@ -14,6 +14,7 @@ import org.mongodb.morphia.entities.SimpleEntity;
 import org.mongodb.morphia.mapping.MappedClass;
 import org.mongodb.morphia.mapping.MappedField;
 import org.mongodb.morphia.mapping.Mapper;
+import org.mongodb.morphia.query.QueryValidator.ValidatedField;
 import org.mongodb.morphia.testmodel.Rectangle;
 
 import java.io.Serializable;
@@ -450,7 +451,7 @@ public class QueryValidatorTest {
         // this unit test is to drive fixing a null pointer in the logging code.  It's a bit stupid but it's an edge case that wasn't
         // caught.
         // when this is called, don't error
-        validateQuery(SimpleEntity.class, new Mapper(), new StringBuilder("name"), true);
+        validateQuery(SimpleEntity.class, new Mapper(), "name", true);
     }
 
     @Test
@@ -458,7 +459,7 @@ public class QueryValidatorTest {
         // this unit test is to drive fixing a null pointer in the logging code.  It's a bit stupid but it's an edge case that wasn't
         // caught.
         // when this is called, don't error
-        validateTypes(new QueryValidator.ValidatedField(), EQUAL, null);
+        validateTypes(new ValidatedField(), EQUAL, null);
     }
 
     @Test
@@ -481,14 +482,14 @@ public class QueryValidatorTest {
     public void shouldReferToMappedClassInExceptionWhenFieldNotFound() {
         thrown.expect(ValidationException.class);
         thrown.expectMessage("The field 'notAField' could not be found in 'org.bson.types.ObjectId'");
-        validateQuery(SimpleEntity.class, new Mapper(), new StringBuilder("id.notAField"), true);
+        validateQuery(SimpleEntity.class, new Mapper(), "id.notAField", true);
     }
 
     @Test
     public void shouldReferToMappedClassInExceptionWhenQueryingPastReferenceField() {
         thrown.expect(ValidationException.class);
         thrown.expectMessage("Cannot use dot-notation past 'reference' in 'org.mongodb.morphia.query.QueryValidatorTest$WithReference'");
-        validateQuery(WithReference.class, new Mapper(), new StringBuilder("reference.name"), true);
+        validateQuery(WithReference.class, new Mapper(), "reference.name", true);
     }
 
     @Test
@@ -496,18 +497,16 @@ public class QueryValidatorTest {
         thrown.expect(ValidationException.class);
         thrown.expectMessage("Cannot use dot-notation past 'serialized' in "
                              + "'org.mongodb.morphia.query.QueryValidatorTest$WithSerializedField'");
-        validateQuery(WithSerializedField.class, new Mapper(), new StringBuilder("serialized.name"), true);
+        validateQuery(WithSerializedField.class, new Mapper(), "serialized.name", true);
     }
 
     @Test
     public void shouldUpdatePathToMongoDBFieldNames() {
         // when
-        final StringBuilder fieldName = new StringBuilder("width");
-        validateQuery(Rectangle.class, new Mapper(), fieldName, true);
+        final ValidatedField validatedField = validateQuery(Rectangle.class, new Mapper(), "width", true);
 
         // then
-        //because fieldname is a really nasty output parameter
-        Assert.assertThat(fieldName.toString(), is("w"));
+        Assert.assertThat(validatedField.getStoredFieldName(), is("w"));
     }
 
     private static class GeoEntity {
