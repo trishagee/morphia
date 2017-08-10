@@ -2,6 +2,7 @@ package org.mongodb.morphia.query;
 
 import com.mongodb.BasicDBObject;
 import org.bson.types.ObjectId;
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -13,6 +14,7 @@ import org.mongodb.morphia.entities.SimpleEntity;
 import org.mongodb.morphia.mapping.MappedClass;
 import org.mongodb.morphia.mapping.MappedField;
 import org.mongodb.morphia.mapping.Mapper;
+import org.mongodb.morphia.testmodel.Rectangle;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -495,6 +497,17 @@ public class QueryValidatorTest {
         thrown.expectMessage("Cannot use dot-notation past 'serialized' in "
                              + "'org.mongodb.morphia.query.QueryValidatorTest$WithSerializedField'");
         validateQuery(WithSerializedField.class, new Mapper(), new StringBuilder("serialized.name"), true);
+    }
+
+    @Test
+    public void shouldUpdatePathToMongoDBFieldNames() {
+        // when
+        final StringBuilder fieldName = new StringBuilder("width");
+        validateQuery(Rectangle.class, new Mapper(), fieldName, true);
+
+        // then
+        //because fieldname is a really nasty output parameter
+        Assert.assertThat(fieldName.toString(), is("w"));
     }
 
     private static class GeoEntity {

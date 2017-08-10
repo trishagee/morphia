@@ -27,12 +27,13 @@ import org.mongodb.morphia.query.validation.SizeOperationValidator;
 import org.mongodb.morphia.query.validation.ValidationFailure;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
-import static java.util.Arrays.stream;
-import static java.util.stream.Collectors.joining;
 
 final class QueryValidator {
     private static final Logger LOG = MorphiaLoggerFactory.get(QueryValidator.class);
@@ -55,60 +56,53 @@ final class QueryValidator {
         Optional<MappedField> mf;
 
         if (!isOperator(path)) {
-            final String[] parts = path.split("\\.");
+            final FieldName fieldName = new FieldName(path);
             MappedClass mc = mapper.getMappedClass(clazz);
             returnValue.mappedClass = mc;
 
-            int i = 0;
-            while (i < parts.length) {
-                final String fieldName = parts[i];
-                final ValidationExceptionFactory exceptionFactory = new ValidationExceptionFactory(fieldName, mc.getClazz().getName(), path);
-                if (isArrayOperator(fieldName)) {
+            while (fieldName.hasMoreElements()) {
+                final String name = fieldName.nextElement();
+                final ValidationExceptionFactory exceptionFactory = new ValidationExceptionFactory(name, mc.getClazz().getName(), path);
+                if (isArrayOperator(name)) {
                     // ignore and move on
-                    i++;
                     continue;
                 }
 
-                mf = mc.getMappedField(fieldName);
+                mf = mc.getMappedField(name);
 
                 //translate from java field name to stored field name
                 if (!mf.isPresent()) {
-                    mf = getMappedFieldFromJavaName(validateNames, parts, mc, i, fieldName,
-                                                    exceptionFactory);
+                    mf = getMappedFieldFromJavaName(validateNames, fieldName, mc, name, exceptionFactory);
                 }
                 returnValue.mappedField = mf.orElse(null);
 
                 if (mf.isPresent() && mf.get().isMap()) {
                     //skip the map key validation, and move to the next part
-                    i += 2;
+                    if (fieldName.hasMoreElements()) {
+                        fieldName.nextElement();
+                    }
                     continue;
                 }
-                i++;
+                if (fieldName.hasMoreElements()) {
+                    // look ahead to the next element, some stuff can only be validated from the
+                    // context of the current element
 
-                if (i >= parts.length) {
-                    continue;
+                    //catch people trying to search/update into @Reference/@Serialized fields
+                    if (validateNames && !canQueryPast(mf.get())) {
+                        exceptionFactory.throwQueryingReferenceFieldsException();
+                    }
+                    //get the next MappedClass for the next field validation
+                    if (mf.isPresent()) {
+                        MappedField mappedField = mf.get();
+                        mc = mapper.getMappedClass((mappedField.isSingleValue()) ? mappedField.getType() : mappedField.getSubClass());
+                    }
                 }
-
-                //catch people trying to search/update into @Reference/@Serialized fields
-                if (validateNames && !canQueryPast(mf.get())) {
-                    exceptionFactory.throwQueryingReferenceFieldsException();
-                }
-
-                if (!mf.isPresent() && mc.isInterface()) {
-                    break;
-                }
-                if (!mf.isPresent()) {
-                    exceptionFactory.throwFieldNotFoundException();
-                }
-                //get the next MappedClass for the next field validation
-                MappedField mappedField = mf.get();
-                mc = mapper.getMappedClass((mappedField.isSingleValue()) ? mappedField.getType() : mappedField.getSubClass());
             }
 
             // NASTY: Using a parameter as an output. Setting the StringBuffer to include any
             // translations, e.g. MongoDB property names vs Java property names
             origProp.setLength(0); // clear existing content
-            origProp.append(stream(parts).collect(joining(".")));
+            origProp.append(fieldName.getMongoName());
         }
         return returnValue;
     }
@@ -139,16 +133,15 @@ final class QueryValidator {
 
     @NotNull
     private static Optional<MappedField> getMappedFieldFromJavaName(boolean validateNames,
-                                                                    String[] parts,
+                                                                    FieldName fieldName,
                                                                     MappedClass mc,
-                                                                    int i, String fieldName,
-                                                                    ValidationExceptionFactory
-                                                                                exceptionFactory) {
-        Optional<MappedField> mf = mc.getMappedFieldByJavaField(fieldName);
+                                                                    String javaFieldName,
+                                                                    ValidationExceptionFactory exceptionFactory) {
+        Optional<MappedField> mf = mc.getMappedFieldByJavaField(javaFieldName);
         if (validateNames && !mf.isPresent()) {
             exceptionFactory.throwFieldNotFoundException();
         }
-        mf.ifPresent(mappedField -> parts[i] = mappedField.getNameToStore());
+        mf.ifPresent(mappedField -> fieldName.setMongoName(mappedField.getNameToStore()));
         return mf;
     }
 
@@ -209,4 +202,32 @@ final class QueryValidator {
         }
     }
 
+    private static class FieldName implements Enumeration<String> {
+        private final String[] javaObjectFieldTokens;
+        private final List<String> mongoFieldTokens;
+        private final String path;
+        private int cursor = 0;
+
+        public FieldName(String path) {
+            this.path = path;
+            javaObjectFieldTokens = path.split("\\.");
+            mongoFieldTokens = new ArrayList<>(Arrays.asList(javaObjectFieldTokens));
+        }
+
+        public void setMongoName(String nameToStore) {
+            mongoFieldTokens.set(cursor - 1, nameToStore);
+        }
+
+        public boolean hasMoreElements() {
+            return cursor < javaObjectFieldTokens.length;
+        }
+
+        public String nextElement() {
+            return javaObjectFieldTokens[cursor++];
+        }
+
+        public String getMongoName() {
+            return mongoFieldTokens.stream().collect(Collectors.joining("."));
+        }
+    }
 }
