@@ -13,17 +13,15 @@ class ValidationExceptionFactory {
         this.queryPath = queryPath;
     }
 
-    static void throwException(String message, Object... params) {
-        throw new ValidationException(format(message, params));
+    ValidationException fieldNotFoundException() {
+        return new ValidationException(format(
+                "The field '%s' could not be found in '%s' while validating - %s; if you wish " +
+                "to continue please disable validation.", fieldName, className, queryPath));
     }
 
-    void throwFieldNotFoundException() {
-        throwException("The field '%s' could not be found in '%s' while validating - %s; if you wish " +
-                       "to continue please disable validation.", fieldName, className, queryPath);
-    }
+    ValidationException queryingReferenceFieldsException() {
+        return new ValidationException(format("Cannot use dot-notation past '%s' in '%s'; found " +
+                                           "while validating - %s", fieldName, className, queryPath));
 
-    void throwQueryingReferenceFieldsException() {
-        throwException("Cannot use dot-notation past '%s' in '%s'; found while validating - %s",
-                       fieldName, className, queryPath);
     }
 }

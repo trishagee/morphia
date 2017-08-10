@@ -98,7 +98,7 @@ final class QueryValidator {
 
             //catch people trying to search/update into @Reference/@Serialized fields
             if (validateNames && !canQueryPast(mf.get())) {
-                exceptionFactory.throwQueryingReferenceFieldsException();
+                throw exceptionFactory.queryingReferenceFieldsException();
             }
             //get the next MappedClass for the next field validation
             if (mf.isPresent()) {
@@ -141,7 +141,7 @@ final class QueryValidator {
                                                                     ValidationExceptionFactory exceptionFactory) {
         Optional<MappedField> mf = mc.getMappedFieldByJavaField(javaFieldName);
         if (validateNames && !mf.isPresent()) {
-            exceptionFactory.throwFieldNotFoundException();
+            throw exceptionFactory.fieldNotFoundException();
         }
         mf.ifPresent(mappedField -> fieldName.setMongoName(mappedField.getNameToStore()));
         return mf;
