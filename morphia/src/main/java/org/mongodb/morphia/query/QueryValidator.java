@@ -53,52 +53,60 @@ final class QueryValidator {
         if (clazz == null) {
             return returnValue;
         }
-        Optional<MappedField> mf;
 
         if (!isOperator(propertyPath)) {
             MappedClass mc = mapper.getMappedClass(clazz);
             returnValue.mappedClass = mc;
 
             while (fieldName.hasMoreElements()) {
-                final String name = fieldName.nextElement();
-                final ValidationExceptionFactory exceptionFactory = new ValidationExceptionFactory(name, mc.getClazz().getName(), propertyPath);
-                if (isArrayOperator(name)) {
-                    // ignore and move on
-                    continue;
-                }
-
-                mf = mc.getMappedField(name);
-
-                //translate from java field name to stored field name
-                if (!mf.isPresent()) {
-                    mf = getMappedFieldFromJavaName(validateNames, fieldName, mc, name, exceptionFactory);
-                }
-                returnValue.mappedField = mf.orElse(null);
-
-                if (mf.isPresent() && mf.get().isMap()) {
-                    //skip the map key validation, and move to the next part
-                    if (fieldName.hasMoreElements()) {
-                        fieldName.nextElement();
-                    }
-                    continue;
-                }
-                if (fieldName.hasMoreElements()) {
-                    // look ahead to the next element, some stuff can only be validated from the
-                    // context of the current element
-
-                    //catch people trying to search/update into @Reference/@Serialized fields
-                    if (validateNames && !canQueryPast(mf.get())) {
-                        exceptionFactory.throwQueryingReferenceFieldsException();
-                    }
-                    //get the next MappedClass for the next field validation
-                    if (mf.isPresent()) {
-                        MappedField mappedField = mf.get();
-                        mc = mapper.getMappedClass((mappedField.isSingleValue()) ? mappedField.getType() : mappedField.getSubClass());
-                    }
-                }
+                mc = validateField(mapper, propertyPath, validateNames, returnValue, fieldName, mc);
             }
         }
         return returnValue;
+    }
+
+    private static MappedClass validateField(@NotNull Mapper mapper, @NotNull String
+            propertyPath, boolean validateNames, ValidatedField returnValue, FieldName fieldName,
+                                             MappedClass mc) {
+        Optional<MappedField> mf;
+        final String name = fieldName.nextElement();
+        final ValidationExceptionFactory exceptionFactory = new ValidationExceptionFactory(name, mc.getClazz().getName(), propertyPath);
+
+        if (isArrayOperator(name)) {
+            // ignore and move on
+            return mc;
+        }
+
+        mf = mc.getMappedField(name);
+
+        //translate from java field name to stored field name
+        if (!mf.isPresent()) {
+            mf = getMappedFieldFromJavaName(validateNames, fieldName, mc, name, exceptionFactory);
+        }
+        returnValue.mappedField = mf.orElse(null);
+
+        if (mf.isPresent() && mf.get().isMap()) {
+            //skip the map key validation, and move to the next part
+            if (fieldName.hasMoreElements()) {
+                fieldName.nextElement();
+            }
+            return mc;
+        }
+        if (fieldName.hasMoreElements()) {
+            // look ahead to the next element, some stuff can only be validated from the
+            // context of the current element
+
+            //catch people trying to search/update into @Reference/@Serialized fields
+            if (validateNames && !canQueryPast(mf.get())) {
+                exceptionFactory.throwQueryingReferenceFieldsException();
+            }
+            //get the next MappedClass for the next field validation
+            if (mf.isPresent()) {
+                MappedField mappedField = mf.get();
+                mc = mapper.getMappedClass((mappedField.isSingleValue()) ? mappedField.getType() : mappedField.getSubClass());
+            }
+        }
+        return mc;
     }
 
     static void validateTypes(@NotNull ValidatedField validatedField, FilterOperator operator,
