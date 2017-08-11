@@ -1,27 +1,25 @@
 package org.mongodb.morphia.query;
 
+import org.jetbrains.annotations.NotNull;
+
 import static java.lang.String.format;
 
 class ValidationExceptionFactory {
-    private final String fieldName;
-    private final String className;
-    private final String queryPath;
+    private final String propertyPath;
 
-    ValidationExceptionFactory(String fieldName, String className, String queryPath) {
-        this.fieldName = fieldName;
-        this.className = className;
-        this.queryPath = queryPath;
+    ValidationExceptionFactory(@NotNull String propertyPath) {
+        this.propertyPath = propertyPath;
     }
 
-    ValidationException fieldNotFoundException() {
+    ValidationException fieldNotFoundException(String className, String fieldName) {
         return new ValidationException(format(
                 "The field '%s' could not be found in '%s' while validating - %s; if you wish " +
-                "to continue please disable validation.", fieldName, className, queryPath));
+                "to continue please disable validation.", fieldName, className, propertyPath));
     }
 
-    ValidationException queryingReferenceFieldsException() {
+    ValidationException queryingReferenceFieldsException(String className, String fieldName) {
         return new ValidationException(format("Cannot use dot-notation past '%s' in '%s'; found " +
-                                           "while validating - %s", fieldName, className, queryPath));
+                                           "while validating - %s", fieldName, className, propertyPath));
 
     }
 }

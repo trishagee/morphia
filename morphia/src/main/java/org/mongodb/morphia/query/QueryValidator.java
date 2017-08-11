@@ -48,7 +48,8 @@ final class QueryValidator {
     static ValidatedField validateQuery(@Nullable final Class clazz, @NotNull final Mapper mapper,
                                         @NotNull final String propertyPath, final boolean validateNames) {
         final ValidatedField returnValue = new ValidatedField();
-        final FieldName fieldName = new FieldName(propertyPath);
+        final ValidationExceptionFactory exceptionFactory = new ValidationExceptionFactory(propertyPath);
+        final FieldName fieldName = new FieldName(propertyPath, validateNames, exceptionFactory);
         returnValue.fieldName = fieldName;
         if (clazz == null) {
             return returnValue;
@@ -57,55 +58,35 @@ final class QueryValidator {
         if (!isOperator(propertyPath)) {
             MappedClass mc = mapper.getMappedClass(clazz);
             returnValue.mappedClass = mc;
+            fieldName.setMappedClass(mc);
 
             while (fieldName.hasMoreElements()) {
-                mc = validateField(mapper, propertyPath, validateNames, returnValue, fieldName, mc);
+                mc = validateField(mapper, returnValue, fieldName,
+                                   mc);
             }
         }
         return returnValue;
     }
 
-    private static MappedClass validateField(@NotNull Mapper mapper, @NotNull String
-            propertyPath, boolean validateNames, ValidatedField returnValue, FieldName fieldName,
+    private static MappedClass validateField(@NotNull Mapper mapper, ValidatedField returnValue, FieldName fieldName,
                                              MappedClass mc) {
         Optional<MappedField> mf;
-        final String name = fieldName.nextElement();
-        final ValidationExceptionFactory exceptionFactory = new ValidationExceptionFactory(name, mc.getClazz().getName(), propertyPath);
+        fieldName.nextElement();
+        returnValue.mappedClass = mc;
 
-        if (isArrayOperator(name)) {
+        if (fieldName.isArrayOperator()) {
             // ignore and move on
             return mc;
         }
 
-        mf = mc.getMappedField(name);
-
-        //translate from java field name to stored field name
-        if (!mf.isPresent()) {
-            mf = getMappedFieldFromJavaName(validateNames, fieldName, mc, name, exceptionFactory);
-        }
+        mf = fieldName.getMappedField(mc);
         returnValue.mappedField = mf.orElse(null);
 
-        if (mf.isPresent() && mf.get().isMap()) {
-            //skip the map key validation, and move to the next part
-            if (fieldName.hasMoreElements()) {
-                fieldName.nextElement();
-            }
+        if (fieldName.isMap()) {
             return mc;
         }
-        if (fieldName.hasMoreElements()) {
-            // look ahead to the next element, some stuff can only be validated from the
-            // context of the current element
 
-            //catch people trying to search/update into @Reference/@Serialized fields
-            if (validateNames && !canQueryPast(mf.get())) {
-                throw exceptionFactory.queryingReferenceFieldsException();
-            }
-            //get the next MappedClass for the next field validation
-            if (mf.isPresent()) {
-                MappedField mappedField = mf.get();
-                mc = mapper.getMappedClass((mappedField.isSingleValue()) ? mappedField.getType() : mappedField.getSubClass());
-            }
-        }
+        mc = fieldName.prepForNext(mapper);
         return mc;
     }
 
@@ -141,14 +122,10 @@ final class QueryValidator {
                                                                     ValidationExceptionFactory exceptionFactory) {
         Optional<MappedField> mf = mc.getMappedFieldByJavaField(javaFieldName);
         if (validateNames && !mf.isPresent()) {
-            throw exceptionFactory.fieldNotFoundException();
+            throw exceptionFactory.fieldNotFoundException(mc.getClazz().getName(), javaFieldName);
         }
         mf.ifPresent(mappedField -> fieldName.setMongoName(mappedField.getNameToStore()));
         return mf;
-    }
-
-    private static boolean isArrayOperator(@NotNull final String propertyName) {
-        return propertyName.equals("$");
     }
 
     private static boolean isOperator(@NotNull final String propertyName) {
@@ -211,18 +188,29 @@ final class QueryValidator {
 
     private static class FieldName implements Enumeration<String> {
         private final String[] javaObjectFieldTokens;
+        private final boolean validateNames;
+        private final ValidationExceptionFactory exceptionFactory;
         private final List<String> mongoFieldTokens;
-        private final String path;
-        private int cursor = 0;
 
-        public FieldName(String path) {
-            this.path = path;
+        private int cursor = 0;
+        private String currentNameElement;
+        private Optional<MappedField> mf;
+        private MappedClass mc;
+
+        public FieldName(String path, boolean validateNames, ValidationExceptionFactory
+                exceptionFactory) {
             javaObjectFieldTokens = path.split("\\.");
+            this.validateNames = validateNames;
+            this.exceptionFactory = exceptionFactory;
             mongoFieldTokens = new ArrayList<>(Arrays.asList(javaObjectFieldTokens));
         }
 
-        public void setMongoName(String nameToStore) {
+        private void setMongoName(String nameToStore) {
             mongoFieldTokens.set(cursor - 1, nameToStore);
+        }
+
+        private void setMappedClass(MappedClass mc) {
+            this.mc = mc;
         }
 
         public boolean hasMoreElements() {
@@ -230,11 +218,58 @@ final class QueryValidator {
         }
 
         public String nextElement() {
-            return javaObjectFieldTokens[cursor++];
+            currentNameElement = javaObjectFieldTokens[cursor++];
+            return currentNameElement;
         }
 
         public String getMongoName() {
             return mongoFieldTokens.stream().collect(joining("."));
+        }
+
+        private boolean isArrayOperator() {
+            return currentNameElement.equals("$");
+        }
+
+        //side effects
+        public Optional<MappedField> getMappedField(MappedClass mc) {
+            mf = mc.getMappedField(currentNameElement);
+            //translate from java field name to stored field name
+            if (!mf.isPresent()) {
+                mf = getMappedFieldFromJavaName(validateNames, this, mc, currentNameElement,
+                                                exceptionFactory);
+            }
+            return mf;
+        }
+
+        //side effects
+        public boolean isMap() {
+            if (mf.isPresent() && mf.get().isMap()) {
+                //over the map keys
+                if (hasMoreElements()) {
+                    nextElement();
+                }
+                return true;
+            }
+            return false;
+        }
+
+        public MappedClass prepForNext(Mapper mapper) {
+            if (hasMoreElements()) {
+                // look ahead to the next element, some stuff can only be validated from the
+                // context of the current element
+
+                //catch people trying to search/update into @Reference/@Serialized fields
+                if (validateNames && !canQueryPast(mf.get())) {
+                    throw exceptionFactory.queryingReferenceFieldsException(mc.getClazz().getName
+                            (), currentNameElement);
+                }
+                //get the next MappedClass for the next field validation
+                if (mf.isPresent()) {
+                    MappedField mappedField = mf.get();
+                    mc = mapper.getMappedClass((mappedField.isSingleValue()) ? mappedField.getType() : mappedField.getSubClass());
+                }
+            }
+            return mc;
         }
     }
 }
