@@ -227,13 +227,13 @@ final class QueryValidator {
                 // context of the current element
 
                 //catch people trying to search/update into @Reference/@Serialized fields
-                if (validateNames && !canQueryPast(mf.get())) {
+                if (validateNames && !canQueryPast(currentElement.mf.get())) {
                     throw exceptionFactory.queryingReferenceFieldsException(mc.getClazz().getName
                             (), currentNameElement);
                 }
                 //get the next MappedClass for the next field validation
-                if (mf.isPresent()) {
-                    MappedField mappedField = mf.get();
+                if (currentElement.mf.isPresent()) {
+                    MappedField mappedField = currentElement.mf.get();
                     mc = mapper.getMappedClass((mappedField.isSingleValue()) ? mappedField.getType() : mappedField.getSubClass());
                 }
             }
