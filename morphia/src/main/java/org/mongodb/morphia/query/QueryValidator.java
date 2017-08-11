@@ -186,10 +186,6 @@ final class QueryValidator {
             }
         }
 
-        private void setMongoName(String nameToStore) {
-            currentElement.setMongoDBName(nameToStore);
-        }
-
         private void setMappedClass(MappedClass mc) {
             this.mc = mc;
         }
@@ -210,15 +206,7 @@ final class QueryValidator {
         }
 
         private void calculateMappedField() {
-            mf = mc.getMappedField(currentNameElement);
-            //translate from java field name to stored field name
-            if (!mf.isPresent()) {
-                mf = mc.getMappedFieldByJavaField(currentNameElement);
-                if (validateNames && !mf.isPresent()) {
-                    throw exceptionFactory.fieldNotFoundException(mc.getClazz().getName(), currentNameElement);
-                }
-                mf.ifPresent(mappedField -> setMongoName(mappedField.getNameToStore()));
-            }
+            mf = currentElement.calculateMappedField(mc, validateNames, exceptionFactory);
         }
 
         //side effects
@@ -256,22 +244,33 @@ final class QueryValidator {
     private static class FieldPathElement {
         private final String javaElementName;
         private String mongoDBElementName;
+        private Optional<MappedField> mf = Optional.empty();
 
-        public FieldPathElement(String javaElementName) {
+        private FieldPathElement(String javaElementName) {
             this.javaElementName = javaElementName;
             this.mongoDBElementName = javaElementName; //for now
         }
 
-        public void setMongoDBName(String mongoDBName) {
-            this.mongoDBElementName = mongoDBName;
-        }
-
-        public String getMongoDBElementName() {
+        String getMongoDBElementName() {
             return mongoDBElementName;
         }
 
-        public boolean isArrayOperator() {
+        private boolean isArrayOperator() {
             return javaElementName.equals("$");
+        }
+
+        private Optional<MappedField> calculateMappedField(MappedClass mc, boolean validateNames,
+                                                          ValidationExceptionFactory exceptionFactory) {
+            mf = mc.getMappedField(javaElementName);
+            //translate from java field name to stored field name
+            if (!mf.isPresent()) {
+                mf = mc.getMappedFieldByJavaField(javaElementName);
+                if (validateNames && !mf.isPresent()) {
+                    throw exceptionFactory.fieldNotFoundException(mc.getClazz().getName(), javaElementName);
+                }
+                mf.ifPresent(mappedField -> mongoDBElementName = mappedField.getNameToStore());
+            }
+            return mf;
         }
     }
 }
