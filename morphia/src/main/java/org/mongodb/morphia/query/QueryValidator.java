@@ -27,7 +27,6 @@ import org.mongodb.morphia.query.validation.SizeOperationValidator;
 import org.mongodb.morphia.query.validation.ValidationFailure;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Optional;
@@ -48,25 +47,25 @@ final class QueryValidator {
     static ValidatedField validateQuery(@Nullable final Class clazz, @NotNull final Mapper mapper,
                                         @NotNull final String propertyPath, final boolean validateNames) {
         final ValidationExceptionFactory exceptionFactory = new ValidationExceptionFactory(propertyPath);
-        final FieldName fieldName = new FieldName(propertyPath, validateNames, exceptionFactory,
+        final FieldPath fieldPath = new FieldPath(propertyPath, validateNames, exceptionFactory,
                                                   mapper);
-        final ValidatedField returnValue = new ValidatedField(fieldName);
+        final ValidatedField returnValue = new ValidatedField(fieldPath);
         if (clazz == null) {
             return returnValue;
         }
 
         if (!isOperator(propertyPath)) {
             MappedClass mc = mapper.getMappedClass(clazz);
-            fieldName.setMappedClass(mc);
+            fieldPath.setMappedClass(mc);
 
-            while (fieldName.hasMoreElements()) {
-                fieldName.nextElement();
+            while (fieldPath.hasMoreElements()) {
+                fieldPath.nextElement();
 
-                if (!fieldName.isArrayOperator()) {
-                    fieldName.calculateMappedField();
+                if (!fieldPath.isArrayOperator()) {
+                    fieldPath.calculateMappedField();
 
-                    if (!fieldName.isMap()) {
-                        fieldName.prepForNext();
+                    if (!fieldPath.isMap()) {
+                        fieldPath.prepForNext();
                     }
                 }
             }
@@ -141,39 +140,40 @@ final class QueryValidator {
     }
 
     static class ValidatedField {
-        private final FieldName fieldName;
+        private final FieldPath fieldPath;
 
-        ValidatedField(FieldName fieldName) {
-            this.fieldName = fieldName;
+        ValidatedField(FieldPath fieldPath) {
+            this.fieldPath = fieldPath;
         }
 
         @Nullable
         public MappedField getMappedField() {
-            return fieldName.mf.orElse(null);
+            return fieldPath.mf.orElse(null);
         }
 
         public String getStoredFieldName() {
-            return fieldName.getMongoName();
+            return fieldPath.getMongoName();
         }
 
         public MappedClass getMappedClass() {
-            return fieldName.mc;
+            return fieldPath.mc;
         }
     }
 
-    static class FieldName implements Enumeration<String> {
+    static class FieldPath implements Enumeration<String> {
         private final String[] javaObjectFieldTokens;
         private final boolean validateNames;
         private final ValidationExceptionFactory exceptionFactory;
         private final Mapper mapper;
-        private final List<String> mongoFieldTokens;
+        private final List<FieldPathElement> elements = new ArrayList<>();
 
         private int cursor = 0;
         private String currentNameElement;
         private Optional<MappedField> mf = Optional.empty();
         private MappedClass mc;
+        private FieldPathElement currentElement;
 
-        public FieldName(@NotNull final String path,
+        public FieldPath(@NotNull final String path,
                          final boolean validateNames,
                          @NotNull final ValidationExceptionFactory exceptionFactory,
                          @NotNull Mapper mapper) {
@@ -181,11 +181,13 @@ final class QueryValidator {
             this.exceptionFactory = exceptionFactory;
             this.mapper = mapper;
             javaObjectFieldTokens = path.split("\\.");
-            mongoFieldTokens = new ArrayList<>(Arrays.asList(javaObjectFieldTokens));
+            for (String javaObjectFieldToken : javaObjectFieldTokens) {
+                elements.add(new FieldPathElement(javaObjectFieldToken));
+            }
         }
 
         private void setMongoName(String nameToStore) {
-            mongoFieldTokens.set(cursor - 1, nameToStore);
+            currentElement.setMongoDBName(nameToStore);
         }
 
         private void setMappedClass(MappedClass mc) {
@@ -197,12 +199,14 @@ final class QueryValidator {
         }
 
         public String nextElement() {
+            currentElement = elements.get(cursor);
             currentNameElement = javaObjectFieldTokens[cursor++];
             return currentNameElement;
         }
 
         private String getMongoName() {
-            return mongoFieldTokens.stream().collect(joining("."));
+            return elements.stream().map(FieldPathElement::getMongoDBElementName)
+                           .collect(joining("."));
         }
 
         private boolean isArrayOperator() {
@@ -250,6 +254,24 @@ final class QueryValidator {
                     mc = mapper.getMappedClass((mappedField.isSingleValue()) ? mappedField.getType() : mappedField.getSubClass());
                 }
             }
+        }
+    }
+
+    private static class FieldPathElement {
+        private final String javaElementName;
+        private String mongoDBElementName;
+
+        public FieldPathElement(String javaElementName) {
+            this.javaElementName = javaElementName;
+            this.mongoDBElementName = javaElementName; //for now
+        }
+
+        public void setMongoDBName(String mongoDBName) {
+            this.mongoDBElementName = mongoDBName;
+        }
+
+        public String getMongoDBElementName() {
+            return mongoDBElementName;
         }
     }
 }
