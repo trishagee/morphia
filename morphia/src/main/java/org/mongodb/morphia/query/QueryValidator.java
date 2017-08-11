@@ -59,9 +59,9 @@ final class QueryValidator {
             fieldPath.setMappedClass(mc);
 
             while (fieldPath.hasMoreElements()) {
-                fieldPath.nextElement();
+                final FieldPathElement element = fieldPath.nextElement();
 
-                if (!fieldPath.isArrayOperator()) {
+                if (!element.isArrayOperator()) {
                     fieldPath.calculateMappedField();
 
                     if (!fieldPath.isMap()) {
@@ -160,7 +160,7 @@ final class QueryValidator {
         }
     }
 
-    static class FieldPath implements Enumeration<String> {
+    static class FieldPath implements Enumeration<FieldPathElement> {
         private final String[] javaObjectFieldTokens;
         private final boolean validateNames;
         private final ValidationExceptionFactory exceptionFactory;
@@ -198,19 +198,15 @@ final class QueryValidator {
             return cursor < javaObjectFieldTokens.length;
         }
 
-        public String nextElement() {
+        public FieldPathElement nextElement() {
             currentElement = elements.get(cursor);
             currentNameElement = javaObjectFieldTokens[cursor++];
-            return currentNameElement;
+            return currentElement;
         }
 
         private String getMongoName() {
             return elements.stream().map(FieldPathElement::getMongoDBElementName)
                            .collect(joining("."));
-        }
-
-        private boolean isArrayOperator() {
-            return currentNameElement.equals("$");
         }
 
         private void calculateMappedField() {
@@ -272,6 +268,10 @@ final class QueryValidator {
 
         public String getMongoDBElementName() {
             return mongoDBElementName;
+        }
+
+        public boolean isArrayOperator() {
+            return javaElementName.equals("$");
         }
     }
 }
