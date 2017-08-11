@@ -60,22 +60,18 @@ final class QueryValidator {
             fieldName.setMappedClass(mc);
 
             while (fieldName.hasMoreElements()) {
-                validateField(fieldName);
+                fieldName.nextElement();
+
+                if (!fieldName.isArrayOperator()) {
+                    fieldName.calculateMappedField();
+
+                    if (!fieldName.isMap()) {
+                        fieldName.prepForNext();
+                    }
+                }
             }
         }
         return returnValue;
-    }
-
-    private static void validateField(FieldName fieldName) {
-        fieldName.nextElement();
-
-        if (!fieldName.isArrayOperator()) {
-            fieldName.calculateMappedField();
-
-            if (!fieldName.isMap()) {
-                fieldName.prepForNext();
-            }
-        }
     }
 
     static void validateTypes(@NotNull ValidatedField validatedField, FilterOperator operator,
@@ -100,20 +96,6 @@ final class QueryValidator {
                 }
             }
         }
-    }
-
-    @NotNull
-    private static Optional<MappedField> getMappedFieldFromJavaName(boolean validateNames,
-                                                                    FieldName fieldName,
-                                                                    MappedClass mc,
-                                                                    String javaFieldName,
-                                                                    ValidationExceptionFactory exceptionFactory) {
-        Optional<MappedField> mf = mc.getMappedFieldByJavaField(javaFieldName);
-        if (validateNames && !mf.isPresent()) {
-            throw exceptionFactory.fieldNotFoundException(mc.getClazz().getName(), javaFieldName);
-        }
-        mf.ifPresent(mappedField -> fieldName.setMongoName(mappedField.getNameToStore()));
-        return mf;
     }
 
     private static boolean isOperator(@NotNull final String propertyName) {
@@ -191,8 +173,10 @@ final class QueryValidator {
         private Optional<MappedField> mf = Optional.empty();
         private MappedClass mc;
 
-        public FieldName(String path, boolean validateNames, ValidationExceptionFactory
-                exceptionFactory, @NotNull Mapper mapper) {
+        public FieldName(@NotNull final String path,
+                         final boolean validateNames,
+                         @NotNull final ValidationExceptionFactory exceptionFactory,
+                         @NotNull Mapper mapper) {
             this.validateNames = validateNames;
             this.exceptionFactory = exceptionFactory;
             this.mapper = mapper;
@@ -217,7 +201,7 @@ final class QueryValidator {
             return currentNameElement;
         }
 
-        public String getMongoName() {
+        private String getMongoName() {
             return mongoFieldTokens.stream().collect(joining("."));
         }
 
@@ -225,17 +209,20 @@ final class QueryValidator {
             return currentNameElement.equals("$");
         }
 
-        public void calculateMappedField() {
+        private void calculateMappedField() {
             mf = mc.getMappedField(currentNameElement);
             //translate from java field name to stored field name
             if (!mf.isPresent()) {
-                mf = getMappedFieldFromJavaName(validateNames, this, mc, currentNameElement,
-                                                exceptionFactory);
+                mf = mc.getMappedFieldByJavaField(currentNameElement);
+                if (validateNames && !mf.isPresent()) {
+                    throw exceptionFactory.fieldNotFoundException(mc.getClazz().getName(), currentNameElement);
+                }
+                mf.ifPresent(mappedField -> setMongoName(mappedField.getNameToStore()));
             }
         }
 
         //side effects
-        public boolean isMap() {
+        private boolean isMap() {
             if (mf.isPresent() && mf.get().isMap()) {
                 //skip over the map keys
                 if (hasMoreElements()) {
@@ -247,7 +234,7 @@ final class QueryValidator {
         }
 
         //side effects
-        public void prepForNext() {
+        private void prepForNext() {
             if (hasMoreElements()) {
                 // look ahead to the next element, some stuff can only be validated from the
                 // context of the current element
