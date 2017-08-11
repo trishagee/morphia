@@ -27,7 +27,6 @@ import org.mongodb.morphia.query.validation.SizeOperationValidator;
 import org.mongodb.morphia.query.validation.ValidationFailure;
 
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -60,15 +59,7 @@ final class QueryValidator {
             fieldPath.setMappedClass(mc);
 
             while (fieldPath.hasMoreElements()) {
-                final FieldPathElement element = fieldPath.nextElement();
-
-                if (!element.isArrayOperator()) {
-                    fieldPath.calculateMappedField();
-
-                    if (!fieldPath.skipIfMap()) {
-                        fieldPath.prepForNext();
-                    }
-                }
+                fieldPath.nextElement();
             }
         }
         return returnValue;
@@ -161,7 +152,7 @@ final class QueryValidator {
         }
     }
 
-    static class FieldPath implements Enumeration<FieldPathElement> {
+    static class FieldPath {
         private final String[] javaObjectFieldTokens;
         private final boolean validateNames;
         private final ValidationExceptionFactory exceptionFactory;
@@ -189,13 +180,31 @@ final class QueryValidator {
             this.mc = mc;
         }
 
-        public boolean hasMoreElements() {
+        private boolean hasMoreElements() {
             return cursor < javaObjectFieldTokens.length;
         }
 
-        public FieldPathElement nextElement() {
-            currentElement = elements.get(cursor++);
-            return currentElement;
+        void nextElement() {
+            if (hasMoreElements()) {
+                currentElement = elements.get(cursor++);
+                if (currentElement.isArrayOperator()) {
+                    //skip and move on
+                    nextElement();
+                    return;
+                }
+                calculateMappedField();
+
+                if (currentElement.isMap()) {
+                    cursor++;
+                    nextElement();
+                    return;
+                }
+                prepForNext();
+            } else {
+                // in the case that the last element was a Map, but the Map keys weren't
+                // mentioned, cursor may have been over-incremented
+                cursor = elements.size();
+            }
         }
 
         private String getMongoName() {
@@ -217,17 +226,6 @@ final class QueryValidator {
 
         private void calculateMappedField() {
             currentElement.calculateMappedField(mc, validateNames, exceptionFactory);
-        }
-
-        //side effects
-        private boolean skipIfMap() {
-            if (currentElement.isMap()) {
-                if (hasMoreElements()) {
-                    nextElement();
-                }
-                return true;
-            }
-            return false;
         }
 
         //side effects
