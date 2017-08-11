@@ -28,6 +28,7 @@ import org.mongodb.morphia.query.validation.ValidationFailure;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -148,7 +149,7 @@ final class QueryValidator {
 
         @Nullable
         public MappedField getMappedField() {
-            return fieldPath.mf.orElse(null);
+            return fieldPath.getMappedField();
         }
 
         public String getStoredFieldName() {
@@ -165,11 +166,9 @@ final class QueryValidator {
         private final boolean validateNames;
         private final ValidationExceptionFactory exceptionFactory;
         private final Mapper mapper;
-        private final List<FieldPathElement> elements = new ArrayList<>();
+        private final LinkedList<FieldPathElement> elements = new LinkedList<>();
 
         private int cursor = 0;
-        private String currentNameElement;
-        private Optional<MappedField> mf = Optional.empty();
         private MappedClass mc;
         private FieldPathElement currentElement;
 
@@ -195,8 +194,7 @@ final class QueryValidator {
         }
 
         public FieldPathElement nextElement() {
-            currentElement = elements.get(cursor);
-            currentNameElement = javaObjectFieldTokens[cursor++];
+            currentElement = elements.get(cursor++);
             return currentElement;
         }
 
@@ -205,8 +203,20 @@ final class QueryValidator {
                            .collect(joining("."));
         }
 
+        // works out the MappedField for this field path by walking up the path to find the last
+        // known MappedField
+        private MappedField getMappedField() {
+            for (int i = cursor - 1; i >= 0; i--) {
+                final Optional<MappedField> mappedField = elements.get(i).mf;
+                if (mappedField.isPresent()) {
+                    return mappedField.get();
+                }
+            }
+            return null;
+        }
+
         private void calculateMappedField() {
-            mf = currentElement.calculateMappedField(mc, validateNames, exceptionFactory);
+            currentElement.calculateMappedField(mc, validateNames, exceptionFactory);
         }
 
         //side effects
@@ -229,7 +239,7 @@ final class QueryValidator {
                 //catch people trying to search/update into @Reference/@Serialized fields
                 if (validateNames && !canQueryPast(currentElement.mf.get())) {
                     throw exceptionFactory.queryingReferenceFieldsException(mc.getClazz().getName
-                            (), currentNameElement);
+                            (), currentElement.javaElementName);
                 }
                 //get the next MappedClass for the next field validation
                 if (currentElement.mf.isPresent()) {
@@ -262,8 +272,8 @@ final class QueryValidator {
             return mf.isPresent() && mf.get().isMap();
         }
 
-        private Optional<MappedField> calculateMappedField(MappedClass mc, boolean validateNames,
-                                                          ValidationExceptionFactory exceptionFactory) {
+        private void calculateMappedField(MappedClass mc, boolean validateNames,
+                                          ValidationExceptionFactory exceptionFactory) {
             mf = mc.getMappedField(javaElementName);
             //translate from java field name to stored field name
             if (!mf.isPresent()) {
@@ -273,7 +283,6 @@ final class QueryValidator {
                 }
                 mf.ifPresent(mappedField -> mongoDBElementName = mappedField.getNameToStore());
             }
-            return mf;
         }
     }
 }
