@@ -56,11 +56,7 @@ final class QueryValidator {
 
         if (!isOperator(propertyPath)) {
             MappedClass mc = mapper.getMappedClass(clazz);
-            fieldPath.setMappedClass(mc);
-
-            while (fieldPath.hasMoreElements()) {
-                fieldPath.nextElement();
-            }
+            fieldPath.populateAndCheck(mc);
         }
         return returnValue;
     }
@@ -176,27 +172,30 @@ final class QueryValidator {
             }
         }
 
-        private void setMappedClass(MappedClass mc) {
+        void populateAndCheck(MappedClass mc) {
             this.mc = mc;
+            while (hasMoreElements()) {
+                populateAndCheckNextElement();
+            }
         }
 
         private boolean hasMoreElements() {
             return cursor < javaObjectFieldTokens.length;
         }
 
-        void nextElement() {
+        private void populateAndCheckNextElement() {
             if (hasMoreElements()) {
                 currentElement = elements.get(cursor++);
                 if (currentElement.isArrayOperator()) {
                     //skip and move on
-                    nextElement();
+                    populateAndCheckNextElement();
                     return;
                 }
-                calculateMappedField();
+                currentElement.calculateMappedField(mc, validateNames, exceptionFactory);
 
                 if (currentElement.isMap()) {
                     cursor++;
-                    nextElement();
+                    populateAndCheckNextElement();
                     return;
                 }
                 prepForNext();
@@ -222,10 +221,6 @@ final class QueryValidator {
                 }
             }
             return null;
-        }
-
-        private void calculateMappedField() {
-            currentElement.calculateMappedField(mc, validateNames, exceptionFactory);
         }
 
         //side effects
