@@ -36,7 +36,6 @@ import static org.mongodb.morphia.query.FilterOperator.MOD;
 import static org.mongodb.morphia.query.FilterOperator.NOT_IN;
 import static org.mongodb.morphia.query.FilterOperator.SIZE;
 import static org.mongodb.morphia.query.QueryValidator.validateQuery;
-import static org.mongodb.morphia.query.QueryValidator.validateTypes;
 
 public class QueryValidatorTest {
     @Rule
@@ -452,14 +451,6 @@ public class QueryValidatorTest {
         // caught.
         // when this is called, don't error
         validateQuery(SimpleEntity.class, new Mapper(), "name", true);
-    }
-
-    @Test
-    public void shouldNotErrorWhenValidateTypesCalledWithNullValue() throws NoSuchFieldException {
-        // this unit test is to drive fixing a null pointer in the logging code.  It's a bit stupid but it's an edge case that wasn't
-        // caught.
-        // when this is called, don't error
-        validateTypes(new ValidatedField(), EQUAL, null);
     }
 
     @Test

@@ -47,54 +47,42 @@ final class QueryValidator {
     @NotNull
     static ValidatedField validateQuery(@Nullable final Class clazz, @NotNull final Mapper mapper,
                                         @NotNull final String propertyPath, final boolean validateNames) {
-        final ValidatedField returnValue = new ValidatedField();
         final ValidationExceptionFactory exceptionFactory = new ValidationExceptionFactory(propertyPath);
-        final FieldName fieldName = new FieldName(propertyPath, validateNames, exceptionFactory);
-        returnValue.fieldName = fieldName;
+        final FieldName fieldName = new FieldName(propertyPath, validateNames, exceptionFactory,
+                                                  mapper);
+        final ValidatedField returnValue = new ValidatedField(fieldName);
         if (clazz == null) {
             return returnValue;
         }
 
         if (!isOperator(propertyPath)) {
             MappedClass mc = mapper.getMappedClass(clazz);
-            returnValue.mappedClass = mc;
             fieldName.setMappedClass(mc);
 
             while (fieldName.hasMoreElements()) {
-                mc = validateField(mapper, returnValue, fieldName,
-                                   mc);
+                validateField(fieldName);
             }
         }
         return returnValue;
     }
 
-    private static MappedClass validateField(@NotNull Mapper mapper, ValidatedField returnValue, FieldName fieldName,
-                                             MappedClass mc) {
-        Optional<MappedField> mf;
+    private static void validateField(FieldName fieldName) {
         fieldName.nextElement();
-        returnValue.mappedClass = mc;
 
-        if (fieldName.isArrayOperator()) {
-            // ignore and move on
-            return mc;
+        if (!fieldName.isArrayOperator()) {
+            fieldName.calculateMappedField();
+
+            if (!fieldName.isMap()) {
+                fieldName.prepForNext();
+            }
         }
-
-        mf = fieldName.getMappedField(mc);
-        returnValue.mappedField = mf.orElse(null);
-
-        if (fieldName.isMap()) {
-            return mc;
-        }
-
-        mc = fieldName.prepForNext(mapper);
-        return mc;
     }
 
     static void validateTypes(@NotNull ValidatedField validatedField, FilterOperator operator,
                               Object value) {
         List<ValidationFailure> validationFailures = new ArrayList<>();
-        final MappedField mappedField = validatedField.mappedField;
-        final MappedClass mc = validatedField.mappedClass;
+        final MappedField mappedField = validatedField.getMappedField();
+        final MappedClass mc = validatedField.getMappedClass();
         if (mappedField != null) {
             boolean compatibleForType = isCompatibleForOperator(mc, mappedField, mappedField.getType(), operator, value, validationFailures);
             boolean compatibleForSubclass = isCompatibleForOperator(mc, mappedField, mappedField.getSubClass(), operator, value, validationFailures);
@@ -171,37 +159,44 @@ final class QueryValidator {
     }
 
     static class ValidatedField {
-        @Nullable
-        private MappedField mappedField;
-        private MappedClass mappedClass;
-        private FieldName fieldName;
+        private final FieldName fieldName;
+
+        ValidatedField(FieldName fieldName) {
+            this.fieldName = fieldName;
+        }
 
         @Nullable
         public MappedField getMappedField() {
-            return mappedField;
+            return fieldName.mf.orElse(null);
         }
 
         public String getStoredFieldName() {
             return fieldName.getMongoName();
         }
+
+        public MappedClass getMappedClass() {
+            return fieldName.mc;
+        }
     }
 
-    private static class FieldName implements Enumeration<String> {
+    static class FieldName implements Enumeration<String> {
         private final String[] javaObjectFieldTokens;
         private final boolean validateNames;
         private final ValidationExceptionFactory exceptionFactory;
+        private final Mapper mapper;
         private final List<String> mongoFieldTokens;
 
         private int cursor = 0;
         private String currentNameElement;
-        private Optional<MappedField> mf;
+        private Optional<MappedField> mf = Optional.empty();
         private MappedClass mc;
 
         public FieldName(String path, boolean validateNames, ValidationExceptionFactory
-                exceptionFactory) {
-            javaObjectFieldTokens = path.split("\\.");
+                exceptionFactory, @NotNull Mapper mapper) {
             this.validateNames = validateNames;
             this.exceptionFactory = exceptionFactory;
+            this.mapper = mapper;
+            javaObjectFieldTokens = path.split("\\.");
             mongoFieldTokens = new ArrayList<>(Arrays.asList(javaObjectFieldTokens));
         }
 
@@ -230,21 +225,19 @@ final class QueryValidator {
             return currentNameElement.equals("$");
         }
 
-        //side effects
-        public Optional<MappedField> getMappedField(MappedClass mc) {
+        public void calculateMappedField() {
             mf = mc.getMappedField(currentNameElement);
             //translate from java field name to stored field name
             if (!mf.isPresent()) {
                 mf = getMappedFieldFromJavaName(validateNames, this, mc, currentNameElement,
                                                 exceptionFactory);
             }
-            return mf;
         }
 
         //side effects
         public boolean isMap() {
             if (mf.isPresent() && mf.get().isMap()) {
-                //over the map keys
+                //skip over the map keys
                 if (hasMoreElements()) {
                     nextElement();
                 }
@@ -253,7 +246,8 @@ final class QueryValidator {
             return false;
         }
 
-        public MappedClass prepForNext(Mapper mapper) {
+        //side effects
+        public void prepForNext() {
             if (hasMoreElements()) {
                 // look ahead to the next element, some stuff can only be validated from the
                 // context of the current element
@@ -269,7 +263,6 @@ final class QueryValidator {
                     mc = mapper.getMappedClass((mappedField.isSingleValue()) ? mappedField.getType() : mappedField.getSubClass());
                 }
             }
-            return mc;
         }
     }
 }

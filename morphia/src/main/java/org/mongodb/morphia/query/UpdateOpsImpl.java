@@ -204,7 +204,7 @@ public class UpdateOpsImpl<T> implements UpdateOperations<T> {
         }
 
         Object val = null;
-        QueryValidator.ValidatedField validatedField = new QueryValidator.ValidatedField();
+        QueryValidator.ValidatedField validatedField = null;
         if (validateNames) {
             validatedField = validateQuery(clazz, mapper, f, validateNames);
             if (validateTypes) {
@@ -212,7 +212,7 @@ public class UpdateOpsImpl<T> implements UpdateOperations<T> {
             }
         }
 
-        if (convert) {
+        if (convert && validatedField != null) {
             final MappedField mf = validatedField.getMappedField();
             if (UpdateOperator.PULL_ALL.equals(op) && value instanceof List) {
                 val = toDBObjList(mf, (List<?>) value);
