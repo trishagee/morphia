@@ -64,7 +64,7 @@ final class QueryValidator {
                 if (!element.isArrayOperator()) {
                     fieldPath.calculateMappedField();
 
-                    if (!fieldPath.isMap()) {
+                    if (!fieldPath.skipIfMap()) {
                         fieldPath.prepForNext();
                     }
                 }
@@ -210,9 +210,8 @@ final class QueryValidator {
         }
 
         //side effects
-        private boolean isMap() {
-            if (mf.isPresent() && mf.get().isMap()) {
-                //skip over the map keys
+        private boolean skipIfMap() {
+            if (currentElement.isMap()) {
                 if (hasMoreElements()) {
                     nextElement();
                 }
@@ -257,6 +256,10 @@ final class QueryValidator {
 
         private boolean isArrayOperator() {
             return javaElementName.equals("$");
+        }
+
+        private boolean isMap() {
+            return mf.isPresent() && mf.get().isMap();
         }
 
         private Optional<MappedField> calculateMappedField(MappedClass mc, boolean validateNames,
