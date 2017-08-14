@@ -247,6 +247,7 @@ final class QueryValidator {
         private final String javaElementName;
         private String mongoDBElementName;
         private Optional<MappedField> mf = Optional.empty();
+        private MappedClass mc;
 
         private FieldPathElement(String javaElementName) {
             this.javaElementName = javaElementName;
@@ -267,6 +268,7 @@ final class QueryValidator {
 
         private void calculateMappedField(MappedClass mc, boolean validateNames,
                                           ValidationExceptionFactory exceptionFactory) {
+            this.mc = mc;
             mf = mc.getMappedField(javaElementName);
             //translate from java field name to stored field name
             if (!mf.isPresent()) {
