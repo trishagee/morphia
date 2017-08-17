@@ -724,7 +724,11 @@ public class MappedField {
     }
 
     boolean hasName(String storedName) {
-        return getLoadNames().stream()
-                             .anyMatch(storedName::equals);
+        for (String s : getLoadNames()) {
+            if (storedName.equals(s)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
