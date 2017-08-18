@@ -32,6 +32,7 @@ import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -259,16 +260,16 @@ public class MappedField {
     /**
      * @return the name of the field's (key)name for mongodb, in order of loading.
      */
-    public List<String> getLoadNames() {
-        final List<String> names = new ArrayList<String>();
-        names.add(getMappedFieldName());
+    public Set<String> getLoadNames() {
+        final Set<String> allFieldNames = new HashSet<String>();
+        allFieldNames.add(getMappedFieldName());
 
-        final AlsoLoad al = (AlsoLoad) foundAnnotations.get(AlsoLoad.class);
-        if (al != null && al.value() != null && al.value().length > 0) {
-            names.addAll(asList(al.value()));
+        final AlsoLoad alternativeFieldNames = (AlsoLoad) foundAnnotations.get(AlsoLoad.class);
+        if (alternativeFieldNames != null && alternativeFieldNames.value().length > 0) {
+            allFieldNames.addAll(asList(alternativeFieldNames.value()));
         }
 
-        return names;
+        return allFieldNames;
     }
 
     /**
@@ -724,11 +725,6 @@ public class MappedField {
     }
 
     boolean hasName(String storedName) {
-        for (String s : getLoadNames()) {
-            if (storedName.equals(s)) {
-                return true;
-            }
-        }
-        return false;
+        return getLoadNames().contains(storedName);
     }
 }
