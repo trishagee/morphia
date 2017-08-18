@@ -32,6 +32,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -88,15 +89,16 @@ public class MappedClass {
     private final Map<Class<? extends Annotation>, List<ClassMethodPair>> lifecycleMethods =
             new HashMap<>();
     /**
-     * a list of the fields to map
+     * Map of MappedFields keyed by field name
      */
-    private final List<MappedField> persistenceFields = new ArrayList<>();
+    private final Map<String, MappedField> persistenceFields = new HashMap<>();
+
     /**
      * the type we are mapping to/from
      */
     private final Class<?> clazz;
     /**
-     * special fields representing the Key of the object
+     * special persistenceFields representing the Key of the object
      */
     private java.lang.reflect.Field idField;
     /**
@@ -321,14 +323,14 @@ public class MappedClass {
     }
 
     /**
-     * Returns fields annotated with the clazz
+     * Returns persistenceFields annotated with the clazz
      *
      * @param clazz The Annotation to find.
-     * @return the list of fields
+     * @return the list of persistenceFields
      */
     public List<MappedField> getFieldsAnnotatedWith(final Class<? extends Annotation> clazz) {
         final List<MappedField> results = new ArrayList<>();
-        for (final MappedField mf : persistenceFields) {
+        for (final MappedField mf : persistenceFields.values()) {
             if (mf.getAnnotations().containsKey(clazz)) {
                 results.add(mf);
             }
@@ -371,7 +373,7 @@ public class MappedClass {
      * @return true if that mapped field name is found
      */
     public MappedField getMappedField(final String storedName) {
-        return persistenceFields.stream()
+        return persistenceFields.values().stream()
                                 .filter(mf -> mf.hasName(storedName))
                                 .findFirst()
                                 .orElse(null);
@@ -384,12 +386,7 @@ public class MappedClass {
      * @return the MappedField for the named Java field
      */
     public MappedField getMappedFieldByJavaField(final String name) {
-        for (final MappedField mf : persistenceFields) {
-            if (mf.getJavaFieldName().equals(name)) {
-                return mf;
-            }
-        }
-        return null;
+        return persistenceFields.get(name);
     }
 
     /**
@@ -411,8 +408,8 @@ public class MappedClass {
     /**
      * @return the persistenceFields
      */
-    public List<MappedField> getPersistenceFields() {
-        return persistenceFields;
+    public Collection<MappedField> getPersistenceFields() {
+        return persistenceFields.values();
     }
 
     /**
@@ -444,13 +441,14 @@ public class MappedClass {
 
     @Override
     public String toString() {
-        return "MappedClass - kind:" + getCollectionName() + " for " + getClazz().getName() + " fields:" + persistenceFields;
+        return "MappedClass - kind:" + getCollectionName() + " for " + getClazz().getName() +
+               " persistenceFields:" + persistenceFields.values();
     }
 
     /**
-     * Update mappings based on fields/annotations.
+     * Update mappings based on persistenceFields/annotations.
      */
-    // TODO: Remove this and make these fields dynamic or auto-set some other way
+    // TODO: Remove this and make these persistenceFields dynamic or auto-set some other way
     public void update() {
         embeddedAn = (Embedded) getAnnotation(Embedded.class);
         entityAn = (Entity) getFirstAnnotation(Entity.class);
@@ -509,19 +507,21 @@ public class MappedClass {
             field.setAccessible(true);
             final int fieldMods = field.getModifiers();
             if (!isIgnorable(field, fieldMods, mapper)) {
+                final MappedField mappedField = new MappedField(field, clazz, mapper);
                 if (field.isAnnotationPresent(Id.class)) {
-                    persistenceFields.add(new MappedField(field, clazz, mapper));
+                    persistenceFields.put(field.getName(), mappedField);
                     update();
                 } else if (field.isAnnotationPresent(Property.class)
                            || field.isAnnotationPresent(Reference.class)
                            || field.isAnnotationPresent(Embedded.class)
                            || field.isAnnotationPresent(Serialized.class)
                            || isSupportedType(field.getType())
-                           || ReflectionUtils.implementsInterface(field.getType(), Serializable.class)) {
-                    persistenceFields.add(new MappedField(field, clazz, mapper));
+                           || ReflectionUtils.implementsInterface(field.getType(), Serializable
+                        .class)) {
+                    persistenceFields.put(field.getName(), mappedField);
                 } else {
                     if (mapper.getOptions().getDefaultMapper() != null) {
-                        persistenceFields.add(new MappedField(field, clazz, mapper));
+                        persistenceFields.put(field.getName(), mappedField);
                     } else if (LOG.isWarningEnabled()) {
                         LOG.warning(format("Ignoring (will not persist) field: %s.%s [type:%s]", clazz.getName(), field.getName(),
                                            field.getType().getName()));
