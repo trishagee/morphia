@@ -42,47 +42,45 @@ final class QueryValidator {
      */
     static MappedField validateQuery(final Class clazz, final Mapper mapper, final StringBuilder origProp, final FilterOperator op,
                                      final Object val, final boolean validateNames, final boolean validateTypes) {
-        Optional<MappedField> mf = Optional.empty();
+        Optional<MappedField> retVal = Optional.empty();
         final String prop = origProp.toString();
         boolean hasTranslations = false;
 
         if (!origProp.substring(0, 1).equals("$")) {
-            final String[] parts = prop.split("\\.");
+            final String[] pathElements = prop.split("\\.");
             if (clazz == null) {
                 return null;
             }
 
             MappedClass mc = mapper.getMappedClass(clazz);
-            //CHECKSTYLE:OFF
-            for (int i = 0; ; ) {
-                //CHECKSTYLE:ON
-                final String part = parts[i];
-                boolean fieldIsArrayOperator = part.equals("$");
 
-                mf = mc.getMappedField(part);
+
+            for (int i = 0; ; ) {
+                final String fieldName = pathElements[i];
+                boolean fieldIsArrayOperator = fieldName.equals("$");
+
+                Optional<MappedField> mf = mc.getMappedField(fieldName);
 
                 //translate from java field name to stored field name
                 if (!mf.isPresent() && !fieldIsArrayOperator) {
-                    mf = mc.getMappedFieldByJavaField(part);
+                    mf = mc.getMappedFieldByJavaField(fieldName);
                     if (validateNames && !mf.isPresent()) {
-                        throw new ValidationException(format("The field '%s' could not be found in '%s' while validating - %s; if "
-                                                             + "you wish to continue please disable validation.", part,
-                                                             mc.getClazz().getName(), prop
-                                                            ));
+                        throw fieldNotFoundException(prop, mc, fieldName);
                     }
                     hasTranslations = true;
                     if (mf.isPresent()) {
-                        parts[i] = mf.get().getNameToStore();
+                        pathElements[i] = mf.get().getNameToStore();
                     }
                 }
 
                 i++;
                 if (mf.isPresent() && mf.get().isMap()) {
-                    //skip the map key validation, and move to the next part
+                    //skip the map key validation, and move to the next fieldName
                     i++;
                 }
 
-                if (i >= parts.length) {
+                retVal = mf;
+                if (i >= pathElements.length) {
                     break;
                 }
 
@@ -90,7 +88,7 @@ final class QueryValidator {
                     //catch people trying to search/update into @Reference/@Serialized fields
                     if (validateNames && !canQueryPast(mf.get())) {
                         throw new ValidationException(format("Cannot use dot-notation past '%s' in '%s'; found while"
-                                                             + " validating - %s", part, mc.getClazz().getName(), prop));
+                                                             + " validating - %s", fieldName, mc.getClazz().getName(), prop));
                     }
 
                     if (!mf.isPresent() && mc.isInterface()) {
@@ -107,15 +105,15 @@ final class QueryValidator {
             //record new property string if there has been a translation to any part
             if (hasTranslations) {
                 origProp.setLength(0); // clear existing content
-                origProp.append(parts[0]);
-                for (int i = 1; i < parts.length; i++) {
+                origProp.append(pathElements[0]);
+                for (int i = 1; i < pathElements.length; i++) {
                     origProp.append('.');
-                    origProp.append(parts[i]);
+                    origProp.append(pathElements[i]);
                 }
             }
 
-            if (validateTypes && mf.isPresent()) {
-                MappedField mappedField = mf.get();
+            if (validateTypes && retVal.isPresent()) {
+                MappedField mappedField = retVal.get();
                 List<ValidationFailure> typeValidationFailures = new ArrayList<>();
                 boolean compatibleForType = isCompatibleForOperator(mc, mappedField, mappedField.getType(), op, val, typeValidationFailures);
                 List<ValidationFailure> subclassValidationFailures = new ArrayList<>();
@@ -135,7 +133,16 @@ final class QueryValidator {
                 }
             }
         }
-        return mf.orElse(null);
+        return retVal.orElse(null);
+    }
+
+    @NotNull
+    private static ValidationException fieldNotFoundException(String prop, MappedClass mc, String
+            part) {
+        return new ValidationException(format("The field '%s' could not be found in '%s' while validating - %s; if "
+                                              + "you wish to continue please disable validation.", part,
+                                              mc.getClazz().getName(), prop
+                                            ));
     }
 
     private static boolean canQueryPast(@NotNull final MappedField mf) {
