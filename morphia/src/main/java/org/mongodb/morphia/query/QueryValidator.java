@@ -30,6 +30,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static java.lang.String.format;
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.joining;
 
 final class QueryValidator {
     private static final Logger LOG = MorphiaLoggerFactory.get(QueryValidator.class);
@@ -48,6 +50,7 @@ final class QueryValidator {
 
         if (!origProp.substring(0, 1).equals("$")) {
             final String[] pathElements = prop.split("\\.");
+            final List<String> databasePathElements = new ArrayList<>(asList(pathElements));
             if (clazz == null) {
                 return null;
             }
@@ -69,7 +72,7 @@ final class QueryValidator {
                     }
                     hasTranslations = true;
                     if (mf.isPresent()) {
-                        pathElements[i] = mf.get().getNameToStore();
+                        databasePathElements.set(i, mf.get().getNameToStore());
                     }
                 }
 
@@ -105,11 +108,7 @@ final class QueryValidator {
             //record new property string if there has been a translation to any part
             if (hasTranslations) {
                 origProp.setLength(0); // clear existing content
-                origProp.append(pathElements[0]);
-                for (int i = 1; i < pathElements.length; i++) {
-                    origProp.append('.');
-                    origProp.append(pathElements[i]);
-                }
+                origProp.append(databasePathElements.stream().collect(joining(".")));
             }
 
             if (validateTypes && retVal.isPresent()) {
