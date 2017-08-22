@@ -447,7 +447,8 @@ public class QueryValidatorTest {
         // this unit test is to drive fixing a null pointer in the logging code.  It's a bit stupid but it's an edge case that wasn't
         // caught.
         // when this is called, don't error
-        validateQuery(SimpleEntity.class, new Mapper(), new StringBuilder("name"), EQUAL, null, true, true);
+        final StringBuilder name = new StringBuilder("name");
+        validateQuery(SimpleEntity.class, new Mapper(), name.toString(), EQUAL, null, true, true);
     }
 
     @Test
@@ -470,22 +471,23 @@ public class QueryValidatorTest {
     public void shouldReferToMappedClassInExceptionWhenFieldNotFound() {
         thrown.expect(ValidationException.class);
         thrown.expectMessage("The field 'notAField' could not be found in 'org.bson.types.ObjectId'");
-        validateQuery(SimpleEntity.class, new Mapper(), new StringBuilder("id.notAField"), FilterOperator.EQUAL, 1, true, true);
+        validateQuery(SimpleEntity.class, new Mapper(), "id.notAField", FilterOperator.EQUAL, 1, true, true);
     }
 
     @Test
     public void shouldReferToMappedClassInExceptionWhenQueryingPastReferenceField() {
         thrown.expect(ValidationException.class);
         thrown.expectMessage("Cannot use dot-notation past 'reference' in 'org.mongodb.morphia.query.QueryValidatorTest$WithReference'");
-        validateQuery(WithReference.class, new Mapper(), new StringBuilder("reference.name"), FilterOperator.EQUAL, "", true, true);
+        validateQuery(WithReference.class, new Mapper(), "reference.name", FilterOperator.EQUAL, "", true, true);
     }
 
     @Test
     public void shouldReferToMappedClassInExceptionWhenQueryingPastSerializedField() {
         thrown.expect(ValidationException.class);
         thrown.expectMessage("Cannot use dot-notation past 'serialized' in "
-                             + "'org.mongodb.morphia.query.QueryValidatorTest$WithSerializedField'");
-        validateQuery(WithSerializedField.class, new Mapper(), new StringBuilder("serialized.name"), FilterOperator.EQUAL, "", true, true);
+                             + "'org.mongodb.morphia.query.QueryValidatorTest$WithSerializedField" +
+                             "'");
+        validateQuery(WithSerializedField.class, new Mapper(), "serialized.name", FilterOperator.EQUAL, "", true, true);
     }
 
     private static class GeoEntity {

@@ -42,13 +42,12 @@ final class QueryValidator {
     /**
      * Validate the path, and value type, returning the mapped field for the field at the path
      */
-    static ValidatedField validateQuery(final Class clazz, final Mapper mapper, final StringBuilder origProp, final FilterOperator op,
+    static ValidatedField validateQuery(final Class clazz, final Mapper mapper, String propertyName, final FilterOperator op,
                                         final Object val, final boolean validateNames, final boolean validateTypes) {
-        final String prop = origProp.toString();
-        final ValidatedField validatedField = new ValidatedField(prop);
+        final ValidatedField validatedField = new ValidatedField(propertyName);
 
-        if (!origProp.substring(0, 1).equals("$")) {
-            final String[] pathElements = prop.split("\\.");
+        if (!propertyName.startsWith("$")) {
+            final String[] pathElements = propertyName.split("\\.");
             final List<String> databasePathElements = new ArrayList<>(asList(pathElements));
             if (clazz == null) {
                 return validatedField;
@@ -61,7 +60,7 @@ final class QueryValidator {
                 boolean fieldIsArrayOperator = fieldName.equals("$");
 
                 final Optional<MappedField> mf = getMappedField(fieldName, mc, databasePathElements,
-                                                                i, prop, validateNames,
+                                                                i, propertyName, validateNames,
                                                                 fieldIsArrayOperator);
                 validatedField.mappedField = mf;
 
@@ -79,13 +78,13 @@ final class QueryValidator {
                     //catch people trying to search/update into @Reference/@Serialized fields
                     if (validateNames && !canQueryPast(mf.get())) {
                         throw new ValidationException(format("Cannot use dot-notation past '%s' in '%s'; found while"
-                                                             + " validating - %s", fieldName, mc.getClazz().getName(), prop));
+                                                             + " validating - %s", fieldName, mc.getClazz().getName(), propertyName));
                     }
 
                     if (!mf.isPresent() && mc.isInterface()) {
                         break;
                     } else if (!mf.isPresent()) {
-                        throw new ValidationException(format("The field '%s' could not be found in '%s'", prop, mc.getClazz().getName()));
+                        throw new ValidationException(format("The field '%s' could not be found in '%s'", propertyName, mc.getClazz().getName()));
                     }
                     //get the next MappedClass for the next field validation
                     MappedField mappedField = mf.get();

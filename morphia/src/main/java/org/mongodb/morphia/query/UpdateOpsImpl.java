@@ -206,10 +206,9 @@ public class UpdateOpsImpl<T> implements UpdateOperations<T> {
 
         Object val = null;
         MappedField mf = null;
-        final StringBuilder sb = new StringBuilder(f);
         ValidatedField validatedField = null;
         if (validateNames || validateTypes) {
-            validatedField = validateQuery(clazz, mapper, sb, EQUAL, val, validateNames,
+            validatedField = validateQuery(clazz, mapper, f, EQUAL, val, validateNames,
                                            validateTypes);
             mf = validatedField.getMappedField();
         }
@@ -234,7 +233,7 @@ public class UpdateOpsImpl<T> implements UpdateOperations<T> {
         final String opString = op.val();
 
         if (!ops.containsKey(opString)) {
-            ops.put(opString, new HashMap<String, Object>());
+            ops.put(opString, new HashMap<>());
         }
         final String databasePath = validatedField == null ? f : validatedField.getDatabasePath();
         ops.get(opString).put(databasePath, val);
