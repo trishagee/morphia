@@ -46,7 +46,6 @@ final class QueryValidator {
                                      final Object val, final boolean validateNames, final boolean validateTypes) {
         Optional<MappedField> retVal = Optional.empty();
         final String prop = origProp.toString();
-        boolean hasTranslations = false;
 
         if (!origProp.substring(0, 1).equals("$")) {
             final String[] pathElements = prop.split("\\.");
@@ -56,7 +55,6 @@ final class QueryValidator {
             }
 
             MappedClass mc = mapper.getMappedClass(clazz);
-
 
             for (int i = 0; ; ) {
                 final String fieldName = pathElements[i];
@@ -70,7 +68,6 @@ final class QueryValidator {
                     if (validateNames && !mf.isPresent()) {
                         throw fieldNotFoundException(prop, mc, fieldName);
                     }
-                    hasTranslations = true;
                     if (mf.isPresent()) {
                         databasePathElements.set(i, mf.get().getNameToStore());
                     }
@@ -105,11 +102,9 @@ final class QueryValidator {
                 }
             }
 
-            //record new property string if there has been a translation to any part
-            if (hasTranslations) {
-                origProp.setLength(0); // clear existing content
-                origProp.append(databasePathElements.stream().collect(joining(".")));
-            }
+            //record new property string
+            origProp.setLength(0); // clear existing content
+            origProp.append(databasePathElements.stream().collect(joining(".")));
 
             if (validateTypes && retVal.isPresent()) {
                 MappedField mappedField = retVal.get();
