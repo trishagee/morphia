@@ -94,10 +94,7 @@ final class QueryValidator {
             }
 
             //record new property string
-            origProp.setLength(0); // clear existing content
-            final String databasePath = databasePathElements.stream().collect(joining("."));
-            origProp.append(databasePath);
-            validatedField.databasePath = databasePath;
+            validatedField.databasePath = databasePathElements.stream().collect(joining("."));
 
             if (validateTypes && validatedField.mappedField.isPresent()) {
                 MappedField mappedField = validatedField.mappedField.get();
