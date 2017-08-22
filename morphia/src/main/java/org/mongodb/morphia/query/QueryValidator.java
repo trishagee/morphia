@@ -63,6 +63,7 @@ final class QueryValidator {
                 final Optional<MappedField> mf = getMappedField(fieldName, mc, databasePathElements,
                                                                 i, prop, validateNames,
                                                                 fieldIsArrayOperator);
+                retVal = mf;
 
                 i++;
                 if (mf.isPresent() && mf.get().isMap()) {
@@ -70,7 +71,6 @@ final class QueryValidator {
                     i++;
                 }
 
-                retVal = mf;
                 if (i >= pathElements.length) {
                     break;
                 }
