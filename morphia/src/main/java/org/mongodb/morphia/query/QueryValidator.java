@@ -60,18 +60,9 @@ final class QueryValidator {
                 final String fieldName = pathElements[i];
                 boolean fieldIsArrayOperator = fieldName.equals("$");
 
-                Optional<MappedField> mf = mc.getMappedField(fieldName);
-
-                //translate from java field name to stored field name
-                if (!mf.isPresent() && !fieldIsArrayOperator) {
-                    mf = mc.getMappedFieldByJavaField(fieldName);
-                    if (validateNames && !mf.isPresent()) {
-                        throw fieldNotFoundException(prop, mc, fieldName);
-                    }
-                    if (mf.isPresent()) {
-                        databasePathElements.set(i, mf.get().getNameToStore());
-                    }
-                }
+                final Optional<MappedField> mf = getMappedField(fieldName, mc, databasePathElements,
+                                                                i, prop, validateNames,
+                                                                fieldIsArrayOperator);
 
                 i++;
                 if (mf.isPresent() && mf.get().isMap()) {
@@ -128,6 +119,24 @@ final class QueryValidator {
             }
         }
         return retVal.orElse(null);
+    }
+
+    private static Optional<MappedField> getMappedField(String fieldName, MappedClass mc,
+                                                        List<String> databasePathElements,
+                                                        int index, String fieldPath,
+                                                        boolean validateNames,
+                                                        boolean fieldIsArrayOperator) {
+        Optional<MappedField> mf = mc.getMappedField(fieldName);
+
+        //translate from java field name to stored field name
+        if (!mf.isPresent() && !fieldIsArrayOperator) {
+            mf = mc.getMappedFieldByJavaField(fieldName);
+            if (validateNames && !mf.isPresent()) {
+                throw fieldNotFoundException(fieldPath, mc, fieldName);
+            }
+            mf.ifPresent(mappedField -> databasePathElements.set(index, mappedField.getNameToStore()));
+        }
+        return mf;
     }
 
     @NotNull
