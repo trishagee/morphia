@@ -43,7 +43,7 @@ public class FieldCriteria extends AbstractCriteria {
                                              op,
                                              value,
                                              validateNames,
-                                             validateTypes);
+                                             validateTypes).getMappedField();
 
         final Mapper mapper = query.getDatastore().getMapper();
 

@@ -42,16 +42,16 @@ final class QueryValidator {
     /**
      * Validate the path, and value type, returning the mapped field for the field at the path
      */
-    static MappedField validateQuery(final Class clazz, final Mapper mapper, final StringBuilder origProp, final FilterOperator op,
-                                     final Object val, final boolean validateNames, final boolean validateTypes) {
-        Optional<MappedField> retVal = Optional.empty();
+    static ValidatedField validateQuery(final Class clazz, final Mapper mapper, final StringBuilder origProp, final FilterOperator op,
+                                        final Object val, final boolean validateNames, final boolean validateTypes) {
+        final ValidatedField validatedField = new ValidatedField();
         final String prop = origProp.toString();
 
         if (!origProp.substring(0, 1).equals("$")) {
             final String[] pathElements = prop.split("\\.");
             final List<String> databasePathElements = new ArrayList<>(asList(pathElements));
             if (clazz == null) {
-                return null;
+                return validatedField;
             }
 
             MappedClass mc = mapper.getMappedClass(clazz);
@@ -63,7 +63,7 @@ final class QueryValidator {
                 final Optional<MappedField> mf = getMappedField(fieldName, mc, databasePathElements,
                                                                 i, prop, validateNames,
                                                                 fieldIsArrayOperator);
-                retVal = mf;
+                validatedField.mappedField = mf;
 
                 i++;
                 if (mf.isPresent() && mf.get().isMap()) {
@@ -97,8 +97,8 @@ final class QueryValidator {
             origProp.setLength(0); // clear existing content
             origProp.append(databasePathElements.stream().collect(joining(".")));
 
-            if (validateTypes && retVal.isPresent()) {
-                MappedField mappedField = retVal.get();
+            if (validateTypes && validatedField.mappedField.isPresent()) {
+                MappedField mappedField = validatedField.mappedField.get();
                 List<ValidationFailure> typeValidationFailures = new ArrayList<>();
                 boolean compatibleForType = isCompatibleForOperator(mc, mappedField, mappedField.getType(), op, val, typeValidationFailures);
                 List<ValidationFailure> subclassValidationFailures = new ArrayList<>();
@@ -118,7 +118,7 @@ final class QueryValidator {
                 }
             }
         }
-        return retVal.orElse(null);
+        return validatedField;
     }
 
     private static Optional<MappedField> getMappedField(String fieldName, MappedClass mc,
@@ -183,4 +183,11 @@ final class QueryValidator {
         return validationApplied && validationFailures.size() == 0;
     }
 
+    static class ValidatedField {
+        private Optional<MappedField> mappedField = Optional.empty();
+
+        public MappedField getMappedField() {
+            return mappedField.orElse(null);
+        }
+    }
 }
