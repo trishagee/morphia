@@ -44,8 +44,8 @@ final class QueryValidator {
      */
     static ValidatedField validateQuery(final Class clazz, final Mapper mapper, final StringBuilder origProp, final FilterOperator op,
                                         final Object val, final boolean validateNames, final boolean validateTypes) {
-        final ValidatedField validatedField = new ValidatedField();
         final String prop = origProp.toString();
+        final ValidatedField validatedField = new ValidatedField(prop);
 
         if (!origProp.substring(0, 1).equals("$")) {
             final String[] pathElements = prop.split("\\.");
@@ -95,7 +95,9 @@ final class QueryValidator {
 
             //record new property string
             origProp.setLength(0); // clear existing content
-            origProp.append(databasePathElements.stream().collect(joining(".")));
+            final String databasePath = databasePathElements.stream().collect(joining("."));
+            origProp.append(databasePath);
+            validatedField.databasePath = databasePath;
 
             if (validateTypes && validatedField.mappedField.isPresent()) {
                 MappedField mappedField = validatedField.mappedField.get();
@@ -185,9 +187,18 @@ final class QueryValidator {
 
     static class ValidatedField {
         private Optional<MappedField> mappedField = Optional.empty();
+        private String databasePath;
+
+        public ValidatedField(String databasePath) {
+            this.databasePath = databasePath;
+        }
 
         public MappedField getMappedField() {
             return mappedField.orElse(null);
+        }
+
+        public String getDatabasePath() {
+            return databasePath;
         }
     }
 }

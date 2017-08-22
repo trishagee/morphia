@@ -9,6 +9,7 @@ import org.mongodb.morphia.logging.MorphiaLoggerFactory;
 import org.mongodb.morphia.mapping.MappedClass;
 import org.mongodb.morphia.mapping.MappedField;
 import org.mongodb.morphia.mapping.Mapper;
+import org.mongodb.morphia.query.QueryValidator.ValidatedField;
 import org.mongodb.morphia.utils.ReflectionUtils;
 
 import java.util.Collections;
@@ -37,13 +38,14 @@ public class FieldCriteria extends AbstractCriteria {
                             final boolean validateNames, final boolean validateTypes, final boolean not) {
         //validate might modify prop string to translate java field name to db field name
         final StringBuilder sb = new StringBuilder(fieldName);
-        final MappedField mf = validateQuery(query.getEntityClass(),
-                                             query.getDatastore().getMapper(),
-                                             sb,
-                                             op,
-                                             value,
-                                             validateNames,
-                                             validateTypes).getMappedField();
+        final ValidatedField validatedField = validateQuery(query.getEntityClass(),
+                                                            query.getDatastore().getMapper(),
+                                                            sb,
+                                                            op,
+                                                            value,
+                                                            validateNames,
+                                                            validateTypes);
+        final MappedField mf = validatedField.getMappedField();
 
         final Mapper mapper = query.getDatastore().getMapper();
 
@@ -82,7 +84,7 @@ public class FieldCriteria extends AbstractCriteria {
             ((DBObject) mappedValue).removeField(Mapper.ID_KEY);
         }
 
-        this.field = sb.toString();
+        this.field = validatedField.getDatabasePath();
         operator = op;
         this.value = mappedValue;
         this.not = not;

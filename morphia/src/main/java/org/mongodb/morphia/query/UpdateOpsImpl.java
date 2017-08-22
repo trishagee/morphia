@@ -5,12 +5,14 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import org.mongodb.morphia.mapping.MappedField;
 import org.mongodb.morphia.mapping.Mapper;
+import org.mongodb.morphia.query.QueryValidator.ValidatedField;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.mongodb.morphia.query.FilterOperator.EQUAL;
 import static org.mongodb.morphia.query.QueryValidator.validateQuery;
 
 
@@ -205,9 +207,11 @@ public class UpdateOpsImpl<T> implements UpdateOperations<T> {
         Object val = null;
         MappedField mf = null;
         final StringBuilder sb = new StringBuilder(f);
+        ValidatedField validatedField = null;
         if (validateNames || validateTypes) {
-            mf = validateQuery(clazz, mapper, sb, FilterOperator.EQUAL, val, validateNames,
-                               validateTypes).getMappedField();
+            validatedField = validateQuery(clazz, mapper, sb, EQUAL, val, validateNames,
+                                           validateTypes);
+            mf = validatedField.getMappedField();
         }
 
         if (convert) {
@@ -232,7 +236,8 @@ public class UpdateOpsImpl<T> implements UpdateOperations<T> {
         if (!ops.containsKey(opString)) {
             ops.put(opString, new HashMap<String, Object>());
         }
-        ops.get(opString).put(sb.toString(), val);
+        final String databasePath = validatedField == null ? f : validatedField.getDatabasePath();
+        ops.get(opString).put(databasePath, val);
     }
 
     protected UpdateOperations<T> remove(final String fieldExpr, final boolean firstNotLast) {

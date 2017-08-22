@@ -20,6 +20,7 @@ import org.mongodb.morphia.mapping.MappedClass;
 import org.mongodb.morphia.mapping.MappedField;
 import org.mongodb.morphia.mapping.Mapper;
 import org.mongodb.morphia.mapping.cache.EntityCache;
+import org.mongodb.morphia.query.QueryValidator.ValidatedField;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -120,8 +121,10 @@ public class QueryImpl<T> extends CriteriaContainerImpl implements Query<T> {
 
             if (validate) {
                 final StringBuilder sb = new StringBuilder(s);
-                validateQuery(clazz, mapper, sb, FilterOperator.IN, "", true, false);
-                s = sb.toString();
+                final ValidatedField validatedField = validateQuery(clazz, mapper, sb,
+                                                                    FilterOperator.IN, "", true,
+                                                                    false);
+                s = validatedField.getDatabasePath();
             }
             ret = ret.add(s, dir);
         }
@@ -372,8 +375,10 @@ public class QueryImpl<T> extends CriteriaContainerImpl implements Query<T> {
         final Map<String, Integer> fieldsFilter = new HashMap<String, Integer>();
         for (String field : fields) {
             final StringBuilder sb = new StringBuilder(field); //validate might modify prop string to translate java field name to db
-            validateQuery(clazz, ds.getMapper(), sb, FilterOperator.EQUAL, null, validateName, false);
-            field = sb.toString();
+
+            final ValidatedField validatedField = validateQuery(clazz, ds
+                    .getMapper(), sb, FilterOperator.EQUAL, null, validateName, false);
+            field = validatedField.getDatabasePath();
             fieldsFilter.put(field, (includeFields ? 1 : 0));
         }
 
