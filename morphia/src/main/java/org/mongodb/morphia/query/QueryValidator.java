@@ -42,8 +42,9 @@ final class QueryValidator {
     /**
      * Validate the path, and value type, returning the mapped field for the field at the path
      */
-    static ValidatedField validateQuery(final Class clazz, final Mapper mapper, String propertyName, final FilterOperator op,
-                                        final Object val, final boolean validateNames, final boolean validateTypes) {
+    static ValidatedField validateQuery(final Class clazz, final Mapper mapper, String propertyName,
+                                        final FilterOperator op, final Object val,
+                                        final boolean validateNames, final boolean validateTypes) {
         final ValidatedField validatedField = new ValidatedField(propertyName);
 
         if (!propertyName.startsWith("$")) {
@@ -95,28 +96,32 @@ final class QueryValidator {
             //record new property string
             validatedField.databasePath = databasePathElements.stream().collect(joining("."));
 
-            if (validateTypes && validatedField.mappedField.isPresent()) {
-                MappedField mappedField = validatedField.mappedField.get();
-                List<ValidationFailure> typeValidationFailures = new ArrayList<>();
-                boolean compatibleForType = isCompatibleForOperator(mc, mappedField, mappedField.getType(), op, val, typeValidationFailures);
-                List<ValidationFailure> subclassValidationFailures = new ArrayList<>();
-                boolean compatibleForSubclass = isCompatibleForOperator(mc, mappedField, mappedField.getSubClass(), op, val, subclassValidationFailures);
+            validateTypes(op, val, validateTypes, validatedField, mc);
+        }
+        return validatedField;
+    }
 
-                if ((mappedField.isSingleValue() && !compatibleForType)
-                    || mappedField.isMultipleValues() && !(compatibleForSubclass || compatibleForType)) {
+    private static void validateTypes(FilterOperator op, Object val, boolean validateTypes, ValidatedField validatedField, MappedClass mc) {
+        if (validateTypes && validatedField.mappedField.isPresent()) {
+            MappedField mappedField = validatedField.mappedField.get();
+            List<ValidationFailure> typeValidationFailures = new ArrayList<>();
+            boolean compatibleForType = isCompatibleForOperator(mc, mappedField, mappedField.getType(), op, val, typeValidationFailures);
+            List<ValidationFailure> subclassValidationFailures = new ArrayList<>();
+            boolean compatibleForSubclass = isCompatibleForOperator(mc, mappedField, mappedField.getSubClass(), op, val, subclassValidationFailures);
 
-                    if (LOG.isWarningEnabled()) {
-                        LOG.warning(format("The type(s) for the query/update may be inconsistent; using an instance of type '%s' "
-                                           + "for the field '%s.%s' which is declared as '%s'", val.getClass().getName(),
-                                           mappedField.getDeclaringClass().getName(), mappedField.getJavaFieldName(), mappedField.getType().getName()
-                                          ));
-                        typeValidationFailures.addAll(subclassValidationFailures);
-                        LOG.warning("Validation warnings: \n" + typeValidationFailures);
-                    }
+            if ((mappedField.isSingleValue() && !compatibleForType)
+                || mappedField.isMultipleValues() && !(compatibleForSubclass || compatibleForType)) {
+
+                if (LOG.isWarningEnabled()) {
+                    LOG.warning(format("The type(s) for the query/update may be inconsistent; using an instance of type '%s' "
+                                       + "for the field '%s.%s' which is declared as '%s'", val.getClass().getName(),
+                                       mappedField.getDeclaringClass().getName(), mappedField.getJavaFieldName(), mappedField.getType().getName()
+                                      ));
+                    typeValidationFailures.addAll(subclassValidationFailures);
+                    LOG.warning("Validation warnings: \n" + typeValidationFailures);
                 }
             }
         }
-        return validatedField;
     }
 
     private static Optional<MappedField> getMappedField(String fieldName, MappedClass mc,
