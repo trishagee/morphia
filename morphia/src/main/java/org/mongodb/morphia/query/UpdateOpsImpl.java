@@ -14,6 +14,7 @@ import java.util.Map;
 
 import static org.mongodb.morphia.query.FilterOperator.EQUAL;
 import static org.mongodb.morphia.query.QueryValidator.validateQuery;
+import static org.mongodb.morphia.query.QueryValidator.validateTypes;
 
 
 /**
@@ -208,12 +209,10 @@ public class UpdateOpsImpl<T> implements UpdateOperations<T> {
         MappedField mf = null;
         ValidatedField validatedField = null;
         if (validateNames || validateTypes) {
-            final FilterOperator operator = EQUAL;
-            validatedField = validateQuery(clazz, mapper, f, operator, val, validateNames,
-                                           validateTypes);
+            validatedField = validateQuery(clazz, mapper, f, validateNames);
             mf = validatedField.getMappedField();
             if (validateTypes) {
-                QueryValidator.validateTypes(operator, val, validatedField);
+                validateTypes(EQUAL, val, validatedField);
             }
         }
 

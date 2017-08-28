@@ -43,8 +43,7 @@ final class QueryValidator {
      * Validate the path, and value type, returning the mapped field for the field at the path
      */
     static ValidatedField validateQuery(final Class clazz, final Mapper mapper, String propertyName,
-                                        final FilterOperator op, final Object val,
-                                        final boolean validateNames, final boolean validateTypes) {
+                                        final boolean validateNames) {
         final ValidatedField validatedField = new ValidatedField(propertyName);
 
         if (!propertyName.startsWith("$")) {

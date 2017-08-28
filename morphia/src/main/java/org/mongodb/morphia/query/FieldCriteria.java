@@ -39,10 +39,8 @@ public class FieldCriteria extends AbstractCriteria {
                             final boolean validateNames, final boolean validateTypes, final boolean not) {
         final ValidatedField validatedField = validateQuery(query.getEntityClass(),
                                                             query.getDatastore().getMapper(),
-                                                            fieldName, op,
-                                                            value,
-                                                            validateNames,
-                                                            validateTypes);
+                                                            fieldName,
+                                                            validateNames);
         if (validateTypes) {
             validateTypes(op, value, validatedField);
         }

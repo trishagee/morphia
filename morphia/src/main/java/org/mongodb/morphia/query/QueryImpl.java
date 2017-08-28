@@ -120,10 +120,7 @@ public class QueryImpl<T> extends CriteriaContainerImpl implements Query<T> {
             }
 
             if (validate) {
-                final ValidatedField validatedField = validateQuery(clazz, mapper,
-                                                                    s, FilterOperator.IN, "",
-                                                                    true,
-                                                                    false);
+                final ValidatedField validatedField = validateQuery(clazz, mapper, s, true);
                 s = validatedField.getDatabasePath();
             }
             ret = ret.add(s, dir);
@@ -377,7 +374,7 @@ public class QueryImpl<T> extends CriteriaContainerImpl implements Query<T> {
             final StringBuilder sb = new StringBuilder(field); //validate might modify prop string to translate java field name to db
 
             final ValidatedField validatedField = validateQuery(clazz, ds
-                    .getMapper(), sb.toString(), FilterOperator.EQUAL, null, validateName, false);
+                    .getMapper(), sb.toString(), validateName);
             field = validatedField.getDatabasePath();
             fieldsFilter.put(field, (includeFields ? 1 : 0));
         }
