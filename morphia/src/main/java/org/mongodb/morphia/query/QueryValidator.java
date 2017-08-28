@@ -98,15 +98,13 @@ final class QueryValidator {
 
             //record new property string
             validatedField.databasePath = databasePathElements.stream().collect(joining("."));
-
-            validateTypes(op, val, validateTypes, validatedField);
         }
         return validatedField;
     }
 
-    static void validateTypes(FilterOperator op, Object val, boolean validateTypes,
-                                      ValidatedField validatedField) {
-        if (validateTypes && validatedField.mappedField.isPresent()) {
+    static void validateTypes(FilterOperator op, Object val,
+                              ValidatedField validatedField) {
+        if (validatedField.mappedField.isPresent()) {
             MappedField mappedField = validatedField.mappedField.get();
             List<ValidationFailure> typeValidationFailures = new ArrayList<>();
             boolean compatibleForType = isCompatibleForOperator(validatedField.mappedClass, mappedField,

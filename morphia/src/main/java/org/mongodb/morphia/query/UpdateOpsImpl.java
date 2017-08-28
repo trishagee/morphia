@@ -208,9 +208,13 @@ public class UpdateOpsImpl<T> implements UpdateOperations<T> {
         MappedField mf = null;
         ValidatedField validatedField = null;
         if (validateNames || validateTypes) {
-            validatedField = validateQuery(clazz, mapper, f, EQUAL, val, validateNames,
+            final FilterOperator operator = EQUAL;
+            validatedField = validateQuery(clazz, mapper, f, operator, val, validateNames,
                                            validateTypes);
             mf = validatedField.getMappedField();
+            if (validateTypes) {
+                QueryValidator.validateTypes(operator, val, validatedField);
+            }
         }
 
         if (convert) {
