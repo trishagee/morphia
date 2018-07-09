@@ -34,7 +34,6 @@ import static org.mongodb.morphia.internal.MorphiaUtils.join;
  * @since 1.3
  */
 public class PathTarget {
-    private final String path;
     private final List<String> segments;
     private boolean validateNames = true;
     private int position;
@@ -55,7 +54,7 @@ public class PathTarget {
         this.root = root;
         segments = asList(path.split("\\."));
         this.mapper = mapper;
-        this.path = path;
+        String path1 = path;
     }
 
     /**
