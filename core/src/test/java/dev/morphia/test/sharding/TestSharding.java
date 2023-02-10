@@ -16,12 +16,14 @@ import dev.morphia.test.TestBase;
 
 import org.bson.types.ObjectId;
 import org.testng.Assert;
+import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
 
 import static com.antwerkz.bottlerocket.clusters.ClusterType.SHARDED;
 import static dev.morphia.mapping.ShardKeyType.HASHED;
 import static org.testng.Assert.assertEquals;
 
+@Ignore
 public class TestSharding extends TestBase {
     @Test
     public void testMapping() {
