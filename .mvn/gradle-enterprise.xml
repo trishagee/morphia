@@ -1,5 +1,6 @@
 <gradleEnterprise>
     <server>
-        <url>https://events.gradle.com/</url>
+        <url>https://18.212.219.143.nip.io/</url>
+        <allowUntrusted>true</allowUntrusted>
     </server>
 </gradleEnterprise>
