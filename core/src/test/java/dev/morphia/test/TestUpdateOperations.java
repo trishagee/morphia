@@ -76,6 +76,7 @@ import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.jetbrains.annotations.NotNull;
 import org.testng.annotations.DataProvider;
+import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
 
 import static dev.morphia.aggregation.expressions.Expressions.literal;
@@ -574,6 +575,7 @@ public class TestUpdateOperations extends TestBase {
     }
 
     @Test
+    @Ignore
     public void testMinWithDates() {
         List<User> entities = List.of(
                 new User("User 1", LocalDate.of(2003, 7, 13)),

@@ -8,6 +8,7 @@ import com.github.zafarkhaja.semver.Version;
 
 import org.jetbrains.annotations.NotNull;
 import org.jsoup.Jsoup;
+import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertFalse;
@@ -15,6 +16,9 @@ import static org.testng.Assert.assertTrue;
 
 @Test
 public class VersionsTest {
+
+    @Test
+    @Ignore
     public void latest() throws IOException {
         var doc = Jsoup.parse(new URL("https://www.mongodb.com/try/download/community"), 10000);
         var found = doc.getElementById("download-version")
