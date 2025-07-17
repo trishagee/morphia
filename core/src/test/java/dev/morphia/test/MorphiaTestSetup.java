@@ -15,7 +15,6 @@ import org.semver4j.Semver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.MongoDBContainer;
-import org.testcontainers.utility.DockerImageName;
 import org.testng.SkipException;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeSuite;
@@ -62,30 +61,30 @@ public class MorphiaTestSetup {
         String mongodb = System.getProperty("mongodb");
         String connectionString;
         MongoDBContainer mongoDBContainer = null;
-        if ("local".equals(mongodb)) {
-            LOG.info("'local' mongodb property specified. Using local server.");
-            connectionString = "mongodb://localhost:27017/" + TEST_DB_NAME;
-        } else {
-            DockerImageName imageName;
-            try {
-                Versions match = mongodb == null
-                        ? Versions.latest()
-                        : Versions.bestMatch(mongodb);
-                imageName = match.dockerImage();
-            } catch (IllegalArgumentException e) {
-                imageName = Versions.latest().dockerImage();
-                LOG.error(format("Could not parse mongo docker image name.  using docker image %s.", imageName));
-            }
-
-            LOG.info("Running tests using " + imageName);
-            mongoDBContainer = new MongoDBContainer(imageName);
-            if (sharded) {
-                mongoDBContainer
-                        .withSharding();
-            }
-            mongoDBContainer.start();
-            connectionString = mongoDBContainer.getReplicaSetUrl(TEST_DB_NAME);
-        }
+        //        if ("local".equals(mongodb)) {
+        LOG.info("'local' mongodb property specified. Using local server.");
+        connectionString = "mongodb://localhost:27017/" + TEST_DB_NAME;
+        //        } else {
+        //            DockerImageName imageName;
+        //            try {
+        //                Versions match = mongodb == null
+        //                        ? Versions.latest()
+        //                        : Versions.bestMatch(mongodb);
+        //                imageName = match.dockerImage();
+        //            } catch (IllegalArgumentException e) {
+        //                imageName = Versions.latest().dockerImage();
+        //                LOG.error(format("Could not parse mongo docker image name.  using docker image %s.", imageName));
+        //            }
+        //
+        //            LOG.info("Running tests using " + imageName);
+        //            mongoDBContainer = new MongoDBContainer(imageName);
+        //            if (sharded) {
+        //                mongoDBContainer
+        //                        .withSharding();
+        //            }
+        //            mongoDBContainer.start();
+        //            connectionString = mongoDBContainer.getReplicaSetUrl(TEST_DB_NAME);
+        //        }
         return new MongoHolder(mongoDBContainer, connectionString);
     }
 
